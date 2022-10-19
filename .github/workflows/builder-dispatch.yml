@@ -33,7 +33,7 @@ jobs:
           echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
         id: getversion
       - name: Upload packages
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.inputs.product }}-${{ github.event.inputs.os }}-${{ steps.getversion.outputs.version }}
           path: built_pkgs/
