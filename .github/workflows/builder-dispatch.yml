@@ -28,7 +28,8 @@ jobs:
       # this builds packages and runs our unit tests (make check)
       - run: builder/build.sh -v -m ${{ github.event.inputs.product }} ${{ github.event.inputs.os }}
       - name: Get version number
-        run: 'echo ::set-output name=version::$(readlink builder/tmp/latest)'
+        run: |
+          echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
         id: getversion
       - name: Upload packages
         uses: actions/upload-artifact@v2
