@@ -22,7 +22,7 @@ jobs:
       UNIT_TESTS: yes
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -70,7 +70,7 @@ jobs:
         working-directory: ./pdns/recursordist/
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -122,7 +122,7 @@ jobs:
         working-directory: ./pdns/dnsdistdist/
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -188,7 +188,7 @@ jobs:
           --restart always
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -251,7 +251,7 @@ jobs:
           --restart always
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -276,7 +276,7 @@ jobs:
       ASAN_OPTIONS: detect_leaks=0
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -302,7 +302,7 @@ jobs:
       TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ github.workspace }}/pdns/recursordist/recursor-tsan.supp"
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -329,7 +329,7 @@ jobs:
       TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ github.workspace }}/pdns/recursordist/recursor-tsan.supp"
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -360,7 +360,7 @@ jobs:
       TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ github.workspace }}/pdns/recursordist/recursor-tsan.supp"
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -389,7 +389,7 @@ jobs:
       SKIP_INCLUDEDIR_TESTS: yes
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -407,7 +407,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
@@ -430,7 +430,7 @@ jobs:
       - test-recursor-bulk
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         with:
           fetch-depth: 5
           submodules: recursive
