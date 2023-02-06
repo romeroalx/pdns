@@ -461,7 +461,4 @@ workflows:
       - test-auth-regress-odbc-sqlite3:
           requires:
             - build-auth
-      - test-auth-regress-odbc-mssql:
-          requires:
-            - build-auth
  
