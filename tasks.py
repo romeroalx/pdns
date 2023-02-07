@@ -608,7 +608,7 @@ def test_auth_backend(c, backend):
         setup_godbc_sqlite3(c)
         with c.cd('regression-tests'):
             for variant in backend_regress_tests[backend]:
-                c.run(f'{pdns_auth_env_vars} ODBCINI=~/odbc.ini GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
+                c.run(f'{pdns_auth_env_vars} ODBCINI=~/odbc.ini ODBC_USER_DSN=pdns-sqlite3-1 GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
 
     if backend == 'godbc_mssql':
         setup_godbc_mssql(c)
