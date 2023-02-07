@@ -1,5 +1,5 @@
 ---
-name: 'Build and test everything'
+name: 'Testing custom actions'
 
 on:
   - workflow_dispatch
