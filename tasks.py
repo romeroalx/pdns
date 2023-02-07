@@ -583,12 +583,13 @@ def setup_godbc_mssql(c):
     c.sudo(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
 
 def setup_godbc_sqlite3(c):
-    c.run('pwd')
+    c.run('echo ${HOME}')
+    c.run('echo ${ODBCINI}')
     #TODO: change next two lines back to run
     c.run('cat >> ~/odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite3\n__EOF__')
     c.run('cat >> ~/odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
     # c.sudo('cat ~/odbc.ini >> /etc/odbc.ini')
-    c.run('cat ~/odbc.ini')
+    # c.run('cat ~/odbc.ini')
 
 @task
 def test_auth_backend(c, backend):
@@ -607,7 +608,7 @@ def test_auth_backend(c, backend):
         setup_godbc_sqlite3(c)
         with c.cd('regression-tests'):
             for variant in backend_regress_tests[backend]:
-                c.run(f'{pdns_auth_env_vars} GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
+                c.run(f'{pdns_auth_env_vars} ODBCINI=~/odbc.ini GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
 
     if backend == 'godbc_mssql':
         setup_godbc_mssql(c)
