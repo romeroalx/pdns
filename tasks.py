@@ -202,7 +202,9 @@ auth_backend_test_deps = dict(
     geoip=[],
     lua2=[],
     tinydns=[],
-    authpy=[]
+    authpy=[],
+    godbc_sqlite3=['libsqliteodbc'],
+    godbc_mssql=['freetds-bin','tdsodbc']
 )
 
 @task(help={'backend': 'Backend to install test deps for, e.g. gsqlite3; can be repeated'}, iterable=['backend'], optional=['backend'])
@@ -556,28 +558,64 @@ backend_regress_tests = dict(
     gmysql   = ['gmysql',     'gmysql-nodnssec-both',   'gmysql-nsec3-both',   'gmysql-nsec3-optout-both',   'gmysql-nsec3-narrow',   'gmysql_sp-both'],
     gpgsql   = ['gpgsql',     'gpgsql-nodnssec-both',   'gpgsql-nsec3-both',   'gpgsql-nsec3-optout-both',   'gpgsql-nsec3-narrow',   'gpgsql_sp-both'],
     gsqlite3 = ['gsqlite3', 'gsqlite3-nodnssec-both', 'gsqlite3-nsec3-both', 'gsqlite3-nsec3-optout-both', 'gsqlite3-nsec3-narrow'],
+    godbc_sqlite3 = [
+        'godbc_sqlite3-nodnssec',
+    ],
+    godbc_mssql = [
+        'godbc_mssql',
+        'godbc_mssql-nodnssec',
+        'godbc_mssql-nsec3',
+        'godbc_mssql-nsec3-optout',
+        'godbc_mssql-nsec3-narrow',
+    ],
 )
+
+godbc_mssql_credentials = {
+    'username' : 'sa',
+    'password' : 'SAsa12%%'
+}
+
+def setup_godbc_mssql(c):
+    c.run(f'cat >> ~/.odbc.ini <<- __EOF__\n[pdns-mssql-docker]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nDatabase=pdns\nTDS_Version=7.1\n__EOF__')
+    c.run(f'cat >> ~/.odbc.ini <<- __EOF__\n[pdns-mssql-docker-nodb]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nTDS_Version=7.1\n__EOF__')
+    c.run(f'cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
+    c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
+
+def setup_godbc_sqlite3(c):
+    #TODO: Check PWD + LS to see if path is correct
+    c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite3\n__EOF__')
+    c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
 
 @task
 def test_auth_backend(c, backend):
+    pdns_auth_env_vars = 'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=127.0.0.1 GMYSQL2HOST=127.0.0.1 MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432"'
+
     if backend == 'remote':
         ci_auth_install_remotebackend_test_deps(c)
 
     if backend == 'authpy':
         with c.cd('regression-tests.auth-py'):
-            c.run(f'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=127.0.0.1 GMYSQL2HOST=127.0.0.1 MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432" WITHKERBEROS=YES ./runtests')
+            c.run(f'{pdns_auth_env_vars} WITHKERBEROS=YES ./runtests')
         return
 
     with c.cd('regression-tests'):
         if backend == 'lua2':
             c.run('touch trustedkeys')  # avoid silly error during cleanup
+        if backend == 'godbc_sqlite3':
+            setup_godbc_sqlite3(c)
+            for variant in backend_regress_tests[backend]:
+                c.run(f'{pdns_auth_env_vars} GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
+        if backend == 'godbc_mssql':
+            setup_godbc_mssql(c)
+            for variant in backend_regress_tests[backend]:
+                c.run(f'{pdns_auth_env_vars} GODBC_MSSQL_PASSWORD={godbc_mssql_credentials["password"]} GODBC_MSSQL_USERNAME={godbc_mssql_credentials["username"]} GODBC_MSSQL_DSN=pdns-mssql-docker ./start-test-stop 5300 {variant}')
         for variant in backend_regress_tests[backend]:
             # FIXME this long line is terrible
-            c.run(f'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=127.0.0.1 GMYSQL2HOST=127.0.0.1 MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432" ./start-test-stop 5300 {variant}')
+            c.run(f'{pdns_auth_env_vars} ./start-test-stop 5300 {variant}')
 
     if backend == 'gsqlite3':
         with c.cd('regression-tests.nobackend'):
-            c.run(f'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=127.0.0.1 GMYSQL2HOST=127.0.0.1 MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432" ./runtests')
+            c.run(f'{pdns_auth_env_vars} ./runtests')
         c.run('/opt/pdns-auth/bin/pdnsutil test-algorithms')
         return
 
