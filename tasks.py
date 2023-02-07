@@ -116,6 +116,7 @@ auth_test_deps = [   # FIXME: we should be generating some of these from shlibde
     'unbound-host',
     'unixodbc',
     'wget',
+    'ccache',
 ]
 doc_deps = [
     'autoconf',
