@@ -577,14 +577,14 @@ godbc_mssql_credentials = {
 }
 
 def setup_godbc_mssql(c):
-    c.sudo(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nDatabase=pdns\nTDS_Version=7.1\n__EOF__')
-    c.sudo(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker-nodb]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nTDS_Version=7.1\n__EOF__')
-    c.sudo(f'cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
-    c.sudo(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
+    c.run(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nDatabase=pdns\nTDS_Version=7.1\n__EOF__')
+    c.run(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker-nodb]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nTDS_Version=7.1\n__EOF__')
+    c.run(f'cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
+    c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
 
 def setup_godbc_sqlite3(c):
-    c.sudo('cat >> /etc/odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/pdns.sqlite3\n__EOF__')
-    c.sudo('cat >> /etc/odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/pdns.sqlite32\n__EOF__')
+    c.run('cat >> /etc/odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/pdns.sqlite3\n__EOF__')
+    c.run('cat >> /etc/odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/pdns.sqlite32\n__EOF__')
 
 @task
 def test_auth_backend(c, backend):
