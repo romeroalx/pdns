@@ -29,7 +29,11 @@ webserver-address: %s
 
     _config_domains = {'example': '127.0.0.1:' + str(xfrServerPort)}
 
-    metric_prog_stats = ["ixfrdist_uptime_seconds", "ixfrdist_domains", "ixfrdist_unknown_domain_inqueries_total"]
+    metric_prog_stats = ["ixfrdist_uptime_seconds", "ixfrdist_domains",
+                         "ixfrdist_unknown_domain_inqueries_total",
+                         "ixfrdist_sys_msec", "ixfrdist_user_msec",
+                         "ixfrdist_real_memory_usage",
+                         "ixfrdist_fd_usage"]
     metric_domain_stats = ["ixfrdist_soa_serial", "ixfrdist_soa_checks_total",
                            "ixfrdist_soa_checks_failed_total",
                            "ixfrdist_soa_inqueries_total",
@@ -72,8 +76,12 @@ webserver-address: %s
                 continue
             if "{" in line:
                 continue
-            self.assertIn(line.split(" ")[0],
+            tokens = line.split(" ")
+            self.assertIn(tokens[0],
                           self.metric_prog_stats + self.metric_domain_stats)
+            if tokens[0] == 'ixfrdist_unknown_domain_inqueries_total':
+                self.assertEqual(int(tokens[1]), 0)
+
         self.checkPrometheusContentPromtool(res.content)
 
     def test_registered(self):
