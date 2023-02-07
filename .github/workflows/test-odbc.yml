@@ -2,7 +2,14 @@
 name: 'Testing custom actions'
 
 on:
-  - workflow_dispatch
+  push:
+    branches:
+    - master
+    - ci-odbc-gh
+  pull_request:
+    branches:
+    - master
+    - ci-odbc-gh
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
