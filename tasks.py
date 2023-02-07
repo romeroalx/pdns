@@ -577,14 +577,14 @@ godbc_mssql_credentials = {
 }
 
 def setup_godbc_mssql(c):
-    c.run(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nDatabase=pdns\nTDS_Version=7.1\n__EOF__')
-    c.run(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker-nodb]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nTDS_Version=7.1\n__EOF__')
-    c.run(f'cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
-    c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
+    c.sudo(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nDatabase=pdns\nTDS_Version=7.1\n__EOF__')
+    c.sudo(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker-nodb]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nTDS_Version=7.1\n__EOF__')
+    c.sudo(f'cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
+    c.sudo(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
 
 def setup_godbc_sqlite3(c):
-    c.run('cat >> /etc/odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/pdns.sqlite3\n__EOF__')
-    c.run('cat >> /etc/odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/pdns.sqlite32\n__EOF__')
+    c.sudo('cat >> /etc/odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/pdns.sqlite3\n__EOF__')
+    c.sudo('cat >> /etc/odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/pdns.sqlite32\n__EOF__')
 
 @task
 def test_auth_backend(c, backend):
@@ -597,18 +597,23 @@ def test_auth_backend(c, backend):
         with c.cd('regression-tests.auth-py'):
             c.run(f'{pdns_auth_env_vars} WITHKERBEROS=YES ./runtests')
         return
+    
+    # to avoid sudo cd error
+    if backend == 'godbc_sqlite3':
+        setup_godbc_sqlite3(c)
+        with c.cd('regression-tests'):
+            for variant in backend_regress_tests[backend]:
+                c.run(f'{pdns_auth_env_vars} GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
+
+    if backend == 'godbc_mssql':
+        setup_godbc_mssql(c)
+        with c.cd('regression-tests'):
+            for variant in backend_regress_tests[backend]:
+                c.run(f'{pdns_auth_env_vars} GODBC_MSSQL_PASSWORD={godbc_mssql_credentials["password"]} GODBC_MSSQL_USERNAME={godbc_mssql_credentials["username"]} GODBC_MSSQL_DSN=pdns-mssql-docker ./start-test-stop 5300 {variant}')
 
     with c.cd('regression-tests'):
         if backend == 'lua2':
             c.run('touch trustedkeys')  # avoid silly error during cleanup
-        if backend == 'godbc_sqlite3':
-            setup_godbc_sqlite3(c)
-            for variant in backend_regress_tests[backend]:
-                c.run(f'{pdns_auth_env_vars} GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
-        if backend == 'godbc_mssql':
-            setup_godbc_mssql(c)
-            for variant in backend_regress_tests[backend]:
-                c.run(f'{pdns_auth_env_vars} GODBC_MSSQL_PASSWORD={godbc_mssql_credentials["password"]} GODBC_MSSQL_USERNAME={godbc_mssql_credentials["username"]} GODBC_MSSQL_DSN=pdns-mssql-docker ./start-test-stop 5300 {variant}')
         for variant in backend_regress_tests[backend]:
             # FIXME this long line is terrible
             c.run(f'{pdns_auth_env_vars} ./start-test-stop 5300 {variant}')
