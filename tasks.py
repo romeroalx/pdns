@@ -583,6 +583,7 @@ def setup_godbc_mssql(c):
 
 def setup_godbc_sqlite3(c):
     #TODO: Check PWD + LS to see if path is correct
+    c.run('ls -l; ls -l ${PWD}/regression-tests; pwd')
     c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite3\n__EOF__')
     c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
 

@@ -4,11 +4,9 @@ name: 'Testing custom actions'
 on:
   push:
     branches:
-    - master
     - ci-odbc-gh
   pull_request:
     branches:
-    - master
     - ci-odbc-gh
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
@@ -115,8 +113,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - backend: gmysql
-            image: mariadb:10
           - backend: godbc_sqlite3
             image: coscale/docker-sleep
       fail-fast: false
@@ -144,11 +140,6 @@ jobs:
         with:
           name: pdns-auth
           path: /opt/pdns-auth
-      - name: Fetch Recursor binaries
-        uses: actions/download-artifact@v3
-        with:
-          name: pdns-recursor-${{ matrix.sanitizers }}
-          path: /opt/pdns-recursor
       # - name: Setup upterm session
       #   uses: lhotari/action-upterm@v1
       # FIXME: install recursor for backends that have ALIAS
