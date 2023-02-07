@@ -105,7 +105,7 @@ jobs:
   #         retention-days: 1
 
   test-auth-backend:
-    needs: build-auth
+    # needs: build-auth
     runs-on: ubuntu-20.04
     env:
       UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
