@@ -115,6 +115,8 @@ jobs:
         include:
           - backend: godbc_sqlite3
             image: coscale/docker-sleep
+          # - backend: godbc_mssql
+          #   image: coscale/docker-sleep
       fail-fast: false
     services:
       database:

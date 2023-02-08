@@ -580,7 +580,7 @@ def setup_godbc_mssql(c):
     c.sudo(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nDatabase=pdns\nTDS_Version=7.1\n__EOF__')
     c.sudo(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker-nodb]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nTDS_Version=7.1\n__EOF__')
     c.sudo(f'cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
-    c.sudo(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
+    c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
 
 def setup_godbc_sqlite3(c):
     #TODO: change next two lines back to run
@@ -593,8 +593,7 @@ def setup_godbc_sqlite3(c):
             Database = ${PWD}/regression-tests/pdns.sqlite3
             [pdns-sqlite3-2]
             Driver = SQLite3
-            Database = ${PWD}/regression-tests/pdns.sqlite32
-            __EOF__''')
+            Database = ${PWD}/regression-tests/pdns.sqlite32__EOF__''')
     c.run('cat ~/.odbc.ini')
     # c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver=SQLite3\nDatabase=${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
     c.sudo('sed -i "s/libsqlite3odbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libsqlite3odbc.so/g" /etc/odbcinst.ini')
