@@ -577,25 +577,20 @@ godbc_mssql_credentials = {
 }
 
 def setup_godbc_mssql(c):
-    c.sudo(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nDatabase=pdns\nTDS_Version=7.1\n__EOF__')
-    c.sudo(f'cat >> /etc/odbc.ini <<- __EOF__\n[pdns-mssql-docker-nodb]\nDriver=FreeTDS\nTrace=No\nServer=127.0.0.1\nPort=1433\nTDS_Version=7.1\n__EOF__')
-    c.sudo(f'cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
+    c.run('echo "[pdns-mssql-docker]" >> ~/.odbc.ini')
+    c.run('echo "Driver=FreeTDS" >> ~/.odbc.ini')
+    c.run('echo "Trace=No >> ~/.odbc.ini')
+    c.run('echo "Server=127.0.0.1" >> ~/.odbc.ini')
+    c.run('echo "Port=1433" >> ~/.odbc.ini')
+    c.run('echo "Database=pdns >> ~/.odbc.ini')
+    c.run('echo "DS_Version=7.1 >> ~/.odbc.ini')
+    c.sudo('cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
     c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
 
 def setup_godbc_sqlite3(c):
-    #TODO: change next two lines back to run
-    # c.run('echo "[pdns-sqlite3-1]" >> ~/.odbc.ini')
-    # c.run('echo "Driver=SQLite3" >> ~/.odbc.ini')
-    # c.run('echo "Database=${PWD}/regression-tests/pdns.sqlite3" >> ~/.odbc.ini')
-    c.run('''cat >> ~/.odbc.ini <<- __EOF__
-            [pdns-sqlite3-1]
-            Driver = SQLite3
-            Database = ${PWD}/regression-tests/pdns.sqlite3
-            [pdns-sqlite3-2]
-            Driver = SQLite3
-            Database = ${PWD}/regression-tests/pdns.sqlite32__EOF__''')
-    c.run('cat ~/.odbc.ini')
-    # c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver=SQLite3\nDatabase=${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
+    c.run('echo "[pdns-sqlite3-1]" >> ~/.odbc.ini')
+    c.run('echo "Driver=SQLite3" >> ~/.odbc.ini')
+    c.run('echo "Database=${PWD}/regression-tests/pdns.sqlite3" >> ~/.odbc.ini')
     c.sudo('sed -i "s/libsqlite3odbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libsqlite3odbc.so/g" /etc/odbcinst.ini')
 
 @task
