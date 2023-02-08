@@ -586,11 +586,11 @@ def setup_godbc_sqlite3(c):
     c.run('echo ${HOME}')
     c.run('echo ${ODBCINI}')
     #TODO: change next two lines back to run
-    c.run('cat >> ~/odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite3\n__EOF__')
-    c.run('cat >> ~/odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
+    c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-1]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite3\n__EOF__')
+    c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
     c.sudo('cat /etc/odbcinst.ini')
     c.sudo('find /usr -name "libsqlite3odbc.so"')
-    c.sudo('sudo ln -s /usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so /usr/lib/x86_64-linux-gnu/libsqlite3odbc.so')
+    c.sudo('ln -s /usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so /usr/lib/x86_64-linux-gnu/libsqlite3odbc.so')
     # c.run('cat ~/odbc.ini')
 
 @task
@@ -610,7 +610,7 @@ def test_auth_backend(c, backend):
         setup_godbc_sqlite3(c)
         with c.cd('regression-tests'):
             for variant in backend_regress_tests[backend]:
-                c.run(f'{pdns_auth_env_vars} ODBCINI=~/odbc.ini ODBCINSTINI=/etc/odbcinst.ini ODBC_USER_DSN=pdns-sqlite3-1 GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
+                c.run(f'{pdns_auth_env_vars} ODBCINI=~/.odbc.ini ODBCINSTINI=/etc/odbcinst.ini ODBC_USER_DSN=pdns-sqlite3-1 GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
 
     if backend == 'godbc_mssql':
         setup_godbc_mssql(c)
