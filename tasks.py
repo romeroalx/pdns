@@ -584,7 +584,7 @@ def setup_godbc_mssql(c):
     c.run('echo "Port=1433" >> ~/.odbc.ini')
     c.run('echo "Database=pdns" >> ~/.odbc.ini')
     c.run('echo "DS_Version=7.1" >> ~/.odbc.ini')
-    c.sudo('cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
+    c.sudo('sh -c \'echo "Threading=1" | cat /usr/share/tdsodbc/odbcinst.ini - | tee -a /etc/odbcinst.ini\'')
     c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
     c.sudo('sed -i "s/libsqlite3odbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libsqlite3odbc.so/g" /etc/odbcinst.ini')
 
