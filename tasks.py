@@ -594,9 +594,8 @@ TDS_Version=7.1
 __EOF__''')
     c.sudo('sh -c \'echo "Threading=1" | cat /usr/share/tdsodbc/odbcinst.ini - | tee -a /etc/odbcinst.ini\'')
     c.sudo('sed -i "s/libtdsodbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libtdsodbc.so/g" /etc/odbcinst.ini')
-    c.sudo('cat /etc/odbcinst.ini')
     c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
-    # Skip 8bit-txt-unescaped tests
+    # Skip 8bit-txt-unescaped test
     c.run('touch ${PWD}/regression-tests/tests/8bit-txt-unescaped/skip')
 
 def setup_godbc_sqlite3(c):
@@ -627,7 +626,7 @@ def test_auth_backend(c, backend):
         setup_godbc_sqlite3(c)
         with c.cd('regression-tests'):
             for variant in backend_regress_tests[backend]:
-                c.run(f'{pdns_auth_env_vars} ODBC_USER_DSN=pdns-sqlite3-1 GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
+                c.run(f'{pdns_auth_env_vars} GODBC_SQLITE3_DSN=pdns-sqlite3-1 ./start-test-stop 5300 {variant}')
         return
 
     if backend == 'godbc_mssql':
