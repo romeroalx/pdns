@@ -579,13 +579,14 @@ godbc_mssql_credentials = {
 def setup_godbc_mssql(c):
     c.run('echo "[pdns-mssql-docker]" >> ~/.odbc.ini')
     c.run('echo "Driver=FreeTDS" >> ~/.odbc.ini')
-    c.run('echo "Trace=No >> ~/.odbc.ini')
+    c.run('echo "Trace=No" >> ~/.odbc.ini')
     c.run('echo "Server=127.0.0.1" >> ~/.odbc.ini')
     c.run('echo "Port=1433" >> ~/.odbc.ini')
-    c.run('echo "Database=pdns >> ~/.odbc.ini')
-    c.run('echo "DS_Version=7.1 >> ~/.odbc.ini')
+    c.run('echo "Database=pdns" >> ~/.odbc.ini')
+    c.run('echo "DS_Version=7.1" >> ~/.odbc.ini')
     c.sudo('cat /usr/share/tdsodbc/odbcinst.ini <(echo Threading=1) >> /etc/odbcinst.ini')
     c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
+    c.sudo('sed -i "s/libsqlite3odbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libsqlite3odbc.so/g" /etc/odbcinst.ini')
 
 def setup_godbc_sqlite3(c):
     c.run('echo "[pdns-sqlite3-1]" >> ~/.odbc.ini')
