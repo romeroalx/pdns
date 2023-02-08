@@ -590,6 +590,7 @@ def setup_godbc_sqlite3(c):
     c.run('cat >> ~/odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver = SQLite3\nDatabase = ${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
     c.sudo('cat /etc/odbcinst.ini')
     c.sudo('find /usr -name "libsqlite3odbc.so"')
+    c.sudo('sudo ln -s /usr/lib/x86_64-linux-gnu/odbc/libsqlite3odbc.so /usr/lib/x86_64-linux-gnu/libsqlite3odbc.so')
     # c.run('cat ~/odbc.ini')
 
 @task
