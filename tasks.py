@@ -587,7 +587,7 @@ def setup_godbc_sqlite3(c):
     # c.run('echo "[pdns-sqlite3-1]" >> ~/.odbc.ini')
     # c.run('echo "Driver=SQLite3" >> ~/.odbc.ini')
     # c.run('echo "Database=${PWD}/regression-tests/pdns.sqlite3" >> ~/.odbc.ini')
-    c.run('''cat >> ~/.odbc.ini \<<- __EOF__
+    c.run('''cat >> ~/.odbc.ini <<- __EOF__
             [pdns-sqlite3-1]
             Driver = SQLite3
             Database = ${PWD}/regression-tests/pdns.sqlite3
@@ -595,6 +595,7 @@ def setup_godbc_sqlite3(c):
             Driver = SQLite3
             Database = ${PWD}/regression-tests/pdns.sqlite32
             __EOF__''')
+    c.run('cat ~/.odbc.ini')
     # c.run('cat >> ~/.odbc.ini <<- __EOF__\n[pdns-sqlite3-2]\nDriver=SQLite3\nDatabase=${PWD}/regression-tests/pdns.sqlite32\n__EOF__')
     c.sudo('sed -i "s/libsqlite3odbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libsqlite3odbc.so/g" /etc/odbcinst.ini')
 
