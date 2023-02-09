@@ -1,11 +1,10 @@
 ---
-name: 'Build and test everything'
+name: 'Testing custom actions'
 
 on:
   push:
-  pull_request:
-  schedule:
-    - cron: '0 22 * * 3'
+    branches:
+    - odbc-cleanup-actions
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
