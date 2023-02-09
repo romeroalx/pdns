@@ -567,7 +567,7 @@ backend_regress_tests = dict(
         'godbc_mssql-nodnssec',
         'godbc_mssql-nsec3',
         'godbc_mssql-nsec3-optout',
-        'godbc_mssql-nsec3-narrow',
+        'godbc_mssql-nsec3-narrow'
     ],
 )
 
