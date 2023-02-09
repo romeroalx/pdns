@@ -555,12 +555,30 @@ backend_regress_tests = dict(
       'lmdb-nsec3-optout-both',
       'lmdb-nsec3-narrow'
     ],
-    gmysql   = ['gmysql',     'gmysql-nodnssec-both',   'gmysql-nsec3-both',   'gmysql-nsec3-optout-both',   'gmysql-nsec3-narrow',   'gmysql_sp-both'],
-    gpgsql   = ['gpgsql',     'gpgsql-nodnssec-both',   'gpgsql-nsec3-both',   'gpgsql-nsec3-optout-both',   'gpgsql-nsec3-narrow',   'gpgsql_sp-both'],
-    gsqlite3 = ['gsqlite3', 'gsqlite3-nodnssec-both', 'gsqlite3-nsec3-both', 'gsqlite3-nsec3-optout-both', 'gsqlite3-nsec3-narrow'],
-    godbc_sqlite3 = [
-        'godbc_sqlite3-nodnssec'
+    gmysql = [
+        'gmysql',
+        'gmysql-nodnssec-both',
+        'gmysql-nsec3-both',
+        'gmysql-nsec3-optout-both',
+        'gmysql-nsec3-narrow',
+        'gmysql_sp-both'
     ],
+    gpgsql = [
+        'gpgsql',
+        'gpgsql-nodnssec-both',
+        'gpgsql-nsec3-both',
+        'gpgsql-nsec3-optout-both',
+        'gpgsql-nsec3-narrow',
+        'gpgsql_sp-both'
+    ],
+    gsqlite3 = [
+        'gsqlite3',
+        'gsqlite3-nodnssec-both',
+        'gsqlite3-nsec3-both',
+        'gsqlite3-nsec3-optout-both',
+        'gsqlite3-nsec3-narrow'
+    ],
+    godbc_sqlite3 = ['godbc_sqlite3-nodnssec'],
     godbc_mssql = [
         'godbc_mssql',
         'godbc_mssql-nodnssec',
@@ -570,27 +588,36 @@ backend_regress_tests = dict(
     ],
 )
 
-godbc_mssql_credentials = {
-    'username' : 'sa',
-    'password' : 'SAsa12%%'
-}
+godbc_mssql_credentials = {"username": "sa", "password": "SAsa12%%"}
+
+godbc_config = (
+    "[pdns-mssql-docker]\n"
+    "Driver=FreeTDS\n"
+    "Trace=No\n"
+    "Server=127.0.0.1\n"
+    "Port=1433\n"
+    "Database=pdns\n"
+    "TDS_Version=7.1\n"
+    "\n"
+    "[pdns-mssql-docker-nodb]\n"
+    "Driver=FreeTDS\n"
+    "Trace=No\n"
+    "Server=127.0.0.1\n"
+    "Port=1433\n"
+    "TDS_Version=7.1\n"
+    "\n"
+    "[pdns-sqlite3-1]\n"
+    "Driver = SQLite3\n"
+    "Database = pdns.sqlite3\n"
+    "\n"
+    "[pdns-sqlite3-2]\n"
+    "Driver = SQLite3\n"
+    "Database = pdns.sqlite32\n"
+)
 
 def setup_godbc_mssql(c):
-    c.run('''cat >> ~/.odbc.ini <<-__EOF__
-[pdns-mssql-docker]
-Driver=FreeTDS
-Trace=No
-Server=127.0.0.1
-Port=1433
-Database=pdns
-TDS_Version=7.1
-[pdns-mssql-docker-nodb]
-Driver=FreeTDS
-Trace=No
-Server=127.0.0.1
-Port=1433
-TDS_Version=7.1
-__EOF__''')
+    with open(os.path.expanduser("~/.odbc.ini"), "a") as f:
+        f.write(godbc_config)
     c.sudo('sh -c \'echo "Threading=1" | cat /usr/share/tdsodbc/odbcinst.ini - | tee -a /etc/odbcinst.ini\'')
     c.sudo('sed -i "s/libtdsodbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libtdsodbc.so/g" /etc/odbcinst.ini')
     c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
@@ -598,14 +625,8 @@ __EOF__''')
     c.run('touch ${PWD}/regression-tests/tests/8bit-txt-unescaped/skip')
 
 def setup_godbc_sqlite3(c):
-    c.run('''cat >> ~/.odbc.ini <<-__EOF__
-[pdns-sqlite3-1]
-Driver = SQLite3
-Database = ${PWD}/regression-tests/pdns.sqlite3
-[pdns-sqlite3-2]
-Driver = SQLite3
-Database = ${PWD}/regression-tests/pdns.sqlite32
-__EOF__''')
+    with open(os.path.expanduser("~/.odbc.ini"), "a") as f:
+        f.write(godbc_config)
     c.sudo('sed -i "s/libsqlite3odbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libsqlite3odbc.so/g" /etc/odbcinst.ini')
 
 @task
