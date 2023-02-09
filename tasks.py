@@ -594,7 +594,7 @@ __EOF__''')
     c.sudo('sh -c \'echo "Threading=1" | cat /usr/share/tdsodbc/odbcinst.ini - | tee -a /etc/odbcinst.ini\'')
     c.sudo('sed -i "s/libtdsodbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libtdsodbc.so/g" /etc/odbcinst.ini')
     c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
-    #FIXME: Skip 8bit-txt-unescaped test
+    # FIXME: Skip 8bit-txt-unescaped test
     c.run('touch ${PWD}/regression-tests/tests/8bit-txt-unescaped/skip')
 
 def setup_godbc_sqlite3(c):
