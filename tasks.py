@@ -667,6 +667,8 @@ def test_auth_backend(c, backend):
 
     if backend == 'ldap':
         c.sudo('DEBIAN_FRONTEND=noninteractive apt-get install -qq -y ldap-utils')
+        c.sudo('sh -c \'echo "127.0.0.1 ldapserver" | tee -a /etc/hosts\'')
+        c.sudo('cat /etc/hosts')
 
     if backend == 'geoip_mmdb':
         with c.cd('regression-tests'):
