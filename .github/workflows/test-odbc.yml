@@ -15,7 +15,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 jobs:
   build-auth:
     name: build auth
-    if: $testing
+    if: ${{ env.testing }}
     runs-on: ubuntu-20.04
     env:
       ASAN_OPTIONS: detect_leaks=0
@@ -59,7 +59,7 @@ jobs:
 
   test-auth-backend:
     needs: build-auth
-    if: $testing
+    if: ${{ env.testing }}
     runs-on: ubuntu-20.04
     env:
       UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
