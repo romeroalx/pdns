@@ -6,12 +6,16 @@ on:
     branches:
     - odbc-cleanup-actions
 
+env:
+  testing: false
+
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
 
 jobs:
   build-auth:
     name: build auth
+    if: $testing
     runs-on: ubuntu-20.04
     env:
       ASAN_OPTIONS: detect_leaks=0
@@ -55,6 +59,7 @@ jobs:
 
   test-auth-backend:
     needs: build-auth
+    if: $testing
     runs-on: ubuntu-20.04
     env:
       UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
@@ -114,22 +119,36 @@ jobs:
       - run: inv install-auth-test-deps -b ${{ matrix.backend }}
       - run: inv test-auth-backend -b ${{ matrix.backend }}
 
+  dummy_ok:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: touch
+        run: touch touched
+
+  dummy_failed:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Exit with error
+        run: exit 1
+
   collect:
     needs:
-      - build-auth
-      - test-auth-backend
+      # - build-auth
+      # - test-auth-backend
+      - dummy_failed
+      - dummy_ok
     if: success() || failure()
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3.1.0
-        with:
-          fetch-depth: 5
-          submodules: recursive
       - name: Install yq
         run: sudo wget https://github.com/mikefarah/yq/releases/download/v4.9.6/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
-      - name: Get full list of jobs for this workflow
-        run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | grep -v '^- collect' | sort | tee /tmp/workflow-jobs-list.yml
-      - name: Get list of jobs the collect job depends on
-        run: yq e '.jobs.collect.needs | ... comments=""' .github/workflows/build-and-test-all.yml | sort | tee /tmp/workflow-collect-dependencies.yml
-      - name: Diff them
-        run: diff -u /tmp/workflow-jobs-list.yml /tmp/workflow-collect-dependencies.yml
+      - name: output github context
+        run: "${{ toJSON(github) }}"
+      - name: output job context
+        run: "${{ toJSON(jobs) }}"
+      # - name: Get full list of jobs for this workflow
+      #   run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | grep -v '^- collect' | sort | tee /tmp/workflow-jobs-list.yml
+      # - name: Get list of jobs the collect job depends on
+      #   run: yq e '.jobs.collect.needs | ... comments=""' .github/workflows/build-and-test-all.yml | sort | tee /tmp/# workflow-collect-dependencies.yml
+      # - name: Diff them
+      #   run: diff -u /tmp/workflow-jobs-list.yml /tmp/workflow-collect-dependencies.yml
