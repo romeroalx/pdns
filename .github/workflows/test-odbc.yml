@@ -6,9 +6,6 @@ on:
     branches:
     - odbc-cleanup-actions
 
-env:
-  testing: false
-
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
 
@@ -143,7 +140,7 @@ jobs:
       - name: Install yq
         run: sudo wget https://github.com/mikefarah/yq/releases/download/v4.9.6/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
       - name: output github context
-        run: "${{ toJSON(github) }}"
+        run: "${{ toJSON(needs) }}"
       - name: output job context
         run: "${{ toJSON(job) }}"
       # - name: Get full list of jobs for this workflow
