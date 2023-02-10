@@ -59,15 +59,16 @@ jobs:
     env:
       UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
       ASAN_OPTIONS: detect_leaks=0
-      LDAPHOST: ldap://ldapserver/
+      ${{ matrix.env_runner }}
     strategy:
       matrix:
         include:
           - backend: godbc_sqlite3
             image: coscale/docker-sleep
+            env_backend: {}
           - backend: godbc_mssql
             image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
-            env:
+            env_backend:
               ACCEPT_EULA: Y
               SA_PASSWORD: 'SAsa12%%'
             ports:
@@ -75,15 +76,19 @@ jobs:
           - backend: ldap
             image: powerdns/ldap-regress:1.2.4-1
             options: '--loglevel debug'
+            env_backend: {}
+            env_runner:
+              LDAPHOST: ldap://ldapserver/
             ports:
               - 389:389
           - backend: geoip_mmdb
             image: coscale/docker-sleep
+            env_backend: {}
       fail-fast: false
     services:
       database:
         image: ${{ matrix.image }}
-        env: ${{ matrix.env }}
+        env: ${{ matrix.env_backend }}
           # POSTGRES_USER: runner
           # POSTGRES_HOST_AUTH_METHOD: trust
           # MYSQL_ALLOW_EMPTY_PASSWORD: 1
