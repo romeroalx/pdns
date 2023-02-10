@@ -636,7 +636,9 @@ def setup_godbc_sqlite3(c):
         f.write(godbc_config)
     c.sudo('sed -i "s/libsqlite3odbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libsqlite3odbc.so/g" /etc/odbcinst.ini')
 
-
+def setup_runner_ldap(c):
+    c.sudo('DEBIAN_FRONTEND=noninteractive apt-get install -qq -y ldap-utils')
+    c.sudo('sh -c \'echo "127.0.0.1 ldapserver" | tee -a /etc/hosts\'')
 
 @task
 def test_auth_backend(c, backend):
@@ -666,9 +668,7 @@ def test_auth_backend(c, backend):
         return
 
     if backend == 'ldap':
-        c.sudo('DEBIAN_FRONTEND=noninteractive apt-get install -qq -y ldap-utils')
-        c.sudo('sh -c \'echo "127.0.0.1 ldapserver" | tee -a /etc/hosts\'')
-        c.sudo('cat /etc/hosts')
+        setup_runner_ldap(c)
 
     if backend == 'geoip_mmdb':
         with c.cd('regression-tests'):

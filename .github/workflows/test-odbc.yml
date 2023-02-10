@@ -65,6 +65,9 @@ jobs:
         include:
           - backend: godbc_sqlite3
             image: coscale/docker-sleep
+            # FORCING FAILURE
+            # env: {}
+            # ports: []
           - backend: godbc_mssql
             image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
             env:
@@ -81,12 +84,14 @@ jobs:
               - 389:389
           - backend: geoip_mmdb
             image: coscale/docker-sleep
+            env: {}
+            ports: []
       fail-fast: false
     services:
       database:
         image: ${{ matrix.image }}
-        env: ${{ matrix.env || null }}
-        ports: ${{ matrix.ports || null }}
+        env: ${{ matrix.env }}
+        ports: ${{ matrix.ports }}
         # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
         options: >-
           --restart always
@@ -113,6 +118,7 @@ jobs:
     needs:
       - build-auth
       - test-auth-backend
+    if: success() || failure()
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3.1.0
