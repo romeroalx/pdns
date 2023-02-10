@@ -137,12 +137,10 @@ jobs:
     if: success() || failure()
     runs-on: ubuntu-20.04
     steps:
-      - name: Install yq
-        run: sudo wget https://github.com/mikefarah/yq/releases/download/v4.9.6/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
-      - name: output github context
-        run: "${{ toJSON(needs) }}"
+      - name: Install jq
+        run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
       - name: output job context
-        run: "${{ toJSON(job) }}"
+        run: "${{ needs }}"
       # - name: Get full list of jobs for this workflow
       #   run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | grep -v '^- collect' | sort | tee /tmp/workflow-jobs-list.yml
       # - name: Get list of jobs the collect job depends on
