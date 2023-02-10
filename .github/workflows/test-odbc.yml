@@ -6,10 +6,6 @@ on:
     branches:
     - odbc-cleanup-actions
 
-env:
-  emptyDict: {}
-  emptyList: []
-
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
 
@@ -89,8 +85,8 @@ jobs:
     services:
       database:
         image: ${{ matrix.image }}
-        env: ${{ matrix.env || emptyDict }}
-        ports: ${{ matrix.ports || emptyList }}
+        env: ${{ matrix.env || null }}
+        ports: ${{ matrix.ports || null }}
         # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
         options: >-
           --restart always
