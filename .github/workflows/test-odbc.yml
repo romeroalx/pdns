@@ -140,7 +140,7 @@ jobs:
       - name: Install jq
         run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
       - name: output job context
-        run: "echo ${{ needs }}"
+        run: "echo ${{ toJSON(needs) }}"
       # - name: Get full list of jobs for this workflow
       #   run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | grep -v '^- collect' | sort | tee /tmp/workflow-jobs-list.yml
       # - name: Get list of jobs the collect job depends on
