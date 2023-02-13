@@ -50,6 +50,7 @@ jobs:
       - run: "sudo grep -r microsoft /etc/apt/"
       - run: "sudo apt-get remove unixodbc-dev"
       - run: "sudo apt-get install unixodbc-dev=2.3.6-0.1build1"
+      - run: "sudo apt-get install unixodbc=2.3.6-0.1build1"
       - run: inv install-clang
       - run: inv install-auth-build-deps
       - run: inv ci-autoconf
