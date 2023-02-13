@@ -144,7 +144,7 @@ doc_deps_pdf = [
 
 @task
 def apt_fresh(c):
-    # c.sudo('sed -i \'s/azure\.//\' /etc/apt/sources.list')
+    c.sudo('sed -i \'s/azure\.//\' /etc/apt/sources.list')
     c.sudo('apt-get update')
     c.sudo('apt-get dist-upgrade')
 

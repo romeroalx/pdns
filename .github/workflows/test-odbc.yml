@@ -38,9 +38,13 @@ jobs:
           restore-keys: auth-ccache-
       # - run: 'sudo sed -i "s/mirror.leaseweb.net\/ubuntu/ports.ubuntu.com\/ubuntu-ports/g" /etc/apt/sources.list'
       # - run: 'sudo sed -i "s/azure.archive.ubuntu.com\/ubuntu/ports.ubuntu.com\/ubuntu-ports/g" /etc/apt/sources.list'
+      # - run: 'sudo sed -i "s/azure.archive.ubuntu.com\/ubuntu/ports.ubuntu.com\/ubuntu-ports/g" /etc/apt/sources.list'
+
+      # /etc/apt/sources.list.d/microsoft-prod.list:deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/ubuntu/20.04/prod focal main
       - run: "sudo cat /etc/apt/sources.list"
       - run: "sudo ls /etc/apt/"
       - run: "sudo grep -r microsoft /etc/apt/"
+      - run: "apt-cache showpkg unixodbc-dev"
       - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
       - run: inv install-clang
       - run: inv install-auth-build-deps
