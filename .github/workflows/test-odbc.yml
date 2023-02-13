@@ -20,7 +20,7 @@ jobs:
       UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
       UNIT_TESTS: yes
     steps:
-      # - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
       - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 5
@@ -49,8 +49,10 @@ jobs:
       - run: "apt-cache showpkg unixodbc"
       - run: "sudo grep -r microsoft /etc/apt/"
       - run: "sudo apt-get remove unixodbc-dev"
-      - run: "sudo apt-get install unixodbc-dev=2.3.6-0.1build1"
+      - run: "sudo apt-get remove libodbc1"
+      - run: "sudo apt-get remove odbcinst1debian2"
       - run: "sudo apt-get install unixodbc=2.3.6-0.1build1"
+      - run: "sudo apt-get install unixodbc-dev=2.3.6-0.1build1"
       - run: inv install-clang
       - run: inv install-auth-build-deps
       - run: inv ci-autoconf
