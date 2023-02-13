@@ -126,8 +126,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Exit with error
-        # run: exit 1
-        run: "echo 'Not this time :)'"
+        run: exit 1
+        # run: "echo 'Not this time :)'"
 
   collect:
     needs:
@@ -142,11 +142,5 @@ jobs:
         run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
       - name: Logging result of needed jobs
         run: "echo '${{ toJSON(needs) }}'"
-      - name: Check if any previous job failed
+      - name: Fail job if any previous jobs failed
         run: "for i in `echo '${{ toJSON(needs) }}' | jq -n 'inputs[].result' | tr -d '\"'`; do if [[ $i == 'failure' ]]; then exit 1; fi; done;"
-      # - name: Get full list of jobs for this workflow
-      #   run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | grep -v '^- collect' | sort | tee /tmp/workflow-jobs-list.yml
-      # - name: Get list of jobs the collect job depends on
-      #   run: yq e '.jobs.collect.needs | ... comments=""' .github/workflows/build-and-test-all.yml | sort | tee /tmp/# workflow-collect-dependencies.yml
-      # - name: Diff them
-      #   run: diff -u /tmp/workflow-jobs-list.yml /tmp/workflow-collect-dependencies.yml
