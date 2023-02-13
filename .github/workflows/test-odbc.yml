@@ -20,6 +20,11 @@ jobs:
       UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
       UNIT_TESTS: yes
     steps:
+      - run: "apt-cache showpkg unixodbc-dev"
+      - run: "apt-cache showpkg unixodbc"
+      - run: "apt-cache showpkg odbcinst"
+      - run: "sudo apt-get remove unixodbc odbcinst odbcinst1debian2 libodbc1 unixodbc-dev"
+      - run: "sudo apt-get install unixodbc=2.3.6-0.1build1 odbcinst=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1"
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
       - uses: actions/checkout@v3.1.0
         with:
@@ -45,11 +50,9 @@ jobs:
       - run: "sudo cat /etc/apt/sources.list"
       - run: "sudo ls /etc/apt/"
       - run: "sudo grep -r microsoft /etc/apt/"
-      - run: "apt-cache showpkg unixodbc-dev"
-      - run: "apt-cache showpkg unixodbc"
       - run: "sudo grep -r microsoft /etc/apt/"
-      - run: "sudo apt-get remove unixodbc odbcinst1debian2 libodbc1 unixodbc-dev"
-      - run: "sudo apt-get install unixodbc=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1"
+      - run: "sudo apt-get remove unixodbc odbcinst odbcinst1debian2 libodbc1 unixodbc-dev"
+      - run: "sudo apt-get install unixodbc=2.3.6-0.1build1 odbcinst=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1"
       - run: inv install-clang
       - run: inv install-auth-build-deps
       - run: inv ci-autoconf
