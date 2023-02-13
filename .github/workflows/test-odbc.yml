@@ -126,7 +126,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Exit with error
-        run: exit 1
+        # run: exit 1
+        run: "echo 'Not this time :)'"
 
   collect:
     needs:
@@ -139,11 +140,9 @@ jobs:
     steps:
       - name: Install jq
         run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
-      - name: output job context
-        run: "echo '${{ toJSON(needs) }}' | jq -n 'inputs[].result' | tr -d '\"'"
-      - name: output job context
-        run: "which jq"
-      - name: output job context
+      - name: Logging result of needed jobs
+        run: "echo '${{ toJSON(needs) }}'"
+      - name: Check if any previous job failed
         run: "for i in `echo '${{ toJSON(needs) }}' | jq -n 'inputs[].result' | tr -d '\"'`; do if [[ $i == 'failure' ]]; then exit 1; fi; done;"
       # - name: Get full list of jobs for this workflow
       #   run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | grep -v '^- collect' | sort | tee /tmp/workflow-jobs-list.yml
