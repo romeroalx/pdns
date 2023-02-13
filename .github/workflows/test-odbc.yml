@@ -140,7 +140,7 @@ jobs:
       - name: Install jq
         run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
       - name: output job context
-        run: "echo '${{ toJSON(needs) }}'"
+        run: "echo '${{ toJSON(needs) }}' | jq -n 'inputs[].result'"
       - name: output job context
         run: "which jq"
       - name: output job context
