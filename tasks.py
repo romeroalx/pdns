@@ -46,7 +46,6 @@ auth_build_deps = [    # FIXME: perhaps we should be stealing these from the deb
     'ruby-dev',
     'sqlite3',
     'unixodbc-dev',
-    'unixodbc',
 ]
 rec_build_deps = [
     'libcap-dev',
@@ -145,7 +144,7 @@ doc_deps_pdf = [
 
 @task
 def apt_fresh(c):
-    c.sudo('sed -i \'s/azure\.//\' /etc/apt/sources.list')
+    # c.sudo('sed -i \'s/azure\.//\' /etc/apt/sources.list')
     c.sudo('apt-get update')
     c.sudo('apt-get dist-upgrade')
 
