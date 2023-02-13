@@ -185,7 +185,7 @@ def install_doc_deps_pdf(c):
 
 @task
 def install_auth_build_deps(c):
-    c.sudo('apt-get install -qq -y --no-install-recommends ' + ' '.join(all_build_deps + git_build_deps + auth_build_deps))
+    c.sudo('DEBIAN_FRONTEND=noninteractive apt-get install -qq -y --no-install-recommends ' + ' '.join(all_build_deps + git_build_deps + auth_build_deps))
     install_libdecaf(c, 'pdns-auth')
 
 def setup_authbind(c):

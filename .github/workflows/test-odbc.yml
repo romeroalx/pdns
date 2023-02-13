@@ -126,4 +126,4 @@ jobs:
       - name: Logging result of needed jobs
         run: "echo '${{ toJSON(needs) }}'"
       - name: Fail job if any previous jobs failed
-        run: "for i in `echo '${{ toJSON(needs) }}' | jq -n 'inputs[].result' | tr -d '\"'`; do if [[ $i == 'failure' ]]; then exit 1; fi; done;"
+        run: "for i in `echo '${{ toJSON(needs) }}' | jq '.[].result' | tr -d '\"'`; do if [[ $i == 'failure' ]]; then exit 1; fi; done;"
