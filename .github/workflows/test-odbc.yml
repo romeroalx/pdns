@@ -49,7 +49,7 @@ jobs:
       - run: "apt-cache showpkg unixodbc"
       - run: "sudo grep -r microsoft /etc/apt/"
       - run: "sudo apt-get remove unixodbc odbcinst1debian2 libodbc1 unixodbc-dev"
-      - run: "sudo apt-get isntall unixodbc=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1"
+      - run: "sudo apt-get install unixodbc=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1"
       - run: inv install-clang
       - run: inv install-auth-build-deps
       - run: inv ci-autoconf
