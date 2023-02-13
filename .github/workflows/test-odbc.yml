@@ -10,123 +10,135 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 jobs:
-  build-auth:
-    name: build auth
+  analyze:
+    name: Analyze
     runs-on: ubuntu-20.04
-    env:
-      ASAN_OPTIONS: detect_leaks=0
-      FUZZING_TARGETS: yes
-      SANITIZERS: asan+ubsan
-      UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
-      UNIT_TESTS: yes
-    steps:
-      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
-        with:
-          fetch-depth: 5
-          submodules: recursive
-      - name: get timestamp for cache
-        id: get-stamp
-        run: |
-          echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
-        shell: bash
-      - name: let GitHub cache our ccache data
-        uses: actions/cache@v3.2.4
-        with:
-          path: ~/.ccache
-          key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
-          restore-keys: auth-ccache-
-      - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
-      # FIXME: Workaround to avoid getting buggy version for unixodbc-dev from Microsoft repo
-      - run: "sudo apt-get remove unixodbc odbcinst odbcinst1debian2 libodbc1 unixodbc-dev"
-      - run: "sudo apt-get install unixodbc=2.3.6-0.1build1 odbcinst=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1"
-      - run: inv install-clang
-      - run: inv install-auth-build-deps
-      - run: inv ci-autoconf
-      - run: inv ci-auth-configure
-      - run: inv ci-auth-make
-      - run: inv ci-auth-install-remotebackend-test-deps
-      - run: inv ci-auth-run-unit-tests
-      - run: inv ci-make-install
-      - run: ccache -s
-      - name: Store the binaries
-        uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
-        with:
-          name: pdns-auth
-          path: /opt/pdns-auth
-          retention-days: 1
 
-  test-auth-backend:
-    needs: build-auth
-    runs-on: ubuntu-20.04
-    env:
-      UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
-      ASAN_OPTIONS: detect_leaks=0
-      LDAPHOST: ldap://ldapserver/
+    permissions:
+      actions: read # for github/codeql-action/init to get workflow details
+      contents: read  # for actions/checkout to fetch code
+      security-events: write  # for github/codeql-action/analyze to upload SARIF results
+
     strategy:
-      matrix:
-        include:
-          - backend: godbc_sqlite3
-            image: coscale/docker-sleep
-            # FORCING FAILURE
-            # env: {}
-            # ports: []
-          - backend: godbc_mssql
-            image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
-            env:
-              ACCEPT_EULA: Y
-              SA_PASSWORD: 'SAsa12%%'
-            ports:
-              - 1433:1433
-          - backend: ldap
-            image: powerdns/ldap-regress:1.2.4-1
-            env:
-              LDAP_LOG_LEVEL: 0
-              CONTAINER_LOG_LEVEL: 4
-            ports:
-              - 389:389
-          - backend: geoip_mmdb
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
       fail-fast: false
-    services:
-      database:
-        image: ${{ matrix.image }}
-        env: ${{ matrix.env }}
-        ports: ${{ matrix.ports }}
-        # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we # do want to run our tasks in a Docker container too.
-        options: >-
-          --restart always
-    steps:
-      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
-        with:
-          fetch-depth: 5
-          submodules: recursive
-      - name: Fetch the binaries
-        uses: actions/download-artifact@v3
-        with:
-          name: pdns-auth
-          path: /opt/pdns-auth
-      # - name: Setup upterm session
-      #   uses: lhotari/action-upterm@v1
-      # FIXME: install recursor for backends that have ALIAS
-      - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
-      - run: inv install-clang-runtime
-      - run: inv install-auth-test-deps -b ${{ matrix.backend }}
-      - run: inv test-auth-backend -b ${{ matrix.backend }}
+      matrix:
+        # Override automatic language detection by changing the below list
+        # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
+        language: ['cpp']
+        product: ['auth', 'rec', 'dnsdist']
+        # Learn more...
+        # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
 
-  collect:
-    needs:
-      - build-auth
-      - test-auth-backend
-    if: success() || failure()
-    runs-on: ubuntu-20.04
     steps:
-      - name: Install jq
-        run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
-      - name: Logging result of needed jobs
-        run: "echo '${{ toJSON(needs) }}'"
-      - name: Fail job if any previous jobs failed
-        run: "for i in `echo '${{ toJSON(needs) }}' | jq '.[].result' | tr -d '\"'`; do if [[ $i == 'failure' ]]; then exit 1; fi; done;"
+    - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+    - name: Checkout repository
+      uses: actions/checkout@v3.1.0
+      with:
+        # We must fetch at least the immediate parents so that if this is
+        # a pull request then we can checkout the head.
+        fetch-depth: 2
+
+    # Python is required for building the Authoritative server
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+        queries: +security-and-quality
+        # TODO: go through +security-and-quality (400 alerts) once, then see if we can upgrade to it
+
+        # If you wish to specify custom queries, you can do so here or in a config file.
+        # By default, queries listed here will override any specified in a config file. 
+        # Prefix the list here with "+" to use these queries and those in the config file.
+        # queries: ./path/to/local/query, your-org/your-repo/queries@main
+
+    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
+    # If this step fails, then you should remove it and run the build manually (see below)
+    # - name: Autobuild
+    #   uses: github/codeql-action/autobuild@v2
+
+    # ℹ️ Command-line programs to run using the OS shell.
+    # 📚 https://git.io/JvXDl
+
+    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
+    #    and modify them (or add more) to build your code if your project
+    #    uses a compiled language
+
+    - name: Update repository metadata
+      run: |
+        sudo apt-get update
+    - name: Install dependencies
+      run: |
+        sudo apt-get -qq -y --no-install-recommends install \
+                bison \
+                default-libmysqlclient-dev \
+                flex \
+                libboost-all-dev \
+                libcap-dev \
+                libcdb-dev \
+                libcurl4-openssl-dev \
+                libedit-dev \
+                libfstrm-dev \
+                libgeoip-dev \
+                libgnutls28-dev \
+                libh2o-evloop-dev \
+                libkrb5-dev \
+                libldap2-dev \
+                liblmdb-dev \
+                liblua5.3-dev \
+                libmaxminddb-dev \
+                libnghttp2-dev \
+                libp11-kit-dev \
+                libpq-dev \
+                libre2-dev \
+                libsnmp-dev \
+                libsodium-dev \
+                libsqlite3-dev \
+                libssl-dev \
+                libsystemd-dev \
+                libwslay-dev \
+                libyaml-cpp-dev \
+                ragel 
+
+    # FIXME: Workaround to avoid getting buggy version for unixodbc-dev from Microsoft repo
+    - name: Remove current package version and dependencies for ODBC
+      run: sudo apt-get remove unixodbc odbcinst odbcinst1debian2 libodbc1 unixodbc-dev
+
+    - name: Install fixed version 2.3.6 of ODBC packages
+      run: sudo apt-get install unixodbc=2.3.6-0.1build1 odbcinst=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1
+
+    - name: Build auth
+      if: matrix.product == 'auth'
+      run: |
+        autoreconf -vfi
+        ./configure --with-modules='bind geoip gmysql godbc gpgsql gsqlite3 ldap lmdb lua2 pipe remote tinydns' --enable-tools --enable-ixfrdist --enable-dns-over-tls --enable-experimental-pkcs11 --with-libsodium --enable-lua-records CFLAGS='-O0' CXXFLAGS='-O0'
+        make -j8 -C ext
+        make -j8 -C modules
+        make -j8 -C pdns
+
+    - name: Build dnsdist
+      if: matrix.product == 'dnsdist'
+      run: |
+        cd pdns/dnsdistdist
+        autoreconf -vfi
+        ./configure --enable-unit-tests --enable-dnstap --enable-dnscrypt --enable-dns-over-tls --enable-dns-over-https LIBS=-lwslay CFLAGS='-O0' CXXFLAGS='-O0'
+        make -j8 -C ext/ipcrypt
+        make -j8 -C ext/yahttp
+        make -j4 dnsdist
+
+    - name: Build recursor
+      if: matrix.product == 'rec'
+      run: |
+        cd pdns/recursordist
+        autoreconf -vfi
+        ./configure --enable-unit-tests --enable-nod --enable-dnstap CFLAGS='-O0' CXXFLAGS='-O0'
+        make -j8 -C ext
+        make htmlfiles.h
+        make -j4 pdns_recursor rec_control
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
