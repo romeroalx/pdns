@@ -36,7 +36,7 @@ jobs:
           path: ~/.ccache
           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-
-      - run: "sudo sed -i 's/mirror.leaseweb.net\/ubuntu/ports.ubuntu.com\/ubuntu-ports/g' /etc/apt/sources.list"
+      - run: 'sudo sed -i "s/mirror.leaseweb.net\/ubuntu/ports.ubuntu.com\/ubuntu-ports/g" /etc/apt/sources.list'
       - run: "sudo cat /etc/apt/sources.list"
       - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
       - run: inv install-clang
