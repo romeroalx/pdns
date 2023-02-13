@@ -37,7 +37,7 @@ jobs:
           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-
       - run: "sudo apt-get update"
-      # - run: "sudo apt-get upgrade"
+      - run: "sudo apt-get dist-upgrade"
       - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
       - run: inv install-clang
       - run: inv install-auth-build-deps
