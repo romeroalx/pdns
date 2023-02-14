@@ -85,9 +85,8 @@ jobs:
         include:
           - backend: godbc_sqlite3
             image: coscale/docker-sleep
-            # FORCING FAILURE
-            # env: {}
-            # ports: []
+            env: {}
+            ports: []
           - backend: godbc_mssql
             image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
             env:

@@ -597,30 +597,30 @@ backend_regress_tests = dict(
 
 godbc_mssql_credentials = {"username": "sa", "password": "SAsa12%%"}
 
-godbc_config = (
-    "[pdns-mssql-docker]\n"
-    "Driver=FreeTDS\n"
-    "Trace=No\n"
-    "Server=127.0.0.1\n"
-    "Port=1433\n"
-    "Database=pdns\n"
-    "TDS_Version=7.1\n"
-    "\n"
-    "[pdns-mssql-docker-nodb]\n"
-    "Driver=FreeTDS\n"
-    "Trace=No\n"
-    "Server=127.0.0.1\n"
-    "Port=1433\n"
-    "TDS_Version=7.1\n"
-    "\n"
-    "[pdns-sqlite3-1]\n"
-    "Driver = SQLite3\n"
-    "Database = pdns.sqlite3\n"
-    "\n"
-    "[pdns-sqlite3-2]\n"
-    "Driver = SQLite3\n"
-    "Database = pdns.sqlite32\n"
-)
+godbc_config = '''
+[pdns-mssql-docker]
+Driver=FreeTDS
+Trace=No
+Server=127.0.0.1
+Port=1433
+Database=pdns
+TDS_Version=7.1
+
+[pdns-mssql-docker-nodb]
+Driver=FreeTDS
+Trace=No
+Server=127.0.0.1
+Port=1433
+TDS_Version=7.1
+
+[pdns-sqlite3-1]
+Driver = SQLite3
+Database = pdns.sqlite3
+
+[pdns-sqlite3-2]
+Driver = SQLite3
+Database = pdns.sqlite32
+'''
 
 def setup_godbc_mssql(c):
     with open(os.path.expanduser("~/.odbc.ini"), "a") as f:
