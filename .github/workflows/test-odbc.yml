@@ -10,135 +10,114 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 jobs:
-  analyze:
-    name: Analyze
-    runs-on: ubuntu-20.04
-
-    permissions:
-      actions: read # for github/codeql-action/init to get workflow details
-      contents: read  # for actions/checkout to fetch code
-      security-events: write  # for github/codeql-action/analyze to upload SARIF results
-
-    strategy:
-      fail-fast: false
-      matrix:
-        # Override automatic language detection by changing the below list
-        # Supported options are ['csharp', 'cpp', 'go', 'java', 'javascript', 'python']
-        language: ['cpp']
-        product: ['auth', 'rec', 'dnsdist']
-        # Learn more...
-        # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
+  el7-devtoolset:
+    runs-on: ubuntu-22.04
 
     steps:
-    - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-    - name: Checkout repository
-      uses: actions/checkout@v3.1.0
+    - name: Check whether a newer devtoolset exists
+      run: |
+        if docker run --rm centos:7 bash -c 'yum install -y centos-release-scl-rh && yum info devtoolset-12-gcc-c++'
+        then
+          echo "::warning file=builder-support/dockerfiles/Dockerfile.rpmbuild::A newer devtoolset exists. Please edit builder-support/dockerfiles/Dockerfile.rpmbuild, builder-support/dockerfiles/Dockerfile.rpmbuild, and .github/workflows/dailies.yml"
+          exit 1
+        else
+          echo "::notice ::No newer devtoolset exists (good)"
+          exit 0
+        fi
+
+  check-debian-autoremovals:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3.1.0
       with:
-        # We must fetch at least the immediate parents so that if this is
-        # a pull request then we can checkout the head.
-        fetch-depth: 2
+        fetch-depth: 5
+        submodules: recursive
 
-    # Python is required for building the Authoritative server
-    - uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
+    - name: Check if Debian is about to toss us off a balcony
+      run: ./build-scripts/check-debian-autoremovals.py
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        queries: +security-and-quality
-        # TODO: go through +security-and-quality (400 alerts) once, then see if we can upgrade to it
+  coverity-auth:
+    name: coverity scan of the auth
+    runs-on: ubuntu-20.04
+    env:
+      COVERITY_TOKEN: ${{ secrets.coverity_auth_token }}
+      FUZZING_TARGETS: no
+      SANITIZERS:
+      UNIT_TESTS: no
+    steps:
+      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
+      # FIXME: Workaround to avoid getting buggy version for unixodbc-dev from Microsoft repo
+      - run: "sudo apt-get remove unixodbc odbcinst odbcinst1debian2 libodbc1 unixodbc-dev"
+      - run: "sudo apt-get install unixodbc=2.3.6-0.1build1 odbcinst=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1"
+      - run: inv install-clang
+      - run: inv install-auth-build-deps
+      - run: inv install-coverity-tools PowerDNS
+      - run: inv coverity-clang-configure
+      - run: inv ci-autoconf
+      - run: inv ci-auth-configure
+      - run: inv coverity-make
+      - run: inv coverity-tarball auth.tar.bz2
+      - run: inv coverity-upload ${{ secrets.coverity_email }} PowerDNS auth.tar.bz2
 
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file. 
-        # Prefix the list here with "+" to use these queries and those in the config file.
-        # queries: ./path/to/local/query, your-org/your-repo/queries@main
+  coverity-dnsdist:
+    name: coverity scan of dnsdist
+    runs-on: ubuntu-20.04
+    env:
+      COVERITY_TOKEN: ${{ secrets.coverity_dnsdist_token }}
+      SANITIZERS:
+      UNIT_TESTS: no
+    steps:
+      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
+      - run: inv install-clang
+      - run: inv install-dnsdist-build-deps
+      - run: inv install-coverity-tools dnsdist
+      - run: inv coverity-clang-configure
+      - run: inv ci-autoconf
+        working-directory: ./pdns/dnsdistdist/
+      - run: inv ci-dnsdist-configure full
+        working-directory: ./pdns/dnsdistdist/
+      - run: inv coverity-make
+        working-directory: ./pdns/dnsdistdist/
+      - run: inv coverity-tarball dnsdist.tar.bz2
+        working-directory: ./pdns/dnsdistdist/
+      - run: inv coverity-upload ${{ secrets.coverity_email }} dnsdist dnsdist.tar.bz2
+        working-directory: ./pdns/dnsdistdist/
 
-    # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
-    # If this step fails, then you should remove it and run the build manually (see below)
-    # - name: Autobuild
-    #   uses: github/codeql-action/autobuild@v2
-
-    # ℹ️ Command-line programs to run using the OS shell.
-    # 📚 https://git.io/JvXDl
-
-    # ✏️ If the Autobuild fails above, remove it and uncomment the following three lines
-    #    and modify them (or add more) to build your code if your project
-    #    uses a compiled language
-
-    - name: Update repository metadata
-      run: |
-        sudo apt-get update
-    - name: Install dependencies
-      run: |
-        sudo apt-get -qq -y --no-install-recommends install \
-                bison \
-                default-libmysqlclient-dev \
-                flex \
-                libboost-all-dev \
-                libcap-dev \
-                libcdb-dev \
-                libcurl4-openssl-dev \
-                libedit-dev \
-                libfstrm-dev \
-                libgeoip-dev \
-                libgnutls28-dev \
-                libh2o-evloop-dev \
-                libkrb5-dev \
-                libldap2-dev \
-                liblmdb-dev \
-                liblua5.3-dev \
-                libmaxminddb-dev \
-                libnghttp2-dev \
-                libp11-kit-dev \
-                libpq-dev \
-                libre2-dev \
-                libsnmp-dev \
-                libsodium-dev \
-                libsqlite3-dev \
-                libssl-dev \
-                libsystemd-dev \
-                libwslay-dev \
-                libyaml-cpp-dev \
-                ragel 
-
-    # FIXME: Workaround to avoid getting buggy version for unixodbc-dev from Microsoft repo
-    - name: Remove current package version and dependencies for ODBC
-      run: sudo apt-get remove unixodbc odbcinst odbcinst1debian2 libodbc1 unixodbc-dev
-
-    - name: Install fixed version 2.3.6 of ODBC packages
-      run: sudo apt-get install unixodbc=2.3.6-0.1build1 odbcinst=2.3.6-0.1build1 odbcinst1debian2=2.3.6-0.1build1 libodbc1=2.3.6-0.1build1 unixodbc-dev=2.3.6-0.1build1
-
-    - name: Build auth
-      if: matrix.product == 'auth'
-      run: |
-        autoreconf -vfi
-        ./configure --with-modules='bind geoip gmysql godbc gpgsql gsqlite3 ldap lmdb lua2 pipe remote tinydns' --enable-tools --enable-ixfrdist --enable-dns-over-tls --enable-experimental-pkcs11 --with-libsodium --enable-lua-records CFLAGS='-O0' CXXFLAGS='-O0'
-        make -j8 -C ext
-        make -j8 -C modules
-        make -j8 -C pdns
-
-    - name: Build dnsdist
-      if: matrix.product == 'dnsdist'
-      run: |
-        cd pdns/dnsdistdist
-        autoreconf -vfi
-        ./configure --enable-unit-tests --enable-dnstap --enable-dnscrypt --enable-dns-over-tls --enable-dns-over-https LIBS=-lwslay CFLAGS='-O0' CXXFLAGS='-O0'
-        make -j8 -C ext/ipcrypt
-        make -j8 -C ext/yahttp
-        make -j4 dnsdist
-
-    - name: Build recursor
-      if: matrix.product == 'rec'
-      run: |
-        cd pdns/recursordist
-        autoreconf -vfi
-        ./configure --enable-unit-tests --enable-nod --enable-dnstap CFLAGS='-O0' CXXFLAGS='-O0'
-        make -j8 -C ext
-        make htmlfiles.h
-        make -j4 pdns_recursor rec_control
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+  coverity-rec:
+    name: coverity scan of the rec
+    runs-on: ubuntu-20.04
+    env:
+      COVERITY_TOKEN: ${{ secrets.coverity_rec_token }}
+      SANITIZERS:
+      UNIT_TESTS: no
+    steps:
+      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
+      - run: inv install-clang
+      - run: inv install-rec-build-deps
+      - run: inv install-coverity-tools 'PowerDNS+Recursor'
+      - run: inv coverity-clang-configure
+      - run: inv ci-autoconf
+        working-directory: ./pdns/recursordist/
+      - run: inv ci-rec-configure
+        working-directory: ./pdns/recursordist/
+      - run: inv coverity-make
+        working-directory: ./pdns/recursordist/
+      - run: inv coverity-tarball recursor.tar.bz2
+        working-directory: ./pdns/recursordist/
+      - run: inv coverity-upload ${{ secrets.coverity_email }} 'PowerDNS+Recursor' recursor.tar.bz2
+        working-directory: ./pdns/recursordist/
