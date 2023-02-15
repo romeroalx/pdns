@@ -45,7 +45,7 @@ auth_build_deps = [    # FIXME: perhaps we should be stealing these from the deb
     'ruby-bundler',
     'ruby-dev',
     'sqlite3',
-    # 'unixodbc-dev',
+    'unixodbc-dev',
 ]
 rec_build_deps = [
     'libcap-dev',
@@ -146,7 +146,7 @@ doc_deps_pdf = [
 def apt_fresh(c):
     c.sudo('sed -i \'s/azure\.//\' /etc/apt/sources.list')
     c.sudo('apt-get update')
-    c.sudo('apt-get dist-upgrade')
+    c.sudo('apt-get -qq -y --allow-downgrade dist-upgrade')
 
 @task
 def install_clang(c):
