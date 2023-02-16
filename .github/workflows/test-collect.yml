@@ -105,7 +105,11 @@ jobs:
         with:
           fetch-depth: 5
           submodules: recursive
+      - name: Get list of jobs in the workflow
+        run: "yq e '.jobs | keys' .github/workflows/test-collect.yml | awk '{print $2}' | grep -v collect | sort | tee /tmp/workflow-jobs-list.yml; cat /tmp/workflow-jobs-list.yml"
       - name: Fail if there is a job missing on the needs list
-        run: "if $(yq e '.jobs | keys' .github/workflows/test-collect.yml | awk '{print $2}' | grep -v collect| grep -n -v -w -q \"$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '\"')\"); then exit 1; fi"
+        run: "echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '\"' | sort | tee /tmp/workflow-needs-list.yml; cat /tmp/workflow-needs-list.yml"
+      - name: Fail if there is a job missing on the needs list
+        run: "if diff -q /tmp/workflow-jobs-list.yml /tmp/workflow-needs-list.yml; then exit 1; fi"
 
 # FIXME: if we can make upload/download-artifact fasts, running unit tests outside of build can let regression tests start earlier
