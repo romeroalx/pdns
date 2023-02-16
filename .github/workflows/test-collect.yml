@@ -19,9 +19,6 @@ jobs:
   build-recursor:
     name: build recursor
     runs-on: ubuntu-20.04
-    defaults:
-      run:
-        working-directory: ./pdns/recursordist/
     steps:
       - run: echo HI
 
