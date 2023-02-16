@@ -76,6 +76,11 @@ jobs:
     steps:
       - run: echo HI
 
+  alexis-check:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+  
   collect:
     needs:
       - build-auth
