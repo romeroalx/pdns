@@ -76,7 +76,7 @@ jobs:
     steps:
       - run: echo HI
 
-  swagger-syntax-check-2:
+  swagger-syntax:
     runs-on: ubuntu-20.04
     steps:
       - run: echo HI
