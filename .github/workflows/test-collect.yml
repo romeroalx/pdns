@@ -75,7 +75,12 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - run: echo HI
-  
+
+  swagger-syntax-check-2:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
   collect:
     needs:
       - build-auth
