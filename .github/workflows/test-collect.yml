@@ -114,7 +114,9 @@ jobs:
       # - name: Grep de ambos
       #   run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect| grep -n -v $(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"')
       - name: Grep de ambos 2
-        run: i=$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"'); echo "$i"; yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect| grep -n -v '$i'
+        run: needs=$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"'); yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect| grep -n -v '$needs'
+      - name: Grep de ambos 2
+        run: needs=$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"'); yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect| grep -n '$needs'
       - name: Fail if there is a job missing on the list of needed jobs for collect
         run: "if $(yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect| grep -n -v -q \"$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '\"')\"); then exit 1; fi"
 
