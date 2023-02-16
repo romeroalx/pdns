@@ -71,7 +71,7 @@ jobs:
     steps:
       - run: echo HI
 
-  swagger-syntax-check-2:
+  swagger-syntax-check:
     runs-on: ubuntu-20.04
     steps:
       - run: echo HI
@@ -94,7 +94,7 @@ jobs:
       - test-recursor-api
       - test-recursor-regression
       - test-recursor-bulk
-      - alexis-check
+      # - alexis-check
     if: success() || failure()
     runs-on: ubuntu-20.04
     steps:
