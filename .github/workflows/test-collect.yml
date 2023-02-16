@@ -110,7 +110,7 @@ jobs:
       - name: List of jobs
         run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect
       - name: List of needs
-        run: echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"')
+        run: echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"'
       - name: Grep de ambos
         run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect| grep -n -v "$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '\"')"
       - name: Grep de ambos
