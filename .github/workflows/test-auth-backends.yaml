@@ -21,7 +21,7 @@ jobs:
       UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
       UNIT_TESTS: yes
     steps:
-      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: romeroalx/pdns/set-ubuntu-mirror@meta-repo-priorities-temp
       - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 5
