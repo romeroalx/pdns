@@ -71,7 +71,7 @@ jobs:
     steps:
       - run: echo HI
 
-  swagger-syntax-check:
+  swagger-syntax-check-2:
     runs-on: ubuntu-20.04
     steps:
       - run: echo HI
@@ -108,17 +108,7 @@ jobs:
           submodules: recursive
       - name: Install yq
         run: sudo wget https://github.com/mikefarah/yq/releases/download/v4.9.6/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
-      - name: List of jobs
-        run: yq e '.jobs | keys' .github/workflows/test-collect.yml | awk '{print $2}' | grep -v collect
-      - name: List of needs
-        run: echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"'
-      # - name: Grep de ambos
-      #   run: yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect| grep -n -v $(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"')
       - name: Fail if there is a job missing on the list of needed jobs for collect
         run: "if $(yq e '.jobs | keys' .github/workflows/test-collect.yml | awk '{print $2}' | grep -v collect| grep -n -v -q \"$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '\"')\"); then exit 1; fi"
-      - name: Grep de ambos 2
-        run: needs=$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"'); yq e '.jobs | keys' .github/workflows/test-collect.yml | awk '{print $2}' | grep -v collect| grep -v "$needs"
-      - name: Grep de ambos 2
-        run: needs=$(echo '${{ toJSON(needs) }}' | jq 'keys | .[]' | tr -d '"'); yq e '.jobs | keys' .github/workflows/test-collect.yml | awk '{print $2}' | grep -v collect| grep "$needs"
 
 # FIXME: if we can make upload/download-artifact fasts, running unit tests outside of build can let regression tests start earlier
