@@ -94,6 +94,7 @@ jobs:
       - test-recursor-api
       - test-recursor-regression
       - test-recursor-bulk
+      - alexis-check
     if: success() || failure()
     runs-on: ubuntu-20.04
     steps:
