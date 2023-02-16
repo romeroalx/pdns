@@ -87,6 +87,7 @@ jobs:
       - build-dnsdist
       - build-recursor
       - swagger-syntax-check
+      - swagger-syntax-check-2
       - test-auth-api
       - test-auth-backend
       - test-dnsdist-regression
