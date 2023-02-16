@@ -1,10 +1,11 @@
 ---
 name: 'Test auth backends'
 
-on:
-  push:
-    branches:
-    - gh-auth-ldap-geoip-temp
+on: [workflow_dispatch]
+  # 
+  # push:
+  #   branches:
+  #   - gh-auth-ldap-geoip-temp
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read

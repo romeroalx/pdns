@@ -1,0 +1,111 @@
+---
+name: 'Test collect'
+
+on:
+  push:
+    branches:
+    - gh-auth-ldap-geoip-temp
+
+permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+  contents: read
+
+jobs:
+  build-auth:
+    name: build auth
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  build-recursor:
+    name: build recursor
+    runs-on: ubuntu-20.04
+    defaults:
+      run:
+        working-directory: ./pdns/recursordist/
+    steps:
+      - run: echo HI
+
+  build-dnsdist:
+    name: build dnsdist
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  test-auth-api:
+    needs: build-auth
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  test-auth-backend:
+    needs: build-auth
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  test-ixfrdist:
+    needs: build-auth
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  test-recursor-api:
+    needs: build-recursor
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  test-recursor-regression:
+    needs: build-recursor
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  test-recursor-bulk:
+    name: 'test rec *mini* bulk'
+    needs: build-recursor
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  test-dnsdist-regression:
+    needs: build-dnsdist
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  swagger-syntax-check:
+    runs-on: ubuntu-20.04
+    steps:
+      - run: echo HI
+
+  collect:
+    needs:
+      - build-auth
+      - build-dnsdist
+      - build-recursor
+      - swagger-syntax-check
+      - test-auth-api
+      - test-auth-backend
+      - test-dnsdist-regression
+      - test-ixfrdist
+      - test-recursor-api
+      - test-recursor-regression
+      - test-recursor-bulk
+    if: success() || failure()
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Install jq
+        run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
+      - name: Fail job if any of the previous jobs failed
+        run: "for i in `echo '${{ toJSON(needs) }}' | jq '.[].result' | tr -d '\"'`; do if [[ $i == 'failure' ]]; then echo '${{ toJSON(needs) }}'; exit 1; fi; done;"
+      - uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      - name: Install yq
+        run: sudo wget https://github.com/mikefarah/yq/releases/download/v4.9.6/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
+      - name: Fail if there is a job missing on the list of needed jobs for collect
+        run: "if $(yq e '.jobs | keys' .github/workflows/build-and-test-all.yml | awk '{print $2}' | grep -v collect| grep -n -v -q '$(echo \"${{ toJSON(needs) }}\" | jq 'keys | .[]' | tr -d '\"'); then exit 1; fi"
+
+# FIXME: if we can make upload/download-artifact fasts, running unit tests outside of build can let regression tests start earlier
