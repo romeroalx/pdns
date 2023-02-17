@@ -6,9 +6,9 @@ EOF
 "
 sudo chmod 755 /usr/sbin/policy-rc.d
 sudo apt-get update
+# sudo dpkg --purge --force-all grub-efi-amd64
 # Use with caution!
-sudo dpkg --purge --force-all grub-efi-amd64
-sudo dpkg --purge --force-all grub-efi
+# sudo dpkg --purge --force-all grub-efi
 sudo dpkg --purge --force-all grub-efi-amd64-signed
 sudo dpkg --purge --force-all shim-signed
 sudo apt-get autoremove
