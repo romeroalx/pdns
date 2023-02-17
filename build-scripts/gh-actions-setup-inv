@@ -7,7 +7,7 @@ EOF
 sudo chmod 755 /usr/sbin/policy-rc.d
 sudo apt-get update
 sudo apt-get purge --allow-remove-essential grub\*
-# sudo apt-get -qq -y install grub-efi
+sudo apt-get -qq -y install grub-efi
 sudo apt-get autoremove
 sudo update-grub
 sudo apt-get -qq -y --allow-downgrades dist-upgrade
