@@ -1,0 +1,34 @@
+---
+name: 'Test collect'
+
+on:
+  push:
+    branches:
+    - gh-auth-ldap-geoip-temp
+
+permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+  contents: read
+
+jobs:
+  build-recursor:
+    name: build recursor
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        sanitizers: [ubsan+asan]
+    env:
+      ASAN_OPTIONS: detect_leaks=0
+      SANITIZERS: ${{ matrix.sanitizers }}
+      UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
+      UNIT_TESTS: yes
+    defaults:
+      run:
+        working-directory: ./pdns/recursordist/
+    steps:
+      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      - run: ../../build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
+      - run: inv apt-fresh
