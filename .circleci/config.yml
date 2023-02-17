@@ -509,9 +509,12 @@ workflows:
       - build-auth:
           requires:
             - checkout
-      - test-auth-regress-geoip:
+      - test-auth-regress-bind:
           requires:
             - build-auth
-      - test-auth-regress-ldap:
-          requires:
-            - build-auth
+      # - test-auth-regress-geoip:
+      #     requires:
+      #       - build-auth
+      # - test-auth-regress-ldap:
+      #     requires:
+      #       - build-auth
