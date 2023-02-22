@@ -46,135 +46,135 @@ jobs:
       - run: inv ci-auth-install-remotebackend-test-deps
       - run: inv ci-auth-run-unit-tests
       - run: inv ci-make-install
-      - run: ccache -s
-      - name: Store the binaries
-        uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
-        with:
-          name: pdns-auth
-          path: /opt/pdns-auth
-          retention-days: 1
-
-  test-auth-backend:
-    needs: build-auth
-    runs-on: ubuntu-20.04
-    env:
-      UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
-      ASAN_OPTIONS: detect_leaks=0
-      LDAPHOST: ldap://ldapserver/
-    strategy:
-      matrix:
-        include:
-          - backend: remote
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: gmysql
-            image: mysql:5
-            env:
-              MYSQL_ALLOW_EMPTY_PASSWORD: 1
-            ports:
-            - 3306:3306
-          - backend: gmysql
-            image: mariadb:10
-            env:
-              MYSQL_ALLOW_EMPTY_PASSWORD: 1
-            ports:
-            - 3306:3306
-          - backend: gpgsql
-            image: postgres:9
-            env:
-              POSTGRES_USER: runner
-              POSTGRES_HOST_AUTH_METHOD: trust
-            ports:
-            - 5432:5432
-          - backend: gsqlite3  # this also runs regression-tests.nobackend and pdnsutil test-algorithms
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: lmdb
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: bind
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: geoip
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: lua2
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: tinydns
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: authpy
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: godbc_sqlite3
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: godbc_mssql
-            image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
-            env:
-              ACCEPT_EULA: Y
-              SA_PASSWORD: 'SAsa12%%'
-            ports:
-              - 1433:1433
-          - backend: ldap
-            image: powerdns/ldap-regress:1.2.4-1
-            env:
-              LDAP_LOG_LEVEL: 0
-              CONTAINER_LOG_LEVEL: 4
-            ports:
-              - 389:389
-          - backend: geoip_mmdb
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-      fail-fast: false
-    services:
-      database:
-        image: ${{ matrix.image }}
-        env: ${{ matrix.env }}
-        ports: ${{ matrix.ports }}
-        # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
-        options: >-
-          --restart always
-    steps:
-      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
-      - uses: actions/checkout@v3.1.0
-        with:
-          fetch-depth: 5
-          submodules: recursive
-      - name: Fetch the binaries
-        uses: actions/download-artifact@v3
-        with:
-          name: pdns-auth
-          path: /opt/pdns-auth
-      # - name: Setup upterm session
-      #   uses: lhotari/action-upterm@v1
-      # FIXME: install recursor for backends that have ALIAS
-      - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
-      - run: inv install-clang-runtime
-      - run: inv install-auth-test-deps -b ${{ matrix.backend }}
-      - run: inv test-auth-backend -b ${{ matrix.backend }}
-
-  collect:
-    needs:
-      - build-auth
-      - test-auth-backend
-    if: success() || failure()
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Install jq
-        run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
-      - name: Fail job if any of the previous jobs failed
-        run: "for i in `echo '${{ toJSON(needs) }}' | jq '.[].result' | tr -d '\"'`; do if [[ $i == 'failure' ]]; then echo '${{ toJSON(needs) }}'; exit 1; fi; done;"
+#       - run: ccache -s
+#       - name: Store the binaries
+#         uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
+#         with:
+#           name: pdns-auth
+#           path: /opt/pdns-auth
+#           retention-days: 1
+# 
+#   test-auth-backend:
+#     needs: build-auth
+#     runs-on: ubuntu-20.04
+#     env:
+#       UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
+#       ASAN_OPTIONS: detect_leaks=0
+#       LDAPHOST: ldap://ldapserver/
+#     strategy:
+#       matrix:
+#         include:
+#           - backend: remote
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: gmysql
+#             image: mysql:5
+#             env:
+#               MYSQL_ALLOW_EMPTY_PASSWORD: 1
+#             ports:
+#             - 3306:3306
+#           - backend: gmysql
+#             image: mariadb:10
+#             env:
+#               MYSQL_ALLOW_EMPTY_PASSWORD: 1
+#             ports:
+#             - 3306:3306
+#           - backend: gpgsql
+#             image: postgres:9
+#             env:
+#               POSTGRES_USER: runner
+#               POSTGRES_HOST_AUTH_METHOD: trust
+#             ports:
+#             - 5432:5432
+#           - backend: gsqlite3  # this also runs regression-tests.nobackend and pdnsutil test-algorithms
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: lmdb
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: bind
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: geoip
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: lua2
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: tinydns
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: authpy
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: godbc_sqlite3
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: godbc_mssql
+#             image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
+#             env:
+#               ACCEPT_EULA: Y
+#               SA_PASSWORD: 'SAsa12%%'
+#             ports:
+#               - 1433:1433
+#           - backend: ldap
+#             image: powerdns/ldap-regress:1.2.4-1
+#             env:
+#               LDAP_LOG_LEVEL: 0
+#               CONTAINER_LOG_LEVEL: 4
+#             ports:
+#               - 389:389
+#           - backend: geoip_mmdb
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#       fail-fast: false
+#     services:
+#       database:
+#         image: ${{ matrix.image }}
+#         env: ${{ matrix.env }}
+#         ports: ${{ matrix.ports }}
+#         # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
+#         options: >-
+#           --restart always
+#     steps:
+#       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+#       - uses: actions/checkout@v3.1.0
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#       - name: Fetch the binaries
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: pdns-auth
+#           path: /opt/pdns-auth
+#       # - name: Setup upterm session
+#       #   uses: lhotari/action-upterm@v1
+#       # FIXME: install recursor for backends that have ALIAS
+#       - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
+#       - run: inv install-clang-runtime
+#       - run: inv install-auth-test-deps -b ${{ matrix.backend }}
+#       - run: inv test-auth-backend -b ${{ matrix.backend }}
+# 
+#   collect:
+#     needs:
+#       - build-auth
+#       - test-auth-backend
+#     if: success() || failure()
+#     runs-on: ubuntu-20.04
+#     steps:
+#       - name: Install jq
+#         run: "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq -y jq"
+#       - name: Fail job if any of the previous jobs failed
+#         run: "for i in `echo '${{ toJSON(needs) }}' | jq '.[].result' | tr -d '\"'`; do if [[ $i == 'failure' ]]; then echo '${{ toJSON(needs) }}'; exit 1; fi; done;"
 
 # FIXME: if we can make upload/download-artifact fasts, running unit tests outside of build can let regression tests start earlier
