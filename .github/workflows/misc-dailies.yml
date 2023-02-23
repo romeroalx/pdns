@@ -1,15 +1,15 @@
 name: "Various daily checks"
 
 on:
-  schedule:
-    - cron: '34 4 * * *'
+  push:
+    branches:
+    - fix-repo-odbc-packages-temp
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
 
 jobs:
   el7-devtoolset:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
 
     steps:
@@ -25,7 +25,6 @@ jobs:
         fi
 
   check-debian-autoremovals:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v3.1.0
@@ -38,7 +37,6 @@ jobs:
 
   coverity-auth:
     name: coverity scan of the auth
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-20.04
     env:
       COVERITY_TOKEN: ${{ secrets.coverity_auth_token }}
@@ -46,7 +44,7 @@ jobs:
       SANITIZERS:
       UNIT_TESTS: no
     steps:
-      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: romeroalx/pdns/set-ubuntu-mirror@meta-repo-priorities-temp
       - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 5
@@ -64,14 +62,13 @@ jobs:
 
   coverity-dnsdist:
     name: coverity scan of dnsdist
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-20.04
     env:
       COVERITY_TOKEN: ${{ secrets.coverity_dnsdist_token }}
       SANITIZERS:
       UNIT_TESTS: no
     steps:
-      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: romeroalx/pdns/set-ubuntu-mirror@meta-repo-priorities-temp
       - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 5
@@ -94,14 +91,13 @@ jobs:
 
   coverity-rec:
     name: coverity scan of the rec
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-20.04
     env:
       COVERITY_TOKEN: ${{ secrets.coverity_rec_token }}
       SANITIZERS:
       UNIT_TESTS: no
     steps:
-      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: romeroalx/pdns/set-ubuntu-mirror@meta-repo-priorities-temp
       - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 5

@@ -2,9 +2,8 @@ name: "CodeQL"
 
 on:
   push:
-  pull_request:
-  schedule:
-    - cron: '0 22 * * 2'
+    branches:
+    - fix-repo-odbc-packages-temp
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
@@ -12,7 +11,6 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 jobs:
   analyze:
     name: Analyze
-    if: ${{ !github.event.schedule || vars.SCHEDULED_CODEQL_ANALYSIS }}
     runs-on: ubuntu-20.04
 
     permissions:
@@ -31,7 +29,7 @@ jobs:
         # https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/configuring-code-scanning#overriding-automatic-language-detection
 
     steps:
-    - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+    - uses: romeroalx/pdns/set-ubuntu-mirror@meta-repo-priorities-temp
     - name: Checkout repository
       uses: actions/checkout@v3.1.0
       with:
