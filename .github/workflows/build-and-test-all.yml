@@ -22,7 +22,7 @@ jobs:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
     steps:
-      - run: id -un 1001; sudo su $(id -un 1001) -c 'id'
+      - run: ls -alsrst; sudo ls -l /__w; id;
       - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 5
