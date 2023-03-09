@@ -23,9 +23,11 @@ jobs:
         UNIT_TESTS: yes
     steps:
       - run: ls -alsrst; sudo ls -l /__w; id;
-      - run: echo "${{ github.action_path }}"
+      - run: echo "${{ jobs.build-auth.steps.working-directory }}"
       - run: echo "${{ runner.temp }}"
       - run: echo "${{ github.workspace }}"
+      - run: pwd; ls *
+      - run: ls -al ${{ github.action_path }}/build-scripts/UBSan.supp
 #       - uses: actions/checkout@v3.1.0
 #         with:
 #           fetch-depth: 5
