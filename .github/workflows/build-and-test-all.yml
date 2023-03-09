@@ -23,7 +23,9 @@ jobs:
         UNIT_TESTS: yes
     steps:
       - run: ls -alsrst; sudo ls -l /__w; id;
-      - run: echo "${{ github.action_path }}; echo "${{ runner.temp }}"; echo "${{ github.workspace }}"
+      - run: echo "${{ github.action_path }}"
+      - run: echo "${{ runner.temp }}"
+      - run: echo "${{ github.workspace }}"
 #       - uses: actions/checkout@v3.1.0
 #         with:
 #           fetch-depth: 5
