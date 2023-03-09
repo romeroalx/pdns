@@ -23,7 +23,19 @@ jobs:
         UNIT_TESTS: yes
     steps:
       - run: ls -alsrst; sudo ls -l /__w; id;
-      - run: echo "${{ jobs.build-auth.steps.working-directory }}"
+      - name: Dump GitHub context
+        id: github_context_step
+        run: echo '${{ toJSON(github) }}'
+      - name: Dump job context
+        run: echo '${{ toJSON(job) }}'
+      - name: Dump steps context
+        run: echo '${{ toJSON(steps) }}'
+      - name: Dump runner context
+        run: echo '${{ toJSON(runner) }}'
+      - name: Dump strategy context
+        run: echo '${{ toJSON(strategy) }}'
+      - name: Dump matrix context
+        run: echo '${{ toJSON(matrix) }}'
       - run: echo "${{ runner.temp }}"
       - run: echo "${{ github.workspace }}"
       - run: pwd; ls *
