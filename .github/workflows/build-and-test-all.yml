@@ -20,6 +20,8 @@ jobs:
         FUZZING_TARGETS: yes
         SANITIZERS: asan+ubsan
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=build-scripts/UBSan.supp"
+        UBSAN_OPTIONS_2: "print_stacktrace=1:halt_on_error=1:suppressions=$HOME/pdns/build-scripts/UBSan.supp"
+        UBSAN_OPTIONS_3: "print_stacktrace=1:halt_on_error=1:suppressions=$PWD/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
     steps:
       - run: ls -alsrst; sudo ls -l /__w; id;
@@ -44,23 +46,24 @@ jobs:
           submodules: recursive
       - run: ls -al build-scripts/UBSan.supp
       - run: pwd; ls *
+      - run: env
       - name: get timestamp for cache
         id: get-stamp
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
-      - name: let GitHub cache our ccache data
-        uses: actions/cache@v3.2.6
-        with:
-          path: ~/.ccache
-          key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
-          restore-keys: auth-ccache-
-      # - run: build-scripts/gh-actions-setup-inv  # this runs apt updatepgrade
-      # - run: inv install-clang
-      # - run: inv install-auth-build-deps
-      - run: inv ci-autoconf
-      - run: inv ci-auth-configure
-      - run: inv ci-auth-make
+#       - name: let GitHub cache our ccache data
+#         uses: actions/cache@v3.2.6
+#         with:
+#           path: ~/.ccache
+#           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
+#           restore-keys: auth-ccache-
+#       # - run: build-scripts/gh-actions-setup-inv  # this runs apt updatepgrade
+#       # - run: inv install-clang
+#       # - run: inv install-auth-build-deps
+#       - run: inv ci-autoconf
+#       - run: inv ci-auth-configure
+#       - run: inv ci-auth-make
 
 #   build-recursor:
 #     name: build recursor
