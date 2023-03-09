@@ -39,7 +39,6 @@ jobs:
           restore-keys: auth-ccache-
       - run: env
       - run: echo $UBSAN_OPTIONS
-      - run: ls $UBSAN_OPTIONS
       - run: inv ci-autoconf
       - run: inv ci-auth-configure
       - run: inv ci-auth-make
