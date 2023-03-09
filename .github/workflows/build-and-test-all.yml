@@ -24,34 +24,14 @@ jobs:
         UBSAN_OPTIONS_3: "print_stacktrace=1:halt_on_error=1:suppressions=$PWD/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
     steps:
-      - run: ls -alsrst; sudo ls -l /__w; id;
-      - name: Dump GitHub context
-        id: github_context_step
-        run: echo '${{ toJSON(github) }}'
-      - name: Dump job context
-        run: echo '${{ toJSON(job) }}'
-      - name: Dump steps context
-        run: echo '${{ toJSON(steps) }}'
-      - name: Dump runner context
-        run: echo '${{ toJSON(runner) }}'
-      - name: Dump strategy context
-        run: echo '${{ toJSON(strategy) }}'
-      - name: Dump matrix context
-        run: echo '${{ toJSON(matrix) }}'
-      - name: Dump env context
-        run: echo '${{ toJSON(env) }}'
+      - run: env
+      - run: echo $GITHUB_WORKSPACE; echo $RUNNER_WORKSPACE
       - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 5
           submodules: recursive
-      - run: ls -al build-scripts/UBSan.supp
-      - run: pwd; ls *
+      - run: echo $GITHUB_WORKSPACE; echo $RUNNER_WORKSPACE
       - run: env
-      - name: get timestamp for cache
-        id: get-stamp
-        run: |
-          echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
-        shell: bash
 #       - name: let GitHub cache our ccache data
 #         uses: actions/cache@v3.2.6
 #         with:
