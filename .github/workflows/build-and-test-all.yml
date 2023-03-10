@@ -8,14 +8,7 @@ on:
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
-
 jobs:
-  regularjob:
-    runs-on: ubuntu-latest
-    steps:
-      - run: ip a
-      - run: ifconfig -a
-      - run: sudo cat /etc/docker/daemon. json
   build-auth:
     name: build auth
     runs-on: ubuntu-20.04
@@ -30,6 +23,16 @@ jobs:
     steps:
       - run: ip a
       - run: ifconfig -a
+      - run: sudo ifconfig eth0 inet6 add fe80::1/64
+      - run: ip a
+      - run: ifconfig -a
+
+  regularjob:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ip a
+      - run: ifconfig -a
+      - run: sudo cat /etc/docker/daemon.json
 #       - uses: actions/checkout@v3.1.0
 #         with:
 #           fetch-depth: 5
