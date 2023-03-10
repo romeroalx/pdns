@@ -39,6 +39,7 @@ jobs:
           restore-keys: auth-ccache-
       - run: env
       - run: echo $UBSAN_OPTIONS
+      - run: ls /home/runner/work/pdns/*
       - run: inv ci-autoconf
       - run: inv ci-auth-configure
       - run: inv ci-auth-make
