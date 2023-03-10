@@ -40,14 +40,13 @@ jobs:
           path: ${{ runner.workspace }}/.ccache
           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-
-      - run: env
-      - run: echo $UBSAN_OPTIONS
-      - run: ls /home/runner/work/pdns/*
+      - run: sudo ls -al /opt
       - run: inv ci-autoconf
       - run: inv ci-auth-configure
       - run: inv ci-auth-make
       - run: inv ci-auth-install-remotebackend-test-deps
       - run: inv ci-auth-run-unit-tests
+      - run: sudo ls -al /opt
       - run: inv ci-make-install
       - run: ccache -s
       - name: Store the binaries
