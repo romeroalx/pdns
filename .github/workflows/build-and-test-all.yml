@@ -10,6 +10,12 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 jobs:
+  regularjob:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ip a
+      - run: ifconfig -a
+      - run: sudo cat /etc/docker/daemon. json
   build-auth:
     name: build auth
     runs-on: ubuntu-20.04
