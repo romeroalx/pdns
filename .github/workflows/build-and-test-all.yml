@@ -43,6 +43,7 @@ jobs:
       - run: echo '${{ toJSON(job.services) }}'
       - run: echo '${{ toJSON(job.container) }}'
       - run: docker network inspect ${{ job.container.network }}
+      - run: netstat -an
 
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
