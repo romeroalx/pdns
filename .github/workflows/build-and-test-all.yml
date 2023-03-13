@@ -41,6 +41,7 @@ jobs:
       - run: env
       - run: docker-compose ps
       - run: echo '${{ toJSON(job.services) }}'
+      - run: echo '${{ toJSON(job.container) }}'
 
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
