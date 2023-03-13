@@ -40,7 +40,7 @@ jobs:
       - run: ip a
       - run: env
       - run: docker-compose ps
-      - run: echo '${{ job.services }}'
+      - run: echo '${{ toJSON(job.services) }}'
 
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
