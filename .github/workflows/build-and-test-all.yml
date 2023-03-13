@@ -45,6 +45,41 @@ jobs:
       - run: docker network inspect ${{ job.container.network }}
       - run: netstat -an
 
+
+  build-auth-2:
+    name: build auth 2
+    runs-on: ubuntu-20.04
+    container:
+      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+    strategy:
+      matrix:
+        include:
+          - backend: gmysql
+            image: mysql:5
+      fail-fast: false
+    services:
+      database:
+        image: ${{ matrix.image }}
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        ports:
+          - 3306:3306
+        # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
+        options: >-
+          --restart always
+    steps:
+      # - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: actions/checkout@v3.1.0
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      # - run: docker service ls
+      - run: ip a
+      - run: env
+      - run: echo '${{ toJSON(job.services) }}'
+      - run: echo '${{ toJSON(job.container) }}'
+      - run: netstat -an
+
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
 #       env:
