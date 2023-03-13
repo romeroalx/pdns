@@ -58,7 +58,7 @@ rec_bulk_deps = [
     'libcap2',
     'libfstrm0',
     'libluajit-5.1-2',
-    'libsnmp35',
+    'libsnmp40',
     'libsodium23',
     'libssl1.1',
     'libsystemd0',
@@ -90,7 +90,7 @@ auth_test_deps = [   # FIXME: we should be generating some of these from shlibde
     'gawk',
     'krb5-user',
     'ldnsutils',
-    'libboost-serialization1.71.0',
+    'libboost-serialization1.74.0',
     'libcdb1',
     'libcurl4',
     'libgeoip1',
@@ -214,7 +214,8 @@ def install_auth_test_deps(c, backend): # FIXME: rename this, we do way more tha
     extra=[]
     for b in backend:
         extra.extend(auth_backend_test_deps[b])
-    c.sudo('apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
+    # c.sudo('apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
+    c.sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
 
     c.run('chmod +x /opt/pdns-auth/bin/* /opt/pdns-auth/sbin/*')
     # c.run('''if [ ! -e $HOME/bin/jdnssec-verifyzone ]; then
@@ -266,7 +267,7 @@ def install_dnsdist_test_deps(c): # FIXME: rename this, we do way more than apt-
               libh2o-evloop0.13 \
               liblmdb0 \
               libnghttp2-14 \
-              libre2-5 \
+              libre2-9 \
               libssl-dev \
               libsystemd0 \
               libsodium23 \
