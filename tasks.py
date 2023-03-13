@@ -250,7 +250,8 @@ def install_rec_test_deps(c): # FIXME: rename this, we do way more than apt-get
     setup_authbind(c)
 
     c.run('sed "s/agentxperms 0700 0755 recursor/agentxperms 0777 0755/g" regression-tests.recursor-dnssec/snmpd.conf | sudo tee /etc/snmp/snmpd.conf')
-    c.sudo('systemctl restart snmpd')
+    # c.sudo('systemctl restart snmpd')
+    c.sudo('/etc/init.d/snmpd restart')
     time.sleep(5)
     c.sudo('chmod 755 /var/agentx')
 
@@ -276,7 +277,8 @@ def install_dnsdist_test_deps(c): # FIXME: rename this, we do way more than apt-
               protobuf-compiler \
               python3-venv snmpd prometheus')
     c.run('sed "s/agentxperms 0700 0755 dnsdist/agentxperms 0777 0755/g" regression-tests.dnsdist/snmpd.conf | sudo tee /etc/snmp/snmpd.conf')
-    c.sudo('systemctl restart snmpd')
+    # c.sudo('systemctl restart snmpd')
+    c.sudo('/etc/init.d/snmpd restart')
     time.sleep(5)
     c.sudo('chmod 755 /var/agentx')
 
