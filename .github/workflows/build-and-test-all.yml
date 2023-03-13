@@ -35,10 +35,11 @@ jobs:
         with:
           fetch-depth: 5
           submodules: recursive
-      - run: docker service ls
+      # - run: docker service ls
       - run: docker ps
       - run: ip a
       - run: env
+      - run: docker-compose ps 
 
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
