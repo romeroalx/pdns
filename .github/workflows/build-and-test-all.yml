@@ -39,7 +39,8 @@ jobs:
       - run: docker ps
       - run: ip a
       - run: env
-      - run: docker-compose ps 
+      - run: docker-compose ps
+      - run: echo '${{ job.services }}'
 
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
