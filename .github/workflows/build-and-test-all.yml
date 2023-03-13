@@ -42,6 +42,7 @@ jobs:
       - run: docker-compose ps
       - run: echo '${{ toJSON(job.services) }}'
       - run: echo '${{ toJSON(job.container) }}'
+      - run: docker network inspect ${{ job.container.network }}
 
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
