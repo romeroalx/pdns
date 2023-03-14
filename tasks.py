@@ -518,7 +518,7 @@ def test_api(c, product, backend=''):
             c.run(f'PDNSRECURSOR=/opt/pdns-recursor/sbin/pdns_recursor ./runtests recursor {backend}')
     elif product == 'auth':
         with c.cd('regression-tests.api'):
-            c.run(f'PDNSSERVER=/opt/pdns-auth/sbin/pdns_server PDNSUTIL=/opt/pdns-auth/bin/pdnsutil SDIG=/opt/pdns-auth/bin/sdig MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432" ./runtests authoritative {backend}')
+            c.run(f'PDNSSERVER=/opt/pdns-auth/sbin/pdns_server PDNSUTIL=/opt/pdns-auth/bin/pdnsutil SDIG=/opt/pdns-auth/bin/sdig MYSQL_HOST="172.17.0.1" PGHOST="172.17.0.1" PGPORT="5432" ./runtests authoritative {backend}')
     else:
         raise Failure('unknown product')
 
@@ -599,7 +599,7 @@ godbc_config = '''
 [pdns-mssql-docker]
 Driver=FreeTDS
 Trace=No
-Server=127.0.0.1
+Server=172.17.0.1
 Port=1433
 Database=pdns
 TDS_Version=7.1
@@ -607,7 +607,7 @@ TDS_Version=7.1
 [pdns-mssql-docker-nodb]
 Driver=FreeTDS
 Trace=No
-Server=127.0.0.1
+Server=172.17.0.1
 Port=1433
 TDS_Version=7.1
 
@@ -636,11 +636,11 @@ def setup_godbc_sqlite3(c):
 
 def setup_ldap_client(c):
     c.sudo('DEBIAN_FRONTEND=noninteractive apt-get install -qq -y ldap-utils')
-    c.sudo('sh -c \'echo "127.0.0.1 ldapserver" | tee -a /etc/hosts\'')
+    c.sudo('sh -c \'echo "172.17.0.1 ldapserver" | tee -a /etc/hosts\'')
 
 @task
 def test_auth_backend(c, backend):
-    pdns_auth_env_vars = 'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=127.0.0.1 GMYSQL2HOST=127.0.0.1 MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432"'
+    pdns_auth_env_vars = 'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=172.17.0.1 GMYSQL2HOST=172.17.0.1 MYSQL_HOST="172.17.0.1" PGHOST="172.17.0.1" PGPORT="5432"'
 
     if backend == 'remote':
         ci_auth_install_remotebackend_test_deps(c)
