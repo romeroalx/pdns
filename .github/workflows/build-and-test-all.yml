@@ -222,7 +222,7 @@ jobs:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
         ASAN_OPTIONS: detect_leaks=0
         LDAPHOST: ldap://ldapserver/
-        ODBCINI: ~/.odbc.ini
+        ODBCINI: /github/home/
     strategy:
       matrix:
         include:
@@ -244,6 +244,19 @@ jobs:
           --restart always
     steps:
       # - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - name: Dump GitHub context
+        id: github_context_step
+        run: echo '${{ toJSON(github) }}'
+      - name: Dump job context
+        run: echo '${{ toJSON(job) }}'
+      - name: Dump steps context
+        run: echo '${{ toJSON(steps) }}'
+      - name: Dump runner context
+        run: echo '${{ toJSON(runner) }}'
+      - name: Dump strategy context
+        run: echo '${{ toJSON(strategy) }}'
+      - name: Dump matrix context
+        run: echo '${{ toJSON(matrix) }}'
       - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 5
