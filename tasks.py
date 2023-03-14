@@ -217,7 +217,7 @@ def install_auth_test_deps(c, backend): # FIXME: rename this, we do way more tha
     # c.sudo('apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
     c.sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
 
-    c.run('chmod +x /opt/pdns-auth/bin/* /opt/pdns-auth/sbin/*')
+    # c.run('chmod +x /opt/pdns-auth/bin/* /opt/pdns-auth/sbin/*')
     # c.run('''if [ ! -e $HOME/bin/jdnssec-verifyzone ]; then
     #               wget https://github.com/dblacka/jdnssec-tools/releases/download/0.14/jdnssec-tools-0.14.tar.gz
     #               tar xfz jdnssec-tools-0.14.tar.gz -C $HOME
