@@ -33,6 +33,8 @@ jobs:
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
+      - run: pwd
+      - run: ls -al /__w/pdns/pdns
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3.2.6
         with:
