@@ -39,6 +39,9 @@ jobs:
           restore-keys: auth-ccache-
       - run: ls -al /
       - run: ls -al ~/
+      - run: ls -al ~/.ccache/
+      - run: ls -al /.ccache/
+      - run: ls -al /__w/pdns/pdns/.ccache/
       - run: ccache -s
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
