@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@v3.2.6
         with:
           # Change to env instead of ~. Prior could lead to write in /
-          path: ${{ runner.workspace }}/.ccache
+          path: ~/.ccache
           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-
       - run: sudo ls -al /opt
