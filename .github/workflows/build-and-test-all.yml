@@ -39,7 +39,8 @@ jobs:
           restore-keys: auth-ccache-
       - run: ls -al /github/home/
       - run: ls -al /github/home/.ccache
-      - run: ls -al ~/*
+      - run: ls -al ~/.*
+      - run: ls -al /.*
       - run: ls -al ~/.ccache/
       - run: ls -al /.ccache/
       - run: ls -al /__w/pdns/pdns/.ccache/
