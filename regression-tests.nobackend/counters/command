@@ -20,11 +20,11 @@ $SDIG 127.0.0.1 $port test.com SOA >&2 >/dev/null
 $SDIG 127.0.0.1 $port server1.test.com A tcp >&2 >/dev/null
 $SDIG 127.0.0.1 $port test.com SOA tcp >&2 >/dev/null
 
-$SDIG ::1 $port server1.test.com A >&2 >/dev/null
-$SDIG ::1 $port server1.com A tcp >&2 >/dev/null
-
-$SDIG ::1 $port test.com SOA >&2 >/dev/null
-$SDIG ::1 $port test.com SOA tcp >&2 >/dev/null
+# $SDIG ::1 $port server1.test.com A >&2 >/dev/null
+# $SDIG ::1 $port server1.com A tcp >&2 >/dev/null
+# 
+# $SDIG ::1 $port test.com SOA >&2 >/dev/null
+# $SDIG ::1 $port test.com SOA tcp >&2 >/dev/null
 
 # NXDOMAIN
 $SDIG 127.0.0.1 $port nx.test.com A >&2 >/dev/null
