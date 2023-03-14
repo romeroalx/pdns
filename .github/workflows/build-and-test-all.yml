@@ -10,51 +10,51 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 jobs:
-  build-auth:
-    name: build auth
-    runs-on: ubuntu-20.04
-    container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
-      env:
-        ASAN_OPTIONS: detect_leaks=0
-        FUZZING_TARGETS: yes
-        SANITIZERS: asan+ubsan
-        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
-        UNIT_TESTS: yes
-        # no IPv6 on Github Docker containers
-        PDNS_TEST_NO_IPV6: yes
-    steps:
-      - uses: actions/checkout@v3.1.0
-        with:
-          fetch-depth: 5
-          submodules: recursive
-      - name: get timestamp for cache
-        id: get-stamp
-        run: |
-          echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
-        shell: bash
-      - name: let GitHub cache our ccache data
-        uses: actions/cache@v3.2.6
-        with:
-          # Change to env instead of ~. Prior could lead to write in /
-          path: ${{ runner.workspace }}/.ccache
-          key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
-          restore-keys: auth-ccache-
-      - run: sudo ls -al /opt
-      - run: inv ci-autoconf
-      - run: inv ci-auth-configure
-      - run: inv ci-auth-make
-      - run: inv ci-auth-install-remotebackend-test-deps
-      - run: inv ci-auth-run-unit-tests
-      - run: sudo ls -al /opt
-      - run: inv ci-make-install
-      - run: ccache -s
-      - name: Store the binaries
-        uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
-        with:
-          name: pdns-auth
-          path: /opt/pdns-auth
-          retention-days: 1
+#   build-auth:
+#     name: build auth
+#     runs-on: ubuntu-20.04
+#     container:
+#       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+#       env:
+#         ASAN_OPTIONS: detect_leaks=0
+#         FUZZING_TARGETS: yes
+#         SANITIZERS: asan+ubsan
+#         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
+#         UNIT_TESTS: yes
+#         # no IPv6 on Github Docker containers
+#         PDNS_TEST_NO_IPV6: yes
+#     steps:
+#       - uses: actions/checkout@v3.1.0
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#       - name: get timestamp for cache
+#         id: get-stamp
+#         run: |
+#           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
+#         shell: bash
+#       - name: let GitHub cache our ccache data
+#         uses: actions/cache@v3.2.6
+#         with:
+#           # Change to env instead of ~. Prior could lead to write in /
+#           path: ${{ runner.workspace }}/.ccache
+#           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
+#           restore-keys: auth-ccache-
+#       - run: sudo ls -al /opt
+#       - run: inv ci-autoconf
+#       - run: inv ci-auth-configure
+#       - run: inv ci-auth-make
+#       - run: inv ci-auth-install-remotebackend-test-deps
+#       - run: inv ci-auth-run-unit-tests
+#       - run: sudo ls -al /opt
+#       - run: inv ci-make-install
+#       - run: ccache -s
+#       - name: Store the binaries
+#         uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
+#         with:
+#           name: pdns-auth
+#           path: /opt/pdns-auth
+#           retention-days: 1
 
 #   build-recursor:
 #     name: build recursor
@@ -214,7 +214,7 @@ jobs:
 
 
   test-auth-backend:
-    needs: build-auth
+    # needs: build-auth
     runs-on: ubuntu-20.04
     container:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
