@@ -26,7 +26,7 @@ jobs:
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
       - run: pwd
-      - run: ls -al /
+      - run: mkdir ~/.ccache
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3.2.6
         with:
@@ -36,7 +36,6 @@ jobs:
           restore-keys: auth-ccache-
       - run: ls -al /
       - run: ls -al ~/
-      - run: sudo find / -name ".ccache"
       - run: ccache -s
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
