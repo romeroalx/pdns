@@ -25,6 +25,17 @@ jobs:
         shell: bash
       - run: pwd
       - run: ls -al /
+      - name: let GitHub cache our ccache data
+        uses: actions/cache@v3.2.6
+        with:
+          # Change to env instead of ~. Prior could lead to write in /
+          path: ~/.ccache
+          key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
+          restore-keys: auth-ccache-
+      - run: ls -al /
+      - run: ls -al ~/
+      - run: sudo find / -name ".ccache"
+      - run: ccache -s
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
 #       env:
