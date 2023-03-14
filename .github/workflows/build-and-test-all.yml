@@ -24,7 +24,7 @@ jobs:
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
       - run: pwd
-      - run: ls -al /__w/pdns/pdns
+      - run: ls -al /
 #     container:
 #       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
 #       env:
