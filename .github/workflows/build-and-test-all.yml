@@ -27,6 +27,8 @@ jobs:
         shell: bash
       - run: pwd
       - run: mkdir ~/.ccache
+      - run: sudo mkdir /.ccache
+      - run: sudo chown -R runner:runner/.ccache
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3.2.6
         with:
