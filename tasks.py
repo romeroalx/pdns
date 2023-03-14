@@ -217,7 +217,7 @@ def install_auth_test_deps(c, backend): # FIXME: rename this, we do way more tha
     # c.sudo('apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
     c.sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
 
-    # c.run('chmod +x /opt/pdns-auth/bin/* /opt/pdns-auth/sbin/*')
+    c.run('chmod +x /opt/pdns-auth/bin/* /opt/pdns-auth/sbin/*')
     # c.run('''if [ ! -e $HOME/bin/jdnssec-verifyzone ]; then
     #               wget https://github.com/dblacka/jdnssec-tools/releases/download/0.14/jdnssec-tools-0.14.tar.gz
     #               tar xfz jdnssec-tools-0.14.tar.gz -C $HOME
@@ -623,9 +623,6 @@ Database = pdns.sqlite32
 def setup_godbc_mssql(c):
     with open(os.path.expanduser("~/.odbc.ini"), "a") as f:
         f.write(godbc_config)
-    c.run('ls ~/.odbc.ini')
-    c.run('cat ~/.odbc.ini')
-    c.run('env')
     c.sudo('sh -c \'echo "Threading=1" | cat /usr/share/tdsodbc/odbcinst.ini - | tee -a /etc/odbcinst.ini\'')
     c.sudo('sed -i "s/libtdsodbc.so/\/usr\/lib\/x86_64-linux-gnu\/odbc\/libtdsodbc.so/g" /etc/odbcinst.ini')
     c.run(f'echo "create database pdns" | isql -v pdns-mssql-docker-nodb {godbc_mssql_credentials["username"]} {godbc_mssql_credentials["password"]}')
@@ -662,9 +659,9 @@ def test_auth_backend(c, backend):
 
     if backend == 'godbc_mssql':
         setup_godbc_mssql(c)
-        #with c.cd('regression-tests'):
-        #    for variant in backend_regress_tests[backend]:
-        #        c.run(f'{pdns_auth_env_vars} GODBC_MSSQL_PASSWORD={godbc_mssql_credentials["password"]} GODBC_MSSQL_USERNAME={godbc_mssql_credentials["username"]} GODBC_MSSQL_DSN=pdns-mssql-docker GODBC_MSSQL2_PASSWORD={godbc_mssql_credentials["password"]} GODBC_MSSQL2_USERNAME={godbc_mssql_credentials["username"]} GODBC_MSSQL2_DSN=pdns-mssql-docker ./start-test-stop 5300 {variant}')
+        with c.cd('regression-tests'):
+            for variant in backend_regress_tests[backend]:
+                c.run(f'{pdns_auth_env_vars} GODBC_MSSQL_PASSWORD={godbc_mssql_credentials["password"]} GODBC_MSSQL_USERNAME={godbc_mssql_credentials["username"]} GODBC_MSSQL_DSN=pdns-mssql-docker GODBC_MSSQL2_PASSWORD={godbc_mssql_credentials["password"]} GODBC_MSSQL2_USERNAME={godbc_mssql_credentials["username"]} GODBC_MSSQL2_DSN=pdns-mssql-docker ./start-test-stop 5300 {variant}')
         return
 
     if backend == 'ldap':
