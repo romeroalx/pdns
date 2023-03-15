@@ -193,7 +193,7 @@ def setup_authbind(c):
     c.sudo('chmod 755 /etc/authbind/byport/53')
 
 auth_backend_test_deps = dict(
-    gsqlite3=['sqlite3'],
+    gsqlite3=['sqlite3','python'],
     gmysql=['default-libmysqlclient-dev'],
     gpgsql=['libpq-dev'],
     lmdb=[],
