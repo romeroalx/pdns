@@ -84,8 +84,6 @@ jobs:
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
-      - run:  sudo mkdir /.ccache
-      - run:  sudo chown runner:runner /.ccache
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3.2.6
         with:
