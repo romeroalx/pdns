@@ -496,9 +496,9 @@ def ci_make_install(c):
 
 @task
 def add_auth_repo(c):
-    dist = 'ubuntu' # FIXME take these from the caller?
-    release = 'focal'
-    version = '44'
+    dist = 'debian' # FIXME take these from the caller?
+    release = 'bullseye'
+    version = '47'
 
     c.sudo('apt-get install -qq -y curl gnupg2')
     if version == 'master':
