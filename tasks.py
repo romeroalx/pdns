@@ -193,7 +193,7 @@ def setup_authbind(c):
     c.sudo('chmod 755 /etc/authbind/byport/53')
 
 auth_backend_test_deps = dict(
-    gsqlite3=['sqlite3','python'],
+    gsqlite3=['sqlite3'],
     gmysql=['default-libmysqlclient-dev'],
     gpgsql=['libpq-dev'],
     lmdb=[],
@@ -243,7 +243,7 @@ def install_rec_test_deps(c): # FIXME: rename this, we do way more than apt-get
               pdns-server pdns-backend-bind daemontools \
               jq libfaketime lua-posix lua-socket bc authbind \
               python3-venv python3-dev default-libmysqlclient-dev libpq-dev \
-              protobuf-compiler snmpd prometheus python')
+              protobuf-compiler snmpd prometheus')
 
     c.run('chmod +x /opt/pdns-recursor/bin/* /opt/pdns-recursor/sbin/*')
 
