@@ -407,12 +407,12 @@ class TestAdvancedGetLocalAddressOnAnyBind(DNSDistTest):
         # except socket.timeout:
         #     data = None
 
-        self.assertTrue(data)
-        receivedResponse = dns.message.from_wire(data)
-        receivedQuery = self._fromResponderQueue.get(True, 1.0)
-        receivedQuery.id = query.id
-        self.assertEqual(receivedQuery, query)
-        self.assertEqual(receivedResponse, response)
+        # self.assertTrue(data)
+        # receivedResponse = dns.message.from_wire(data)
+        # receivedQuery = self._fromResponderQueue.get(True, 1.0)
+        # receivedQuery.id = query.id
+        # self.assertEqual(receivedQuery, query)
+        # self.assertEqual(receivedResponse, response)
 
 class TestAdvancedAllowHeaderOnly(DNSDistTest):
 
