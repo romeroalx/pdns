@@ -498,7 +498,8 @@ def ci_make_install(c):
 def add_auth_repo(c):
     dist = 'debian' # FIXME take these from the caller?
     release = 'bullseye'
-    version = '47'
+    # V44 not available for debian
+    version = '45'
 
     c.sudo('apt-get install -qq -y curl gnupg2')
     if version == 'master':
