@@ -2,7 +2,7 @@ version: "2"
 services:
   kerberos:
     build: .
-    network_mode: "host"
+    # network_mode: "host"
     ports:
       - "1188:88"
       - "1749:749"
