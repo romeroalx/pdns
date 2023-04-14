@@ -59,7 +59,8 @@ rec_bulk_deps = [
     'libcap2',
     'libfstrm0',
     'libluajit-5.1-2',
-    'libsnmp35',
+    #'libsnmp35',
+    'libsnmp40',
     'libsodium23',
     'libssl1.1',
     'libsystemd0',
@@ -91,7 +92,8 @@ auth_test_deps = [   # FIXME: we should be generating some of these from shlibde
     'gawk',
     'krb5-user',
     'ldnsutils',
-    'libboost-serialization1.71.0',
+    # 'libboost-serialization1.71.0',
+    'libboost-serialization1.74.0',
     'libcdb1',
     'libcurl4',
     'libgeoip1',
@@ -217,7 +219,8 @@ def install_auth_test_deps(c, backend): # FIXME: rename this, we do way more tha
     extra=[]
     for b in backend:
         extra.extend(auth_backend_test_deps[b])
-    c.sudo('apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
+    # c.sudo('apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
+    c.sudo('DEBIAN_FRONTEND=noninteractive apt-get -y -qq install ' + ' '.join(extra+auth_test_deps))
 
     c.run('chmod +x /opt/pdns-auth/bin/* /opt/pdns-auth/sbin/*')
     # c.run('''if [ ! -e $HOME/bin/jdnssec-verifyzone ]; then
@@ -252,12 +255,14 @@ def install_rec_test_deps(c): # FIXME: rename this, we do way more than apt-get
     setup_authbind(c)
 
     c.run('sed "s/agentxperms 0700 0755 recursor/agentxperms 0777 0755/g" regression-tests.recursor-dnssec/snmpd.conf | sudo tee /etc/snmp/snmpd.conf')
-    c.sudo('systemctl restart snmpd')
+    # c.sudo('systemctl restart snmpd')
+    c.sudo('/etc/init.d/snmpd restart')
     time.sleep(5)
     c.sudo('chmod 755 /var/agentx')
 
 @task
 def install_dnsdist_test_deps(c): # FIXME: rename this, we do way more than apt-get
+    # libre2-5
     c.sudo('apt-get install -qq -y \
               libluajit-5.1-2 \
               libboost-all-dev \
@@ -269,7 +274,7 @@ def install_dnsdist_test_deps(c): # FIXME: rename this, we do way more than apt-
               libh2o-evloop0.13 \
               liblmdb0 \
               libnghttp2-14 \
-              libre2-5 \
+              libre2-9 \
               libssl-dev \
               libsystemd0 \
               libsodium23 \
@@ -278,7 +283,8 @@ def install_dnsdist_test_deps(c): # FIXME: rename this, we do way more than apt-
               protobuf-compiler \
               python3-venv snmpd prometheus')
     c.run('sed "s/agentxperms 0700 0755 dnsdist/agentxperms 0777 0755/g" regression-tests.dnsdist/snmpd.conf | sudo tee /etc/snmp/snmpd.conf')
-    c.sudo('systemctl restart snmpd')
+    # c.sudo('systemctl restart snmpd')
+    c.sudo('/etc/init.d/snmpd restart')
     time.sleep(5)
     c.sudo('chmod 755 /var/agentx')
 
@@ -568,9 +574,13 @@ def ci_make_install(c):
 
 @task
 def add_auth_repo(c):
-    dist = 'ubuntu' # FIXME take these from the caller?
-    release = 'focal'
-    version = '44'
+    # dist = 'ubuntu' # FIXME take these from the caller?
+    # release = 'focal'
+    # version = '44'
+    dist = 'debian' # FIXME take these from the caller?
+    release = 'bullseye'
+    # V44 not available for debian
+    version = '45'
 
     c.sudo('apt-get install -qq -y curl gnupg2')
     if version == 'master':
@@ -590,7 +600,8 @@ def test_api(c, product, backend=''):
             c.run(f'PDNSRECURSOR=/opt/pdns-recursor/sbin/pdns_recursor ./runtests recursor {backend}')
     elif product == 'auth':
         with c.cd('regression-tests.api'):
-            c.run(f'PDNSSERVER=/opt/pdns-auth/sbin/pdns_server PDNSUTIL=/opt/pdns-auth/bin/pdnsutil SDIG=/opt/pdns-auth/bin/sdig MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432" ./runtests authoritative {backend}')
+            # c.run(f'PDNSSERVER=/opt/pdns-auth/sbin/pdns_server PDNSUTIL=/opt/pdns-auth/bin/pdnsutil SDIG=/opt/pdns-auth/bin/sdig MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432" ./runtests authoritative {backend}')
+            c.run(f'PDNSSERVER=/opt/pdns-auth/sbin/pdns_server PDNSUTIL=/opt/pdns-auth/bin/pdnsutil SDIG=/opt/pdns-auth/bin/sdig MYSQL_HOST="172.17.0.1" PGHOST="172.17.0.1" PGPORT="5432" ./runtests authoritative {backend}')
     else:
         raise Failure('unknown product')
 
@@ -667,11 +678,12 @@ backend_regress_tests = dict(
 
 godbc_mssql_credentials = {"username": "sa", "password": "SAsa12%%"}
 
+# Server=127.0.0.1
 godbc_config = '''
 [pdns-mssql-docker]
 Driver=FreeTDS
 Trace=No
-Server=127.0.0.1
+Server=172.17.0.1
 Port=1433
 Database=pdns
 TDS_Version=7.1
@@ -679,7 +691,7 @@ TDS_Version=7.1
 [pdns-mssql-docker-nodb]
 Driver=FreeTDS
 Trace=No
-Server=127.0.0.1
+Server=172.17.0.1
 Port=1433
 TDS_Version=7.1
 
@@ -708,11 +720,13 @@ def setup_godbc_sqlite3(c):
 
 def setup_ldap_client(c):
     c.sudo('DEBIAN_FRONTEND=noninteractive apt-get install -qq -y ldap-utils')
-    c.sudo('sh -c \'echo "127.0.0.1 ldapserver" | tee -a /etc/hosts\'')
+    # c.sudo('sh -c \'echo "127.0.0.1 ldapserver" | tee -a /etc/hosts\'')
+    c.sudo('sh -c \'echo "172.17.0.1 ldapserver" | tee -a /etc/hosts\'')
 
 @task
 def test_auth_backend(c, backend):
-    pdns_auth_env_vars = 'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=127.0.0.1 GMYSQL2HOST=127.0.0.1 MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432"'
+    # pdns_auth_env_vars = 'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=127.0.0.1 GMYSQL2HOST=127.0.0.1 MYSQL_HOST="127.0.0.1" PGHOST="127.0.0.1" PGPORT="5432"'
+    pdns_auth_env_vars = 'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST=172.17.0.1 GMYSQL2HOST=172.17.0.1 MYSQL_HOST="172.17.0.1" PGHOST="172.17.0.1" PGPORT="5432"'
 
     if backend == 'remote':
         ci_auth_install_remotebackend_test_deps(c)
