@@ -60,7 +60,7 @@ rec_bulk_deps = [
     'libfstrm0',
     'libluajit-5.1-2',
     #'libsnmp35',
-    'libsnmp40',
+    '"libsnmp[1-9]+"',
     'libsodium23',
     'libssl1.1',
     'libsystemd0',
@@ -93,7 +93,7 @@ auth_test_deps = [   # FIXME: we should be generating some of these from shlibde
     'krb5-user',
     'ldnsutils',
     # 'libboost-serialization1.71.0',
-    'libboost-serialization1.74.0',
+    '"libboost-serialization1.7[1-9]+"',
     'libcdb1',
     'libcurl4',
     'libgeoip1',
@@ -274,7 +274,7 @@ def install_dnsdist_test_deps(c): # FIXME: rename this, we do way more than apt-
               libh2o-evloop0.13 \
               liblmdb0 \
               libnghttp2-14 \
-              libre2-9 \
+              "libre2-[1-9]+" \
               libssl-dev \
               libsystemd0 \
               libsodium23 \
