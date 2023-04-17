@@ -33,7 +33,7 @@ jobs:
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
-      - run: "ls ~"
+      - run: "mkdir -p ~/.ccache"
       - run: "cd ~; pwd; cd -"
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3
