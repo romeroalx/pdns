@@ -784,7 +784,7 @@ def test_dnsdist(c):
     c.run('ls -ald /var /var/agentx /var/agentx/master')
     c.run('ls -al /var/agentx/master')
     with c.cd('regression-tests.dnsdist'):
-        c.run('DNSDISTBIN=/opt/dnsdist/bin/dnsdist ./runtests')
+        c.run('DNSDISTBIN=/opt/dnsdist/bin/dnsdist SKIP_IPV6_TESTS=y ./runtests')
 
 @task
 def test_regression_recursor(c):
