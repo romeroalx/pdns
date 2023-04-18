@@ -10,50 +10,50 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 jobs:
-#   build-auth:
-#     name: build auth
-#     runs-on: ubuntu-20.04
-#     container:
-#       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
-#       env:
-#         ASAN_OPTIONS: detect_leaks=0
-#         FUZZING_TARGETS: yes
-#         SANITIZERS: asan+ubsan
-#         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
-#         UNIT_TESTS: yes
-#         # no IPv6 on Github Docker containers
-#         PDNS_TEST_NO_IPV6: yes
-#     steps:
-#       - uses: actions/checkout@v3
-#         with:
-#           fetch-depth: 5
-#           submodules: recursive
-#       - name: get timestamp for cache
-#         id: get-stamp
-#         run: |
-#           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
-#         shell: bash
-#       - run: mkdir -p ~/.ccache
-#       - name: let GitHub cache our ccache data
-#         uses: actions/cache@v3
-#         with:
-#           path: ~/.ccache
-#           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
-#           restore-keys: auth-ccache-
-#       - run: inv ci-autoconf
-#       - run: inv ci-auth-configure
-#       - run: inv ci-auth-make
-#       - run: inv ci-auth-install-remotebackend-test-deps
-#       - run: inv ci-auth-run-unit-tests
-#       - run: inv ci-make-install
-#       - run: ccache -s
-#       - name: Store the binaries
-#         uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
-#         with:
-#           name: pdns-auth
-#           path: /opt/pdns-auth
-#           retention-days: 1
-# 
+  build-auth:
+    name: build auth
+    runs-on: ubuntu-20.04
+    container:
+      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      env:
+        ASAN_OPTIONS: detect_leaks=0
+        FUZZING_TARGETS: yes
+        SANITIZERS: asan+ubsan
+        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
+        UNIT_TESTS: yes
+        # no IPv6 on Github Docker containers
+        PDNS_TEST_NO_IPV6: yes
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      - name: get timestamp for cache
+        id: get-stamp
+        run: |
+          echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
+        shell: bash
+      - run: mkdir -p ~/.ccache
+      - name: let GitHub cache our ccache data
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
+          restore-keys: auth-ccache-
+      - run: inv ci-autoconf
+      - run: inv ci-auth-configure
+      - run: inv ci-auth-make
+      - run: inv ci-auth-install-remotebackend-test-deps
+      - run: inv ci-auth-run-unit-tests
+      - run: inv ci-make-install
+      - run: ccache -s
+      - name: Store the binaries
+        uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
+        with:
+          name: pdns-auth
+          path: /opt/pdns-auth
+          retention-days: 1
+
 #   build-recursor:
 #     name: build recursor
 #     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
@@ -100,58 +100,58 @@ jobs:
 #           name: pdns-recursor-${{ matrix.sanitizers }}
 #           path: /opt/pdns-recursor
 #           retention-days: 1
-
-  build-dnsdist:
-    name: build dnsdist
-    if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        sanitizers: [ubsan+asan, tsan]
-        features: [least, full]
-        exclude:
-          - sanitizers: tsan
-            features: least
-    container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
-      env:
-        ASAN_OPTIONS: detect_leaks=0
-        SANITIZERS: ${{ matrix.sanitizers }}
-        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
-        UNIT_TESTS: yes
-    defaults:
-      run:
-        working-directory: ./pdns/dnsdistdist/
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 5
-          submodules: recursive
-      - name: get timestamp for cache
-        id: get-stamp
-        run: |
-          echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
-        shell: bash
-      - run: mkdir -p ~/.ccache
-      - name: let GitHub cache our ccache data
-        uses: actions/cache@v3
-        with:
-          path: ~/.ccache
-          key: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-${{ steps.get-stamp.outputs.stamp }}
-          restore-keys: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-
-      - run: inv ci-autoconf
-      - run: inv ci-dnsdist-configure ${{ matrix.features }}
-      - run: inv ci-dnsdist-make
-      - run: inv ci-dnsdist-run-unit-tests
-      - run: inv ci-make-install
-      - run: ccache -s
-      - name: Store the binaries
-        uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
-        with:
-          name: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}
-          path: /opt/dnsdist
-          retention-days: 1
-
+# 
+#   build-dnsdist:
+#     name: build dnsdist
+#     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+#     runs-on: ubuntu-20.04
+#     strategy:
+#       matrix:
+#         sanitizers: [ubsan+asan, tsan]
+#         features: [least, full]
+#         exclude:
+#           - sanitizers: tsan
+#             features: least
+#     container:
+#       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+#       env:
+#         ASAN_OPTIONS: detect_leaks=0
+#         SANITIZERS: ${{ matrix.sanitizers }}
+#         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
+#         UNIT_TESTS: yes
+#     defaults:
+#       run:
+#         working-directory: ./pdns/dnsdistdist/
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#       - name: get timestamp for cache
+#         id: get-stamp
+#         run: |
+#           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
+#         shell: bash
+#       - run: mkdir -p ~/.ccache
+#       - name: let GitHub cache our ccache data
+#         uses: actions/cache@v3
+#         with:
+#           path: ~/.ccache
+#           key: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-${{ steps.get-stamp.outputs.stamp }}
+#           restore-keys: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-
+#       - run: inv ci-autoconf
+#       - run: inv ci-dnsdist-configure ${{ matrix.features }}
+#       - run: inv ci-dnsdist-make
+#       - run: inv ci-dnsdist-run-unit-tests
+#       - run: inv ci-make-install
+#       - run: ccache -s
+#       - name: Store the binaries
+#         uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
+#         with:
+#           name: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}
+#           path: /opt/dnsdist
+#           retention-days: 1
+# 
 #   test-auth-api:
 #     needs: build-auth
 #     runs-on: ubuntu-20.04
@@ -202,116 +202,116 @@ jobs:
 #       - run: inv install-auth-test-deps -b ${{ matrix.backend }}
 #       - run: inv test-api auth -b ${{ matrix.backend }}
 # 
-#   test-auth-backend:
-#     needs: build-auth
-#     runs-on: ubuntu-20.04
-#     container:
-#       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
-#       env:
-#         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
-#         ASAN_OPTIONS: detect_leaks=0
-#         LDAPHOST: ldap://ldapserver/
-#         ODBCINI: /github/home/.odbc.ini
-#     strategy:
-#       matrix:
-#         include:
-#           - backend: remote
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: gmysql
-#             image: mysql:5
-#             env:
-#               MYSQL_ALLOW_EMPTY_PASSWORD: 1
-#             ports:
-#             - 3306:3306
-#           - backend: gmysql
-#             image: mariadb:10
-#             env:
-#               MYSQL_ALLOW_EMPTY_PASSWORD: 1
-#             ports:
-#             - 3306:3306
-#           - backend: gpgsql
-#             image: postgres:9
-#             env:
-#               POSTGRES_USER: runner
-#               POSTGRES_HOST_AUTH_METHOD: trust
-#             ports:
-#             - 5432:5432
-#           - backend: gsqlite3  # this also runs regression-tests.nobackend and pdnsutil test-algorithms
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: lmdb
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: bind
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: geoip
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: lua2
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: tinydns
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: authpy
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: godbc_sqlite3
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#           - backend: godbc_mssql
-#             image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
-#             env:
-#               ACCEPT_EULA: Y
-#               SA_PASSWORD: 'SAsa12%%'
-#             ports:
-#               - 1433:1433
-#           - backend: ldap
-#             image: powerdns/ldap-regress:1.2.4-1
-#             env:
-#               LDAP_LOG_LEVEL: 0
-#               CONTAINER_LOG_LEVEL: 4
-#             ports:
-#               - 389:389
-#           - backend: geoip_mmdb
-#             image: coscale/docker-sleep
-#             env: {}
-#             ports: []
-#       fail-fast: false
-#     services:
-#       database:
-#         image: ${{ matrix.image }}
-#         env: ${{ matrix.env }}
-#         ports: ${{ matrix.ports }}
-#         # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
-#         options: >-
-#           --restart always
-#     steps:
-#       - uses: actions/checkout@v3
-#         with:
-#           fetch-depth: 5
-#           submodules: recursive
-#       - name: Fetch the binaries
-#         uses: actions/download-artifact@v3
-#         with:
-#           name: pdns-auth
-#           path: /opt/pdns-auth
-#       # FIXME: install recursor for backends that have ALIAS
-#       - run: inv install-clang-runtime
-#       - run: inv install-auth-test-deps -b ${{ matrix.backend }}
-#       - run: inv test-auth-backend -b ${{ matrix.backend }}
-# 
+  test-auth-backend:
+    needs: build-auth
+    runs-on: ubuntu-20.04
+    container:
+      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      env:
+        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
+        ASAN_OPTIONS: detect_leaks=0
+        LDAPHOST: ldap://ldapserver/
+        ODBCINI: /github/home/.odbc.ini
+    strategy:
+      matrix:
+        include:
+          - backend: remote
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: gmysql
+            image: mysql:5
+            env:
+              MYSQL_ALLOW_EMPTY_PASSWORD: 1
+            ports:
+            - 3306:3306
+          - backend: gmysql
+            image: mariadb:10
+            env:
+              MYSQL_ALLOW_EMPTY_PASSWORD: 1
+            ports:
+            - 3306:3306
+          - backend: gpgsql
+            image: postgres:9
+            env:
+              POSTGRES_USER: runner
+              POSTGRES_HOST_AUTH_METHOD: trust
+            ports:
+            - 5432:5432
+          - backend: gsqlite3  # this also runs regression-tests.nobackend and pdnsutil test-algorithms
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: lmdb
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: bind
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: geoip
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: lua2
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: tinydns
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: authpy
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: godbc_sqlite3
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+          - backend: godbc_mssql
+            image: mcr.microsoft.com/mssql/server:2017-GA-ubuntu
+            env:
+              ACCEPT_EULA: Y
+              SA_PASSWORD: 'SAsa12%%'
+            ports:
+              - 1433:1433
+          - backend: ldap
+            image: powerdns/ldap-regress:1.2.4-1
+            env:
+              LDAP_LOG_LEVEL: 0
+              CONTAINER_LOG_LEVEL: 4
+            ports:
+              - 389:389
+          - backend: geoip_mmdb
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+      fail-fast: false
+    services:
+      database:
+        image: ${{ matrix.image }}
+        env: ${{ matrix.env }}
+        ports: ${{ matrix.ports }}
+        # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
+        options: >-
+          --restart always
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      - name: Fetch the binaries
+        uses: actions/download-artifact@v3
+        with:
+          name: pdns-auth
+          path: /opt/pdns-auth
+      # FIXME: install recursor for backends that have ALIAS
+      - run: inv install-clang-runtime
+      - run: inv install-auth-test-deps -b ${{ matrix.backend }}
+      - run: inv test-auth-backend -b ${{ matrix.backend }}
+
 #   test-ixfrdist:
 #     needs: build-auth
 #     runs-on: ubuntu-20.04
@@ -422,36 +422,36 @@ jobs:
 #       - run: inv install-clang-runtime
 #       - run: inv install-rec-bulk-deps
 #       - run: inv test-bulk-recursor ${{ matrix.threads }} ${{ matrix.mthreads }} ${{ matrix.shards }}
-
-  test-dnsdist-regression:
-    needs: build-dnsdist
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        sanitizers: [ubsan+asan, tsan]
-    container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
-      env:
-        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
-        # Disabling (intercept_send=0) the custom send wrappers for ASAN and TSAN because they cause the tools to report a race that doesn't exist on actual implementations of send(), see https://github.com/google/sanitizers/issues/1498
-        ASAN_OPTIONS: detect_leaks=0:intercept_send=0
-        TSAN_OPTIONS: "halt_on_error=1:intercept_send=0:suppressions=${{ github.workspace }}/pdns/dnsdistdist/dnsdist-tsan.supp"
-        # IncludeDir tests are disabled because of a weird interaction between TSAN and these tests which ever only happens on GH actions
-        SKIP_INCLUDEDIR_TESTS: yes
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 5
-          submodules: recursive
-      - name: Fetch the binaries
-        uses: actions/download-artifact@v3
-        with:
-          name: dnsdist-full-${{ matrix.sanitizers }}
-          path: /opt/dnsdist
-      - run: inv install-clang-runtime
-      - run: inv install-dnsdist-test-deps
-      - run: inv test-dnsdist
-
+# 
+#   test-dnsdist-regression:
+#     needs: build-dnsdist
+#     runs-on: ubuntu-20.04
+#     strategy:
+#       matrix:
+#         sanitizers: [ubsan+asan, tsan]
+#     container:
+#       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+#       env:
+#         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
+#         # Disabling (intercept_send=0) the custom send wrappers for ASAN and TSAN because they cause the tools to report a race that doesn't exist on actual implementations of send(), see https://github.com/google/sanitizers/issues/1498
+#         ASAN_OPTIONS: detect_leaks=0:intercept_send=0
+#         TSAN_OPTIONS: "halt_on_error=1:intercept_send=0:suppressions=${{ github.workspace }}/pdns/dnsdistdist/dnsdist-tsan.supp"
+#         # IncludeDir tests are disabled because of a weird interaction between TSAN and these tests which ever only happens on GH actions
+#         SKIP_INCLUDEDIR_TESTS: yes
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#       - name: Fetch the binaries
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: dnsdist-full-${{ matrix.sanitizers }}
+#           path: /opt/dnsdist
+#       - run: inv install-clang-runtime
+#       - run: inv install-dnsdist-test-deps
+#       - run: inv test-dnsdist
+# 
 #   swagger-syntax-check:
 #     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
 #     runs-on: ubuntu-20.04

@@ -734,6 +734,7 @@ def test_auth_backend(c, backend):
         ci_auth_install_remotebackend_test_deps(c)
 
     if backend == 'authpy':
+        c.sudo(f'sh -c \'echo "{auth_backend_ip_addr} kerberos-server" | tee -a /etc/hosts\'')
         with c.cd('regression-tests.auth-py'):
             c.run(f'{pdns_auth_env_vars} WITHKERBEROS=YES ./runtests')
         return
@@ -769,7 +770,7 @@ def test_auth_backend(c, backend):
 
     if backend == 'gsqlite3':
         with c.cd('regression-tests.nobackend'):
-            c.run(f'{pdns_auth_env_vars} ./runtests')
+            c.run(f'{pdns_auth_env_vars} SKIP_IPV6_TESTS=y ./runtests')
         c.run('/opt/pdns-auth/bin/pdnsutil test-algorithms')
         return
 
