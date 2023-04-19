@@ -570,7 +570,7 @@ def ci_make_install(c):
     res = c.run('make install') # FIXME: this builds auth docs - again
 
 @task
-def add_auth_repo(c, dist_name='ubuntu', dist_release_name='focal', pdns_repo_version='44'):
+def add_auth_repo(c, dist_name, dist_release_name, pdns_repo_version):
     c.sudo('apt-get install -qq -y curl gnupg2')
     if pdns_repo_version == 'master':
         c.sudo('curl -s -o /etc/apt/trusted.gpg.d/pdns-repo.asc https://repo.powerdns.com/CBC8B383-pub.asc')
