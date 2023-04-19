@@ -340,6 +340,9 @@ jobs:
     strategy:
       matrix:
         sanitizers: [ubsan+asan, tsan]
+        dist_name: [debian]
+        dist_release_name: [bullseye]
+        pdns_repo_version: ['45']
     container:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       env:
@@ -358,7 +361,7 @@ jobs:
           path: /opt/pdns-recursor
       # - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
       - run: inv apt-fresh
-      - run: inv add-auth-repo  # FIXME: do we need this for rec API testing?
+      - run: inv add-auth-repo  ${{ matrix.dist_name }} ${{ matrix.dist_release_name }} ${{ matrix.pdns_repo_version }} # FIXME: do we need this for rec API testing?
       - run: inv install-clang-runtime
       - run: inv install-rec-test-deps
       - run: inv test-api recursor
