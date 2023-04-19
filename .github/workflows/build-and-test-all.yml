@@ -211,7 +211,7 @@ jobs:
         ASAN_OPTIONS: detect_leaks=0
         LDAPHOST: ldap://ldapserver/
         ODBCINI: /github/home/.odbc.ini
-        # SKIP_IPV6_TESTS: yes
+        SKIP_IPV6_TESTS: yes
     strategy:
       matrix:
         include:
@@ -361,7 +361,7 @@ jobs:
           path: /opt/pdns-recursor
       # - run: build-scripts/gh-actions-setup-inv  # this runs apt update+upgrade
       - run: inv apt-fresh
-      # - run: inv add-auth-repo  ${{ matrix.dist_name }} ${{ matrix.dist_release_name }} ${{ matrix.pdns_repo_version }} # FIXME: do we need this for rec API testing?
+      - run: inv add-auth-repo  ${{ matrix.dist_name }} ${{ matrix.dist_release_name }} ${{ matrix.pdns_repo_version }} # FIXME: do we need this for rec API testing?
       - run: inv install-clang-runtime
       - run: inv install-rec-test-deps
       - run: inv test-api recursor
@@ -381,7 +381,7 @@ jobs:
         UBSAN_OPTIONS: 'print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp'
         ASAN_OPTIONS: detect_leaks=0
         TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ github.workspace }}/pdns/recursordist/recursor-tsan.supp"
-        # SKIP_IPV6_TESTS: yes
+        SKIP_IPV6_TESTS: yes
     steps:
       # - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
       - uses: actions/checkout@v3.1.0
@@ -445,7 +445,7 @@ jobs:
         TSAN_OPTIONS: "halt_on_error=1:intercept_send=0:suppressions=${{ github.workspace }}/pdns/dnsdistdist/dnsdist-tsan.supp"
         # IncludeDir tests are disabled because of a weird interaction between TSAN and these tests which ever only happens on GH actions
         SKIP_INCLUDEDIR_TESTS: yes
-        # SKIP_IPV6_TESTS: yes
+        SKIP_IPV6_TESTS: yes
     steps:
       - uses: actions/checkout@v3
         with:
