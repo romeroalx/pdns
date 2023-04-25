@@ -3,19 +3,9 @@ set -ex
 cp -f ../regression-tests/zones/test.dyndns.orig ../regression-tests/zones/test.dyndns
 cp -f ../regression-tests/zones/sub.test.dyndns.orig ../regression-tests/zones/sub.test.dyndns
 
-if [ -n "${SKIP_IPV6_TESTS}" ]; then
-  cp -f counters/expected_result counters/expected_result.orig
-  cp -f counters/expected_result_no_ipv6 counters/expected_result
-fi
-
 export testsdir=$(pwd)
 ../regression-tests/runtests $1
 ../regression-tests/toxml
-
-if [ -n "${SKIP_IPV6_TESTS}" ]; then
-  cp -f counters/expected_result.orig counters/expected_result
-  rm -f counters/expected_result.orig
-fi
 
 failed_tests=`cat failed_tests | wc -l`
 if [ $failed_tests = 0 ];

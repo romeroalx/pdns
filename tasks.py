@@ -5,6 +5,8 @@ import os
 import sys
 import time
 
+auth_backend_ip_addr = os.environ.get('AUTH_BACKEND_IP_ADDR') if os.environ.get('AUTH_BACKEND_IP_ADDR') else "127.0.0.1"
+
 all_build_deps = [
     'ccache',
     'libboost-all-dev',
@@ -143,8 +145,6 @@ doc_deps_pdf = [
     'texlive-formats-extra',
     'texlive-latex-extra',
 ]
-
-auth_backend_ip_addr = "172.17.0.1"
 
 @task
 def apt_fresh(c):
@@ -589,7 +589,7 @@ def test_api(c, product, backend=''):
             c.run(f'PDNSRECURSOR=/opt/pdns-recursor/sbin/pdns_recursor ./runtests recursor {backend}')
     elif product == 'auth':
         with c.cd('regression-tests.api'):
-            c.run(f'PDNSSERVER=/opt/pdns-auth/sbin/pdns_server PDNSUTIL=/opt/pdns-auth/bin/pdnsutil SDIG=/opt/pdns-auth/bin/sdig MYSQL_HOST="{auth_backend_ip_addr}" PGHOST="{auth_backend_ip_addr}" PGPORT="5432" ./runtests authoritative {backend}')
+            c.run(f'PDNSSERVER=/opt/pdns-auth/sbin/pdns_server PDNSUTIL=/opt/pdns-auth/bin/pdnsutil SDIG=/opt/pdns-auth/bin/sdig MYSQL_HOST={auth_backend_ip_addr} PGHOST={auth_backend_ip_addr} PGPORT=5432 ./runtests authoritative {backend}')
     else:
         raise Failure('unknown product')
 
@@ -711,7 +711,7 @@ def setup_ldap_client(c):
 
 @task
 def test_auth_backend(c, backend):
-    pdns_auth_env_vars = f'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST={auth_backend_ip_addr} GMYSQL2HOST={auth_backend_ip_addr} MYSQL_HOST="{auth_backend_ip_addr}" PGHOST="{auth_backend_ip_addr}" PGPORT="5432"'
+    pdns_auth_env_vars = f'PDNS=/opt/pdns-auth/sbin/pdns_server PDNS2=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig NOTIFY=/opt/pdns-auth/bin/pdns_notify NSEC3DIG=/opt/pdns-auth/bin/nsec3dig SAXFR=/opt/pdns-auth/bin/saxfr ZONE2SQL=/opt/pdns-auth/bin/zone2sql ZONE2LDAP=/opt/pdns-auth/bin/zone2ldap ZONE2JSON=/opt/pdns-auth/bin/zone2json PDNSUTIL=/opt/pdns-auth/bin/pdnsutil PDNSCONTROL=/opt/pdns-auth/bin/pdns_control PDNSSERVER=/opt/pdns-auth/sbin/pdns_server SDIG=/opt/pdns-auth/bin/sdig GMYSQLHOST={auth_backend_ip_addr} GMYSQL2HOST={auth_backend_ip_addr} MYSQL_HOST={auth_backend_ip_addr} PGHOST={auth_backend_ip_addr} PGPORT=5432'
 
     if backend == 'remote':
         ci_auth_install_remotebackend_test_deps(c)
@@ -752,7 +752,10 @@ def test_auth_backend(c, backend):
             c.run(f'{pdns_auth_env_vars} ./start-test-stop 5300 {variant}')
 
     if backend == 'gsqlite3':
+        if os.environ.get('SKIP_IPV6_TESTS'):
+            pdns_auth_env_vars += ' context=noipv6'
         with c.cd('regression-tests.nobackend'):
+            c.run(f'echo {pdns_auth_env_vars}')
             c.run(f'{pdns_auth_env_vars} ./runtests')
         c.run('/opt/pdns-auth/bin/pdnsutil test-algorithms')
         return

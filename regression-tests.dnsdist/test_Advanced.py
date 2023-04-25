@@ -394,26 +394,28 @@ class TestAdvancedGetLocalAddressOnAnyBind(DNSDistTest):
         self.assertEqual(receivedQuery, query)
         self.assertEqual(receivedResponse, response)
 
-        # a bit more tricky, UDP-only IPv6
-        if not 'SKIP_IPV6_TESTS' in os.environ:
-          sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-          sock.settimeout(1.0)
-          sock.connect(('::1', self._dnsDistPort))
-          self._toResponderQueue.put(response, True, 1.0)
-          try:
-              data = query.to_wire()
-              sock.send(data)
-              (data, remote) = sock.recvfrom(4096)
-              self.assertEquals(remote[0], '::1')
-          except socket.timeout:
-              data = None
+        if 'SKIP_IPV6_TESTS' in os.environ:
+          return
 
-          self.assertTrue(data)
-          receivedResponse = dns.message.from_wire(data)
-          receivedQuery = self._fromResponderQueue.get(True, 1.0)
-          receivedQuery.id = query.id
-          self.assertEqual(receivedQuery, query)
-          self.assertEqual(receivedResponse, response)
+        # a bit more tricky, UDP-only IPv6        
+        sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        sock.settimeout(1.0)
+        sock.connect(('::1', self._dnsDistPort))
+        self._toResponderQueue.put(response, True, 1.0)
+        try:
+            data = query.to_wire()
+            sock.send(data)
+            (data, remote) = sock.recvfrom(4096)
+            self.assertEquals(remote[0], '::1')
+        except socket.timeout:
+            data = None
+
+        self.assertTrue(data)
+        receivedResponse = dns.message.from_wire(data)
+        receivedQuery = self._fromResponderQueue.get(True, 1.0)
+        receivedQuery.id = query.id
+        self.assertEqual(receivedQuery, query)
+        self.assertEqual(receivedResponse, response)
 
 class TestAdvancedGetLocalAddressOnNonDefaultLoopbackBind(DNSDistTest):
     # this one is tricky: on the loopback interface we cannot harvest the destination

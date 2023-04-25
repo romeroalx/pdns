@@ -160,6 +160,7 @@ jobs:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
         ASAN_OPTIONS: detect_leaks=0
         TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ github.workspace }}/pdns/dnsdistdist/dnsdist-tsan.supp"
+        AUTH_BACKEND_IP_ADDR: "172.17.0.1"
     strategy:
       matrix:
         include:
@@ -211,6 +212,7 @@ jobs:
         ASAN_OPTIONS: detect_leaks=0
         LDAPHOST: ldap://ldapserver/
         ODBCINI: /github/home/.odbc.ini
+        AUTH_BACKEND_IP_ADDR: "172.17.0.1"
         SKIP_IPV6_TESTS: yes
     strategy:
       matrix:
