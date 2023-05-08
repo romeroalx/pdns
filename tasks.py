@@ -161,7 +161,8 @@ def install_clang(c):
 
 @task
 def install_clang_tidy_tools(c):
-    c.sudo('apt-get -qq -y --no-install-recommends install clang-tidy-12 clang-tools-12 bear python-yaml')
+    c.sudo('apt-get -qq -y --no-install-recommends install clang-tidy-12 clang-tools-12 bear python3-yaml')
+    c.sudo('python3 -m pip install gitpython unidiff')
 
 @task
 def install_clang_runtime(c):
@@ -536,7 +537,7 @@ def ci_auth_make(c):
 def ci_auth_make_bear(c):
     # Needed for clang-tidy -line-filter vs project structure shenanigans
     with c.cd('pdns'):
-        c.run('bear --append make -j8 -k V=1 -C ..')
+        c.run('bear -- make -j8 -k V=1 -C ..')
 
 @task
 def ci_rec_make(c):
@@ -545,7 +546,7 @@ def ci_rec_make(c):
 @task
 def ci_rec_make_bear(c):
     # Assumed to be running under ./pdns/recursordist/
-    c.run('bear --append make -j8 -k V=1')
+    c.run('bear -- make -j8 -k V=1')
 
 @task
 def ci_dnsdist_make(c):
@@ -554,7 +555,7 @@ def ci_dnsdist_make(c):
 @task
 def ci_dnsdist_make_bear(c):
     # Assumed to be running under ./pdns/dnsdistdist/
-    c.run('bear --append make -j4 -k V=1')
+    c.run('bear -- make -j4 -k V=1')
 
 @task
 def ci_auth_install_remotebackend_test_deps(c):
