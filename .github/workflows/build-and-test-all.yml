@@ -17,7 +17,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         ASAN_OPTIONS: detect_leaks=0
         FUZZING_TARGETS: yes
@@ -91,7 +91,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         ASAN_OPTIONS: detect_leaks=0
         SANITIZERS: ${{ matrix.sanitizers }}
@@ -166,7 +166,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         ASAN_OPTIONS: detect_leaks=0
         SANITIZERS: ${{ matrix.sanitizers }}
@@ -233,7 +233,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
         ASAN_OPTIONS: detect_leaks=0
@@ -287,7 +287,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
         ASAN_OPTIONS: detect_leaks=0
@@ -402,7 +402,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
         ASAN_OPTIONS: detect_leaks=0
@@ -433,7 +433,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
         ASAN_OPTIONS: detect_leaks=0
@@ -468,7 +468,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         UBSAN_OPTIONS: 'print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp'
         ASAN_OPTIONS: detect_leaks=0
@@ -506,7 +506,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         UBSAN_OPTIONS: 'print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp'
         ASAN_OPTIONS: detect_leaks=0
@@ -535,7 +535,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
       env:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
         # Disabling (intercept_send=0) the custom send wrappers for ASAN and TSAN because they cause the tools to report a race that doesn't exist on actual implementations of send(), see https://github.com/google/sanitizers/issues/1498
@@ -565,7 +565,7 @@ jobs:
       image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
+        password: ${{ secrets.PACKAGE_REPO_TOKEN }}
     steps:
       - uses: actions/checkout@v3
         with:
