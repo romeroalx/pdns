@@ -7,6 +7,8 @@ import time
 
 auth_backend_ip_addr = os.environ.get('AUTH_BACKEND_IP_ADDR') if os.environ.get('AUTH_BACKEND_IP_ADDR') else "127.0.0.1"
 
+clang_version = '13' 
+
 all_build_deps = [
     'ccache',
     'libboost-all-dev',
@@ -155,24 +157,24 @@ def apt_fresh(c):
 @task
 def install_clang(c):
     """
-    install clang-12 and llvm-12
+    install clang and llvm
     """
-    c.sudo('apt-get -qq -y --no-install-recommends install clang-12 llvm-12')
+    c.sudo(f'apt-get -qq -y --no-install-recommends install clang-{clang_version} llvm-{clang_version}')
 
 @task
 def install_clang_tidy_tools(c):
-    c.sudo('apt-get -qq -y --no-install-recommends install clang-tidy-12 clang-tools-12 bear python3-yaml')
+    c.sudo(f'apt-get -qq -y --no-install-recommends install clang-tidy-{clang_version} clang-tools-{clang_version} bear python3-yaml')
 
 @task
 def install_clang_runtime(c):
     # this gives us the symbolizer, for symbols in asan/ubsan traces
-    c.sudo('apt-get -qq -y --no-install-recommends install clang-12')
+    c.sudo(f'apt-get -qq -y --no-install-recommends install clang-{clang_version}')
 
 def install_libdecaf(c, product):
     c.run('git clone https://git.code.sf.net/p/ed448goldilocks/code /tmp/libdecaf')
     with c.cd('/tmp/libdecaf'):
         c.run('git checkout 41f349')
-        c.run('CC=clang-12 CXX=clang-12 '
+        c.run(f'CC=clang-{clang_version} CXX=clang-{clang_version} '
               'cmake -B build '
               '-DCMAKE_INSTALL_PREFIX=/usr/local '
               '-DCMAKE_INSTALL_LIBDIR=lib '
@@ -364,8 +366,8 @@ def get_base_configure_cmd():
         f'CFLAGS="{get_cflags()}"',
         f'CXXFLAGS="{get_cxxflags()}"',
         './configure',
-        "CC='clang-12'",
-        "CXX='clang++-12'",
+        f"CC='clang-{clang_version}'",
+        f"CXX='clang++-{clang_version}'",
         "--enable-option-checking=fatal",
         "--enable-systemd",
         "--with-libsodium",
@@ -512,13 +514,13 @@ def ci_dnsdist_configure(c, features):
     sanitizers = ' '.join('--enable-'+x for x in os.getenv('SANITIZERS').split('+')) if os.getenv('SANITIZERS') != '' else ''
     cflags = '-O1 -Werror=vla -Werror=shadow -Wformat=2 -Werror=format-security -Werror=string-plus-int'
     cxxflags = cflags + ' -Wp,-D_GLIBCXX_ASSERTIONS ' + additional_flags
-    res = c.run('''CFLAGS="%s" \
+    res = c.run(f'''CFLAGS="%s" \
                    CXXFLAGS="%s" \
-                   AR=llvm-ar-12 \
-                   RANLIB=llvm-ranlib-12 \
+                   AR=llvm-ar-{clang_version} \
+                   RANLIB=llvm-ranlib-{clang_version} \
                    ./configure \
-                     CC='clang-12' \
-                     CXX='clang++-12' \
+                     CC='clang-{clang_version}' \
+                     CXX='clang++-{clang_version}' \
                      --enable-option-checking=fatal \
                      --enable-fortify-source=auto \
                      --enable-auto-var-init=pattern \
@@ -822,7 +824,7 @@ def install_coverity_tools(c, project):
 
 @task
 def coverity_clang_configure(c):
-    c.sudo('/usr/local/bin/cov-configure --template --comptype clangcc --compiler clang++-12')
+    c.sudo(f'/usr/local/bin/cov-configure --template --comptype clangcc --compiler clang++-{clang_version}')
 
 @task
 def coverity_make(c):
