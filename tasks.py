@@ -7,7 +7,7 @@ import time
 
 auth_backend_ip_addr = os.environ.get('AUTH_BACKEND_IP_ADDR') if os.environ.get('AUTH_BACKEND_IP_ADDR') else "127.0.0.1"
 
-clang_version = '13' 
+clang_version = os.environ.get('CLANG_VERSION') if os.environ.get('CLANG_VERSION') else "12"
 
 all_build_deps = [
     'ccache',

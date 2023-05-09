@@ -10,7 +10,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 env:
-  clang_version: '13'
+  CLANG_VERSION: '13'
 
 jobs:
   build-auth:
