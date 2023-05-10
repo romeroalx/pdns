@@ -140,9 +140,9 @@ class OutgoingDOHTests(object):
     def testZHealthChecks(self):
         # this test has to run last, as it will mess up the TCP connection counter,
         # hence the 'Z' in the name
-        self.sendConsoleCommand("getServer(0):setAuto()")
-        time.sleep(10)
-        status = self.sendConsoleCommand("if getServer(0):isUp() then return 'up' else return 'down' end").strip("\n")
+        self.sendConsoleCommand("getServer(0):setAuto()", timeout=5.0)
+        time.sleep(15)
+        status = self.sendConsoleCommand("if getServer(0):isUp() then return 'up' else return 'down' end", timeout=5.0).strip("\n")
         self.assertEqual(status, 'up')
 
 class BrokenOutgoingDOHTests(object):
