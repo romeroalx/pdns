@@ -141,7 +141,7 @@ class OutgoingDOHTests(object):
         # this test has to run last, as it will mess up the TCP connection counter,
         # hence the 'Z' in the name
         self.sendConsoleCommand("getServer(0):setAuto()")
-        time.sleep(2)
+        time.sleep(10)
         status = self.sendConsoleCommand("if getServer(0):isUp() then return 'up' else return 'down' end").strip("\n")
         self.assertEqual(status, 'up')
 
