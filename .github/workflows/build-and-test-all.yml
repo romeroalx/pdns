@@ -197,6 +197,9 @@ jobs:
           path: ~/.ccache
           key: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-
+      - run: pwd
+      - run: ls
+      - run: echo "${{ github.workspace }}"
       - run: inv install-clang-tidy-tools
       - run: inv ci-autoconf
       - run: inv ci-dnsdist-configure ${{ matrix.features }}
