@@ -31,7 +31,7 @@ jobs:
         UNIT_TESTS: yes
         PDNS_TEST_NO_IPV6: yes
     outputs:
-      clang-tidy-auth-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
+      clang-tidy-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -106,7 +106,7 @@ jobs:
       run:
         working-directory: ./pdns/recursordist/
     outputs:
-      clang-tidy-recursor-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
+      clang-tidy-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -181,7 +181,7 @@ jobs:
       run:
         working-directory: ./pdns/dnsdistdist/
     outputs:
-      clang-tidy-dnsdist-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
+      clang-tidy-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -584,10 +584,16 @@ jobs:
     runs-on: ubuntu-20.04
     name: Check whether clang-tidy succeeded
     steps:
-    - run: |
-        if [ ${{ needs.build-auth.outputs.clang-tidy-auth-failed }} != 0 -o ${{ needs.build-dnsdist.outputs.clang-tidy-dnsdist-failed }} != 0 -o ${{ needs.build-recursor.outputs.clang-tidy-recursor-failed }} != 0 ]; then
-          exit 1
-        fi
+      - run: |
+          if [ "x${{ needs.build-auth.outputs.clang-tidy-failed }}" != "x" -a "${{ needs.build-auth.outputs.clang-tidy-failed }}" != "0" ]; then
+            exit 1
+          fi
+          if [ "x${{ needs.build-dnsdist.outputs.clang-tidy-failed }}" != "x" -a "${{ needs.build-dnsdist.outputs.clang-tidy-failed }}" != "0" ]; then
+            exit 1
+          fi
+          if [ "x${{needs.build-recursor.outputs.clang-tidy-failed}}" != "x" -a "${{needs.build-recursor.outputs.clang-tidy-failed}}" != "0" ]; then
+            exit 1
+          fi
 
   collect:
     needs:
