@@ -21,7 +21,7 @@ jobs:
     name: build auth
     runs-on: ubuntu-20.04
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -95,7 +95,7 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -170,7 +170,7 @@ jobs:
           - sanitizers: tsan
             features: least
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -237,7 +237,7 @@ jobs:
     needs: build-auth
     runs-on: ubuntu-20.04
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -291,7 +291,7 @@ jobs:
     needs: build-auth
     runs-on: ubuntu-20.04
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -406,7 +406,7 @@ jobs:
     needs: build-auth
     runs-on: ubuntu-20.04
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -437,7 +437,7 @@ jobs:
         dist_release_name: [bullseye]
         pdns_repo_version: ['45']
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -472,7 +472,7 @@ jobs:
         dist_release_name: [bullseye]
         pdns_repo_version: ['45']
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -510,7 +510,7 @@ jobs:
         mthreads: [2048]
         shards: [1, 2, 1024]
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -539,7 +539,7 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -569,7 +569,7 @@ jobs:
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ubuntu-20.04
     container:
-      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
+      image: "${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}"
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
