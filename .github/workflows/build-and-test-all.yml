@@ -173,7 +173,7 @@ jobs:
       env:
         ASAN_OPTIONS: detect_leaks=0
         SANITIZERS: ${{ matrix.sanitizers }}
-        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp"
+        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=$GITHUB_WORKSPACE/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
     defaults:
       run:
@@ -201,6 +201,8 @@ jobs:
       - run: ls
       - run: env
       - run: echo "${{ github.workspace }}"
+      - run: echo "${{ toJSON(github) }}"
+      - run: echo "$UBSAN_OPTIONS"
       - run: inv install-clang-tidy-tools
       - run: inv ci-autoconf
       - run: inv ci-dnsdist-configure ${{ matrix.features }}
