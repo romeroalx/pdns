@@ -10,6 +10,8 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 env:
+  PDNS_BASE_IMAGE_NAME: ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base
+  PDNS_BASE_IMAGE_TAG: '11'
   CLANG_VERSION: '13'
   # github.workspace variable points to the Runner home folder. Container home folder defined below.
   REPO_HOME: '/__w/pdns/pdns'
@@ -19,7 +21,7 @@ jobs:
     name: build auth
     runs-on: ubuntu-20.04
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -93,7 +95,7 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -168,7 +170,7 @@ jobs:
           - sanitizers: tsan
             features: least
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -235,7 +237,7 @@ jobs:
     needs: build-auth
     runs-on: ubuntu-20.04
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -289,7 +291,7 @@ jobs:
     needs: build-auth
     runs-on: ubuntu-20.04
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -404,7 +406,7 @@ jobs:
     needs: build-auth
     runs-on: ubuntu-20.04
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -435,7 +437,7 @@ jobs:
         dist_release_name: [bullseye]
         pdns_repo_version: ['45']
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -470,7 +472,7 @@ jobs:
         dist_release_name: [bullseye]
         pdns_repo_version: ['45']
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -508,7 +510,7 @@ jobs:
         mthreads: [2048]
         shards: [1, 2, 1024]
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -537,7 +539,7 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
@@ -567,7 +569,7 @@ jobs:
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ubuntu-20.04
     container:
-      image: 'ghcr.io/romeroalx/debian-image-from-ci/debian-pdns-base:11'
+      image: ${{ env.PDNS_BASE_IMAGE_NAME }}:${{ env.PDNS_BASE_IMAGE_TAG }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.PACKAGE_REPO_TOKEN }}
