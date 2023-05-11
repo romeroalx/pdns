@@ -11,6 +11,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 env:
   CLANG_VERSION: '13'
+  # github.workspace variable points to the Runner home folder. Container home folder defined below.
   REPO_HOME: '/__w/pdns/pdns'
 
 jobs:
