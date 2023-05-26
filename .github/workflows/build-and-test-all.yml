@@ -2,7 +2,7 @@
 name: 'Build and test everything'
 
 on:
-  # push:
+  push:
   pull_request:
   schedule:
     - cron: '0 22 * * 3'
@@ -28,7 +28,7 @@ jobs:
         SANITIZERS: asan+ubsan
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
-        PDNS_TEST_NO_IPV6: yes
+        # PDNS_TEST_NO_IPV6: yes
     outputs:
       clang-tidy-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
     steps:
@@ -282,7 +282,7 @@ jobs:
         LDAPHOST: ldap://ldapserver/
         ODBCINI: /github/home/.odbc.ini
         AUTH_BACKEND_IP_ADDR: "172.17.0.1"
-        SKIP_IPV6_TESTS: yes
+        # SKIP_IPV6_TESTS: yes
     strategy:
       matrix:
         include:
@@ -514,7 +514,7 @@ jobs:
         TSAN_OPTIONS: "halt_on_error=1:intercept_send=0:suppressions=${{ env.REPO_HOME }}/pdns/dnsdistdist/dnsdist-tsan.supp"
         # IncludeDir tests are disabled because of a weird interaction between TSAN and these tests which ever only happens on GH actions
         SKIP_INCLUDEDIR_TESTS: yes
-        SKIP_IPV6_TESTS: yes
+        # SKIP_IPV6_TESTS: yes
     steps:
       - uses: actions/checkout@v3
         with:
