@@ -29,6 +29,7 @@ jobs:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
         # PDNS_TEST_NO_IPV6: yes
+      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     outputs:
       clang-tidy-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
     steps:
@@ -283,6 +284,7 @@ jobs:
         ODBCINI: /github/home/.odbc.ini
         AUTH_BACKEND_IP_ADDR: "172.17.0.1"
         # SKIP_IPV6_TESTS: yes
+      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     strategy:
       matrix:
         include:
@@ -452,6 +454,7 @@ jobs:
         ASAN_OPTIONS: detect_leaks=0
         TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ env.REPO_HOME }}/pdns/recursordist/recursor-tsan.supp"
         SKIP_IPV6_TESTS: yes
+      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     steps:
       # - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
       - uses: actions/checkout@v3.1.0
@@ -515,6 +518,7 @@ jobs:
         # IncludeDir tests are disabled because of a weird interaction between TSAN and these tests which ever only happens on GH actions
         SKIP_INCLUDEDIR_TESTS: yes
         # SKIP_IPV6_TESTS: yes
+      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     steps:
       - uses: actions/checkout@v3
         with:
