@@ -453,6 +453,7 @@ jobs:
         UBSAN_OPTIONS: 'print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp'
         ASAN_OPTIONS: detect_leaks=0
         TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ env.REPO_HOME }}/pdns/recursordist/recursor-tsan.supp"
+        PDNS_DEBUG: "YES"
         # SKIP_IPV6_TESTS: yes
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     steps:
@@ -467,6 +468,7 @@ jobs:
           name: pdns-recursor-${{ matrix.sanitizers }}
           path: /opt/pdns-recursor
       - run: inv apt-fresh
+      - run: env
       - run: inv add-auth-repo ${{ matrix.dist_name }} ${{ matrix.dist_release_name }} ${{ matrix.pdns_repo_version }}
       - run: inv install-clang-runtime
       - run: inv install-rec-test-deps
