@@ -2,6 +2,7 @@
 name: Test triggering specific package build
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       product:
