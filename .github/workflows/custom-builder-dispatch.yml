@@ -43,7 +43,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-build-packages:
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@test-issue-provenance
+    uses: romeroalx/pdns/.github/workflows/custom-build-packages.yml@test-issue-provenance
     with:
       product: ${{ github.event.inputs.product }}
       os: ${{ github.event.inputs.os }}
