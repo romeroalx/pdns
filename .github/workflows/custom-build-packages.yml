@@ -142,8 +142,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - run: "echo '${{ needs.prepare.outputs.oslist }}'"
+      - run: sudo apt-get update && sudo apt-get -y install jo
+      - run: echo "oslist=$(jo -a ${{ inputs.os }})"
       - run: "echo '${{toJSON(needs.build.outputs)}}'"
-      - run: "for i in '${{ needs.prepare.outputs.oslist }}'; do echo $i; done"
+      - run: "for i in $(jo -a ${{ inputs.os }}); do echo $i; done"
       # - run: "for i in '${{fromJson(needs.prepare.outputs.oslist)}}'; do echo '${{ needs.build.outputs[format('pkghashes-{0}', $i)] }}'; done"
 
 
