@@ -141,9 +141,9 @@ jobs:
     name: generate OS list
     runs-on: ubuntu-20.04
     steps:
-      - run: "echo '${{fromJson(needs.prepare.outputs.oslist)}}'"
-      - run: "echo '${{fromJson(needs.build.outputs)}}'"
-      - run: "for i in '${{fromJson(needs.prepare.outputs.oslist)}}'; do echo $i; done"
+      - run: "echo '${{toJSON(needs.prepare.outputs.oslist)}}'"
+      - run: "echo '${{toJSON(needs.build.outputs)}}'"
+      - run: "for i in '${{toJSON(needs.prepare.outputs.oslist)}}'; do echo $i; done"
       # - run: "for i in '${{fromJson(needs.prepare.outputs.oslist)}}'; do echo '${{ needs.build.outputs[format('pkghashes-{0}', $i)] }}'; done"
 
 
