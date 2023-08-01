@@ -66,17 +66,17 @@ jobs:
       matrix:
         os: ${{fromJson(needs.prepare.outputs.oslist)}}
       fail-fast: false
-    # outputs:
-    #   version: ${{ steps.getversion.outputs.version }}
-    #   pkghashes-el-7: ${{ steps.pkghashes.outputs.pkghashes-el-7 }}
-    #   pkghashes-el-8: ${{ steps.pkghashes.outputs.pkghashes-el-8 }}
-    #   pkghashes-el-9: ${{ steps.pkghashes.outputs.pkghashes-el-9 }}
-    #   pkghashes-debian-buster: ${{ steps.pkghashes.outputs.pkghashes-debian-buster }}
-    #   pkghashes-debian-bullseye: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye }}
-    #   pkghashes-debian-bookworm: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm }}
-    #   pkghashes-ubuntu-focal: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal }}
-    #   pkghashes-ubuntu-jammy: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy }}
-    #   srchashes: ${{ steps.srchashes.outputs.srchashes }}
+    outputs:
+      version: ${{ steps.getversion.outputs.version }}
+      pkghashes-el-7: ${{ steps.pkghashes.outputs.pkghashes-el-7 }}
+      pkghashes-el-8: ${{ steps.pkghashes.outputs.pkghashes-el-8 }}
+      pkghashes-el-9: ${{ steps.pkghashes.outputs.pkghashes-el-9 }}
+      pkghashes-debian-buster: ${{ steps.pkghashes.outputs.pkghashes-debian-buster }}
+      pkghashes-debian-bullseye: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye }}
+      pkghashes-debian-bookworm: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm }}
+      pkghashes-ubuntu-focal: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal }}
+      pkghashes-ubuntu-jammy: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy }}
+      srchashes: ${{ steps.srchashes.outputs.srchashes }}
     steps:
       - uses: actions/checkout@v3
         with:
