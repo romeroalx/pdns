@@ -14,7 +14,7 @@ jobs:
     uses: romeroalx/pdns/.github/workflows/custom-build-packages.yml@test-issue-provenance
     with:
       product: authoritative
-      os: 'el-8 el-7 debian-bookworm ubuntu-focal'
+      os: 'el-8 el-7'
       ref: master
       is_release: 'NO'
     # secrets:
