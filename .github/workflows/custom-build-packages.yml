@@ -142,16 +142,8 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - run: echo "${{ needs.prepare.outputs.oslist }}"
-      - run: sudo apt-get update && sudo apt-get -y install jo
-      - run: echo "oslist=$(jo -a ${{ inputs.os }})"
-      - run: echo "${{ inputs.os }}"  | tee /tmp/os-outputs.yml
-      - run: cat /tmp/build-outputs.yml
-      - run: cat /tmp/build-outputs.yml | jq .srchashes
-      - run: cat /tmp/build-outputs.yml | jq .srchashes2
-      - run: if [[ -n $(cat /tmp/build-outputs.yml | jq .srchashes) ]]; then echo ok; else echo nok; fi
-      - run: if [[ -n $(cat /tmp/build-outputs.yml | jq .srchashes2) ]]; then echo ok; else echo nok; fi
-      - run: "for i in $(jo -a ${{ inputs.os }}); do echo $i; done"
-      - run: "for i in ${{ inputs.os }}; do echo pkghashes-$i | tee -a /tmp/os-inputs.yml; done"
+      # - run: sudo apt-get update && sudo apt-get -y install jo
+      # - run: echo "oslist=$(jo -a ${{ inputs.os }})"
       - name: Get list of jobs in the workflow
         run: echo '${{ toJSON(needs.build.outputs) }}' | jq 'keys[]' | tee /tmp/build-outputs.txt
       - run: for i in ${{ inputs.os }}; do echo "\"pkghashes-$i\""; done | sort | tee /tmp/os-inputs.txt; echo "\"srchashes\"" | tee -a /tmp/os-inputs.txt
