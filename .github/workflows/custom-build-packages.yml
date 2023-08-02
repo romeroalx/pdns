@@ -148,6 +148,8 @@ jobs:
       - name: Get list of jobs in the workflow
         run: echo '${{ toJSON(needs.build.outputs) }}' | tee /tmp/build-outputs.yml
       - run: cat /tmp/build-outputs.yml
+      - run: cat /tmp/build-outputs.yml | jq .srchashes
+      - run: cat /tmp/build-outputs.yml | jq .srchashes2
       - run: if [[ -n $(cat /tmp/build-outputs.yml | jq .srchashes) ]]; then echo ok; else echo nok; fi
       - run: if [[ -n $(cat /tmp/build-outputs.yml | jq .srchashes2) ]]; then echo ok; else echo nok; fi
       - run: "for i in $(jo -a ${{ inputs.os }}); do echo $i; done"
