@@ -141,7 +141,8 @@ jobs:
     name: generate OS list
     runs-on: ubuntu-20.04
     steps:
-      - run: echo '${{ fromJson(needs.prepare.outputs.oslist) }}'
+      - run: echo '${{ toJSON(needs.prepare.outputs.oslist) }}'
+      - run: echo '${{ toJSON(needs.prepare.outputs.oslist) }}' | jq '.[]'
       - name: Get list of outputs from build jobs
         run: echo '${{ toJSON(needs.build.outputs) }}' | jq 'keys[]' | grep -v version | tee /tmp/build-outputs.txt
       - name: Get list of OS inputs
