@@ -146,7 +146,7 @@ jobs:
       - run: echo "oslist=$(jo -a ${{ inputs.os }})"
       - run: echo "${{ inputs.os }}"
       - name: Get list of jobs in the workflow
-        run: echo '${{ toJSON(needs.build.outputs) }} | tee /tmp/build-outputs.yml"
+        run: echo '${{ toJSON(needs.build.outputs) }}' | tee /tmp/build-outputs.yml"
       - run: cat /tmp/build-outputs.yml
       - run: if [[ -n $(cat /tmp/build-outputs.yml) | jq .srchashes) ]]; then echo ok; else echo nok; fi
       - run: if [[ -n $(cat /tmp/build-outputs.yml) | jq .srchashes2) ]]; then echo ok; else echo nok; fi
