@@ -137,21 +137,17 @@ jobs:
     #       rsync -4rlptD built_pkgs/* "$RSYNCTARGET"
 
   check-hashes:
-    needs: build
+    needs: [prepare, build]
     name: generate OS list
     runs-on: ubuntu-20.04
     steps:
-      - run: echo "${{ needs.prepare.outputs.oslist }}"
-      # - run: sudo apt-get update && sudo apt-get -y install jo
-      # - run: echo "oslist=$(jo -a ${{ inputs.os }})"
-      - name: Get list of jobs in the workflow
-        run: echo '${{ toJSON(needs.build.outputs) }}' | jq 'keys[]' | tee /tmp/build-outputs.txt
-      - run: for i in ${{ inputs.os }}; do echo "\"pkghashes-$i\""; done | sort | tee /tmp/os-inputs.txt; echo "\"srchashes\"" | tee -a /tmp/os-inputs.txt
-      - run: cat /tmp/os-inputs.txt
-      - run: cat /tmp/build-outputs.txt
-      - name: Fail if there is a job missing on the needs list
+      - run: echo '${{ fromJson(needs.prepare.outputs.oslist) }}'
+      - name: Get list of outputs from build jobs
+        run: echo '${{ toJSON(needs.build.outputs) }}' | jq 'keys[]' | grep -v version | tee /tmp/build-outputs.txt
+      - name: Get list of OS inputs
+        run: for i in ${{ inputs.os }}; do echo "\"pkghashes-$i\""; done | sort | tee /tmp/os-inputs.txt; echo "\"srchashes\"" | tee -a /tmp/os-inputs.txt
+      - name: Fail if there is a hash missing
         run: "if ! diff -q /tmp/build-outputs.txt /tmp/os-inputs.txt; then exit 1; fi"
-      # - run: "for i in '${{fromJson(needs.prepare.outputs.oslist)}}'; do echo '${{ needs.build.outputs[format('pkghashes-{0}', $i)] }}'; done"
 
 
   # provenance-pkgs:
