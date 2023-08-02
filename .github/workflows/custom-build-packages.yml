@@ -84,44 +84,44 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.ref }}
       # this builds packages and runs our unit tests (make check)
-      # - run: IS_RELEASE=${{ inputs.is_release}} builder/build.sh -v -m ${{ inputs.product }} ${{ matrix.os }}
-      # - name: Get version number
-      #   run: |
-      #     echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
-      #   id: getversion
-      # - name: Upload packages as GH artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ${{ inputs.product }}-${{ matrix.os }}-${{ steps.getversion.outputs.version }}
-      #     path: built_pkgs/
-      #     retention-days: 7
-      # - name: Normalize package name
-      #   id: normalize-name
-      #   run: |
-      #     if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
-      #       echo "normalized-package-name=pdns" >> $GITHUB_OUTPUT
-      #     elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
-      #       echo "normalized-package-name=pdns-recursor" >> $GITHUB_OUTPUT
-      #     else
-      #       echo "normalized-package-name=${{ inputs.product }}" >> $GITHUB_OUTPUT
-      #     fi
-      # 
-      # - name: Extract packages from the tarball
-      #   # so we get provenance for individual packages (and the JSON package manifests from the builder)
-      #   id: extract
-      #   run: |
-      #     mkdir -m 700 -p ./packages/
-      #     tar xvf ./built_pkgs/*/*/${{ steps.normalize-name.outputs.normalized-package-name }}-${{ steps.getversion.outputs.version }}-${{ matrix.os }}.tar.bz2 -C ./packages/ --transform='s/.*\///'
+      - run: IS_RELEASE=${{ inputs.is_release}} builder/build.sh -v -m ${{ inputs.product }} ${{ matrix.os }}
+      - name: Get version number
+        run: |
+          echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
+        id: getversion
+      - name: Upload packages as GH artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.product }}-${{ matrix.os }}-${{ steps.getversion.outputs.version }}
+          path: built_pkgs/
+          retention-days: 7
+      - name: Normalize package name
+        id: normalize-name
+        run: |
+          if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
+            echo "normalized-package-name=pdns" >> $GITHUB_OUTPUT
+          elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
+            echo "normalized-package-name=pdns-recursor" >> $GITHUB_OUTPUT
+          else
+            echo "normalized-package-name=${{ inputs.product }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract packages from the tarball
+        # so we get provenance for individual packages (and the JSON package manifests from the builder)
+        id: extract
+        run: |
+          mkdir -m 700 -p ./packages/
+          tar xvf ./built_pkgs/*/*/${{ steps.normalize-name.outputs.normalized-package-name }}-${{ steps.getversion.outputs.version }}-${{ matrix.os }}.tar.bz2 -C ./packages/ --transform='s/.*\///'
       - name: Generate package hashes for provenance
         shell: bash
         id: pkghashes
         run: |
-          echo "pkghashes-${{ matrix.os }}=1234" >> $GITHUB_OUTPUT
+          echo "pkghashes-${{ matrix.os }}=$(sha256sum ./packages/*.rpm ./packages/*.deb ./packages/*.json | base64 -w0)" >> $GITHUB_OUTPUT
       - name: Generate source hash for provenance
         shell: bash
         id: srchashes
         run: |
-          echo "srchashes=1234" >> $GITHUB_OUTPUT
+          echo "srchashes=$(sha256sum ./built_pkgs/*/*/${{ steps.normalize-name.outputs.normalized-package-name }}-${{ steps.getversion.outputs.version }}.tar.bz2 ./packages/*.json | base64 -w0)" >> $GITHUB_OUTPUT
     #   - name: Upload packages to downloads.powerdns.com
     #     env:
     #       SSHKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
@@ -138,7 +138,7 @@ jobs:
 
   check-hashes:
     needs: build
-    name: Check all hashes were created
+    name: Check if hashes were created for all targets
     runs-on: ubuntu-20.04
     steps:
       - name: Get list of outputs from build jobs
@@ -149,34 +149,34 @@ jobs:
         run: if ! diff -q /tmp/build-outputs.txt /tmp/os-inputs.txt; then exit 1; fi
 
 
-  # provenance-pkgs:
-  #   needs: [prepare, build, check-hashes]
-  #   name: Generate provenance for ${{ inputs.product }} (${{ inputs.ref }}) for ${{ matrix.os }}
-  #   strategy:
-  #     matrix:
-  #       os: ${{fromJson(needs.prepare.outputs.oslist)}}
-  #   permissions:
-  #     actions: read   # To read the workflow path.
-  #     id-token: write # To sign the provenance.
-  #     contents: write # To be able to upload assets as release artifacts
-  #   uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.4.0
-  #   with:
-  #     base64-subjects: "${{ needs.build.outputs[format('pkghashes-{0}', matrix.os)] }}"
-  #     upload-assets: false
-  #     provenance-name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-${{ matrix.os}}.intoto.jsonl"
+  provenance-pkgs:
+    needs: [prepare, build, check-hashes]
+    name: Generate provenance for ${{ inputs.product }} (${{ inputs.ref }}) for ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ${{fromJson(needs.prepare.outputs.oslist)}}
+    permissions:
+      actions: read   # To read the workflow path.
+      id-token: write # To sign the provenance.
+      contents: write # To be able to upload assets as release artifacts
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.4.0
+    with:
+      base64-subjects: "${{ needs.build.outputs[format('pkghashes-{0}', matrix.os)] }}"
+      upload-assets: false
+      provenance-name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-${{ matrix.os}}.intoto.jsonl"
 
-  # provenance-src:
-  #   needs: [build, check-hashes]
-  #   name: Generate provenance for ${{ inputs.product }} (${{ inputs.ref }}) source tarball
-  #   permissions:
-  #     actions: read   # To read the workflow path.
-  #     id-token: write # To sign the provenance.
-  #     contents: write # To be able to upload assets as release artifacts
-  #   uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.4.0
-  #   with:
-  #     base64-subjects: "${{ needs.build.outputs.srchashes }}"
-  #     upload-assets: false
-  #     provenance-name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-src.intoto.jsonl"
+  provenance-src:
+    needs: [build, check-hashes]
+    name: Generate provenance for ${{ inputs.product }} (${{ inputs.ref }}) source tarball
+    permissions:
+      actions: read   # To read the workflow path.
+      id-token: write # To sign the provenance.
+      contents: write # To be able to upload assets as release artifacts
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.4.0
+    with:
+      base64-subjects: "${{ needs.build.outputs.srchashes }}"
+      upload-assets: false
+      provenance-name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-src.intoto.jsonl"
 
   # upload-provenance:
   #   needs: [prepare, build, provenance-src, provenance-pkgs]
