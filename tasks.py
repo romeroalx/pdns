@@ -587,6 +587,10 @@ def ci_dnsdist_run_unit_tests(c):
       raise UnexpectedExit(res)
 
 @task
+def ci_make_distdir(c):
+    res = c.run('make distdir')
+
+@task
 def ci_make_install(c):
     res = c.run('make install') # FIXME: this builds auth docs - again
 
