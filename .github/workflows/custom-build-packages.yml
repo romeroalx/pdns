@@ -139,7 +139,7 @@ jobs:
   check-hashes:
     needs: build
     name: Check if hashes were created for all targets
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Get list of outputs from build jobs
         run: echo '${{ toJSON(needs.build.outputs) }}' | jq 'keys[]' | grep -v version | tee /tmp/build-outputs.txt
