@@ -1605,6 +1605,7 @@ fuzz_target_proxyprotocol_LDADD = $(fuzz_targets_libs)
 fuzz_target_dnsdistcache_SOURCES = \
 	channel.hh channel.cc \
 	dns.cc dns.hh \
+	dnsdistdist/dnsdist-systemd.cc dnsdistdist/dnsdist-systemd.hh \
 	dnsdist-cache.cc dnsdist-cache.hh \
 	dnsdist.cc dnsdist.hh \
 	dnsdist-dynbpf.cc dnsdist-dynbpf.hh \
@@ -1614,7 +1615,6 @@ fuzz_target_dnsdistcache_SOURCES = \
 	sholder.hh \
 	dnsdist-snmp.cc dnsdist-snmp.hh \
 	snmp-agent.cc snmp-agent.hh \
-	dnsdistdist/dnsdist-systemd.cc dnsdistdist/dnsdist-systemd.hh \
 	dnsdist-ecs.cc dnsdist-ecs.hh \
 	standalone_fuzz_target_runner.cc \
 	dnsdist-idstate.hh \
