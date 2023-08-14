@@ -1606,7 +1606,17 @@ fuzz_target_dnsdistcache_SOURCES = \
 	channel.hh channel.cc \
 	dns.cc dns.hh \
 	dnsdist-cache.cc dnsdist-cache.hh \
+	dnsdist.cc dnsdist.hh \
+	dnsdist-dynbpf.cc dnsdist-dynbpf.hh \
+	dnscrypt.cc dnscrypt.hh \
+	dnsdist-lbpolicies.hh \
+	bpf-filter.cc bpf-filter.hh \
+	sholder.hh \
+	dnsdist-snmp.cc dnsdist-snmp.hh \
+	snmp-agent.cc snmp-agent.hh \
+	dnsdistdist/dnsdist-systemd.cc dnsdistdist/dnsdist-systemd.hh \
 	dnsdist-ecs.cc dnsdist-ecs.hh \
+	standalone_fuzz_target_runner.cc \
 	dnsdist-idstate.hh \
 	dnsdist-protocols.cc dnsdist-protocols.hh \
 	dnslabeltext.cc \
