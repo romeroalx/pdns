@@ -54,10 +54,10 @@ jobs:
       - name: Reconfigure
         working-directory: pdns-0.0.0-git1
         run: inv ci-auth-configure
-      - run: ls -alrsth pdns/
+      - run: ls -alrsth pdns-0.0.0-git1/pdns/
       - name: Make
         working-directory: pdns-0.0.0-git1
-        run: inv ci-auth-make-beat
+        run: inv ci-auth-make-bear
       - run: ln -s ../clang-tidy.full .clang-tidy
         working-directory: pdns-0.0.0-git1
       - name: Run clang-tidy
