@@ -2,7 +2,7 @@
 name: 'Build and test everything'
 
 on:
-  # push:
+  push:
   pull_request:
   schedule:
     - cron: '0 22 * * 3'
@@ -443,8 +443,8 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
         dist_name: [debian]
-        dist_release_name: [bullseye]
-        pdns_repo_version: ['45']
+        dist_release_name: [bookworm]
+        pdns_repo_version: ['48']
     container:
       image: ghcr.io/romeroalx/base-pdns-ci-image/debian-bookworm-pdns-base:master
       env:
@@ -485,7 +485,7 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
         dist_name: [debian]
-        dist_release_name: [bullseye]
+        dist_release_name: [bookworm]
         pdns_repo_version: ['48']
     container:
       image: ghcr.io/romeroalx/base-pdns-ci-image/debian-bookworm-pdns-base:master
