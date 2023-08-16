@@ -300,7 +300,7 @@ def install_dnsdist_build_deps(c):
 
 @task
 def ci_autoconf(c):
-    c.run('BUILDER_VERSION=0.0.0-git1 autoreconf -vfi')
+    c.run('autoreconf -vfi')
 
 @task
 def ci_docs_build(c):

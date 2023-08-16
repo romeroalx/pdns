@@ -1606,16 +1606,7 @@ fuzz_target_dnsdistcache_SOURCES = \
 	channel.hh channel.cc \
 	dns.cc dns.hh \
 	dnsdist-cache.cc dnsdist-cache.hh \
-	dnsdist.hh \
-	dnsdist-dynbpf.hh \
-	dnscrypt.hh \
-	dnsdist-lbpolicies.hh \
-	bpf-filter.hh \
-	sholder.hh \
-	dnsdist-snmp.hh \
-	snmp-agent.hh \
 	dnsdist-ecs.cc dnsdist-ecs.hh \
-	standalone_fuzz_target_runner.cc \
 	dnsdist-idstate.hh \
 	dnsdist-protocols.cc dnsdist-protocols.hh \
 	dnslabeltext.cc \
