@@ -25,7 +25,7 @@ jobs:
       image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
       env:
         ASAN_OPTIONS: detect_leaks=0
-        FUZZING_TARGETS: no
+        FUZZING_TARGETS: yes
         SANITIZERS: asan+ubsan
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
