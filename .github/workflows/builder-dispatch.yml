@@ -42,9 +42,9 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-build-packages:
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@dev-build-pkgs-ubuntu-22
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@dev-build-pkgs-ubuntu-22
     with:
-      product: ${{ github.event.inputs.product }}
+      product: authoritative
       os: ${{ github.event.inputs.os }}
       ref: ${{ github.event.inputs.ref }}
       is_release: ${{ github.event.inputs.is_release }}
