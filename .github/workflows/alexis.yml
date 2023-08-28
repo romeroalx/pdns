@@ -16,7 +16,7 @@ jobs:
   test-auth-backend:
     runs-on: ubuntu-20.04
     container:
-      image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
+      image: ghcr.io/romeroalx/base-pdns-ci-image/debian-11-pdns-base:test
       env:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
         ASAN_OPTIONS: detect_leaks=0
@@ -53,15 +53,12 @@ jobs:
       - run: inv install-clang-runtime
       - run: inv install-auth-test-deps -b ${{ matrix.backend }}
       - run: cat /etc/group
-      - run: sudo docker-compose ps
+      - run: docker-compose ps
       - run: ls -al /var/run/docker.sock
       - run: ls -n /var/run/docker.sock
-      # - run: sudo usermod -aG systemd-network runner
       - run: docker -v
       - run: docker run ubuntu:latest bash
-      - run: sudo usermod -aG docker runner
       - run: docker-compose ps
       - run: docker-compose ps
       - run: docker-compose -v
       - run: docker -v
-      - run: docker run ubuntu:latest bash
