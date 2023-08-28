@@ -48,6 +48,10 @@ jobs:
       # FIXME: install recursor for backends that have ALIAS
       - run: inv install-clang-runtime
       - run: inv install-auth-test-deps -b ${{ matrix.backend }}
+      - run: docker -v
+      - run: docker run ubuntu:latest bash
+      - run: sudo usermod -aG docker $USER
+      - run: docker-compose ps
       - run: docker-compose ps
       - run: docker-compose -v
       - run: docker -v
