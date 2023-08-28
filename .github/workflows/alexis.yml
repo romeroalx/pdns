@@ -49,10 +49,10 @@ jobs:
       - run: inv install-clang-runtime
       - run: inv install-auth-test-deps -b ${{ matrix.backend }}
       - run: sudo docker-compose ps
-      - run: sudo usermod -aG docker $USER
+      - run: sudo usermod -aG docker runner
       - run: docker -v
       - run: docker run ubuntu:latest bash
-      - run: sudo usermod -aG docker $USER
+      - run: sudo usermod -aG docker runner
       - run: docker-compose ps
       - run: docker-compose ps
       - run: docker-compose -v
