@@ -15,7 +15,7 @@ on:
         description: OSes to build for, space separated
         type: string
         # please remember to update build-packages.yml as well
-        default: >
+        default: >-
           el-7
           el-8
           el-9
@@ -42,7 +42,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-build-packages:
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@check-fix-provenance
     with:
       product: ${{ github.event.inputs.product }}
       os: ${{ github.event.inputs.os }}
