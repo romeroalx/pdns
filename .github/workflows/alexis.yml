@@ -46,8 +46,11 @@ jobs:
           fetch-depth: 5
           submodules: recursive
       # FIXME: install recursor for backends that have ALIAS
+      - run: id
+      - run: cat /etc/group
       - run: inv install-clang-runtime
       - run: inv install-auth-test-deps -b ${{ matrix.backend }}
+      - run: cat /etc/group
       - run: sudo docker-compose ps
       - run: sudo usermod -aG docker runner
       - run: docker -v
