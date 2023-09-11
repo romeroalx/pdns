@@ -40,20 +40,22 @@ jobs:
         with:
           fetch-depth: 5
           submodules: recursive
+      - run: pwd; ls
+        working-directory: ../
       - name: get timestamp for cache
         id: get-stamp
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
+        working-directory: ../
       - run: mkdir -p ~/.ccache
+        working-directory: ../
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3
         with:
           path: ~/.ccache
           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-
-      - run: pwd; ls
-        working-directory: ../
       - run: inv ci-autoconf
         working-directory: ../
       - run: inv ci-auth-configure
