@@ -40,17 +40,14 @@ jobs:
         with:
           fetch-depth: 5
           submodules: recursive
-      - run: pwd; ls
-        working-directory: ./
       - name: get timestamp for cache
         id: get-stamp
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
-        # Override default working-directory to GITHUB_WORKSPACE folder
-        working-directory: ./
+        working-directory: .
       - run: mkdir -p ~/.ccache
-        working-directory: ./
+        working-directory: .
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3
         with:
@@ -58,11 +55,11 @@ jobs:
           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-
       - run: inv ci-autoconf
-        working-directory: ./
+        working-directory: .
       - run: inv ci-auth-configure
-        working-directory: ./
+        working-directory: .
       - run: inv ci-make-distdir
-        working-directory: ./
+        working-directory: .
       - run: inv ci-auth-configure
       - run: inv ci-auth-make-bear  # This runs under pdns-$BUILDER_VERSION/pdns/
       - run: ln -s ../clang-tidy.full .clang-tidy
@@ -127,10 +124,9 @@ jobs:
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
-        # Override default working-directory to GITHUB_WORKSPACE folder
-        working-directory: ./
+        working-directory: .
       - run: mkdir -p ~/.ccache
-        working-directory: ./
+        working-directory: .
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3
         with:
@@ -208,10 +204,9 @@ jobs:
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
-        # Override default working-directory to GITHUB_WORKSPACE folder
-        working-directory: ./
+        working-directory: .
       - run: mkdir -p ~/.ccache
-        working-directory: ./
+        working-directory: .
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3
         with:
