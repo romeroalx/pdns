@@ -41,15 +41,16 @@ jobs:
           fetch-depth: 5
           submodules: recursive
       - run: pwd; ls
-        working-directory: ../
+        working-directory: ./
       - name: get timestamp for cache
         id: get-stamp
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
-        working-directory: ../
+        # Override default working-directory to GITHUB_WORKSPACE folder
+        working-directory: ./
       - run: mkdir -p ~/.ccache
-        working-directory: ../
+        working-directory: ./
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3
         with:
@@ -57,19 +58,19 @@ jobs:
           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-
       - run: inv ci-autoconf
-        working-directory: ../
+        working-directory: ./
       - run: inv ci-auth-configure
-        working-directory: ../
+        working-directory: ./
       - run: inv ci-make-distdir
-        working-directory: ../
+        working-directory: ./
       - run: inv ci-auth-configure
       - run: inv ci-auth-make-bear  # This runs under pdns-$BUILDER_VERSION/pdns/
       - run: ln -s ../clang-tidy.full .clang-tidy
       - name: Run clang-tidy
-        working-directory: ./pdns
+        working-directory: ./pdns-${{ env.BUILDER_VERSION }}/pdns
         run: git diff -U0 HEAD^..HEAD | python3 ../../.github/scripts/git-filter.py | python3 /usr/bin/clang-tidy-diff-${CLANG_VERSION}.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p2 -export-fixes clang-tidy-auth.yml
       - name: Print clang-tidy fixes YAML
-        working-directory: ./pdns
+        working-directory: ./pdns-${{ env.BUILDER_VERSION }}/pdns
         shell: bash
         run: |
           if [ -f clang-tidy-auth.yml ]; then
@@ -78,7 +79,7 @@ jobs:
       - name: Result annotations
         id: clang-tidy-annotations
         shell: bash
-        working-directory: ./pdns
+        working-directory: ./pdns-${{ env.BUILDER_VERSION }}/pdns
         run: |
           if [ -f clang-tidy-auth.yml ]; then
             set +e
@@ -126,7 +127,10 @@ jobs:
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
+        # Override default working-directory to GITHUB_WORKSPACE folder
+        working-directory: ./
       - run: mkdir -p ~/.ccache
+        working-directory: ./
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3
         with:
@@ -134,11 +138,11 @@ jobs:
           key: recursor-${{ matrix.sanitizers }}-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: recursor-${{ matrix.sanitizers }}-ccache-
       - run: inv ci-autoconf
-        working-directory: ../
+        working-directory: ./pdns/recursordist/
       - run: inv ci-rec-configure
-        working-directory: ../
+        working-directory: ./pdns/recursordist/
       - run: inv ci-make-distdir
-        working-directory: ../
+        working-directory: ./pdns/recursordist/
       - run: inv ci-rec-configure
       - run: inv ci-rec-make-bear
       - run: ln -s ../../../.clang-tidy.full .clang-tidy
@@ -204,7 +208,10 @@ jobs:
         run: |
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
+        # Override default working-directory to GITHUB_WORKSPACE folder
+        working-directory: ./
       - run: mkdir -p ~/.ccache
+        working-directory: ./
       - name: let GitHub cache our ccache data
         uses: actions/cache@v3
         with:
@@ -212,11 +219,11 @@ jobs:
           key: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-
       - run: inv ci-autoconf
-        working-directory: ../
+        working-directory: ./pdns/dnsdistdist/
       - run: inv ci-dnsdist-configure ${{ matrix.features }}
-        working-directory: ../
+        working-directory: ./pdns/dnsdistdist/
       - run: inv ci-make-distdir
-        working-directory: ../
+        working-directory: ./pdns/dnsdistdist/
       - run: inv ci-dnsdist-configure ${{ matrix.features }}
       - run: inv ci-dnsdist-make-bear
       - run: ln -s ../../../.clang-tidy.full .clang-tidy
