@@ -30,6 +30,9 @@ jobs:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
+    defaults:
+      run:
+        working-directory: ./pdns-${{ env.BUILDER_VERSION }}
     outputs:
       clang-tidy-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
     steps:
@@ -49,20 +52,22 @@ jobs:
           path: ~/.ccache
           key: auth-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-
+      - run: pwd; ls
+        working-directory: ../
       - run: inv ci-autoconf
+        working-directory: ../
       - run: inv ci-auth-configure
+        working-directory: ../
       - run: inv ci-make-distdir
+        working-directory: ../
       - run: inv ci-auth-configure
-        working-directory: pdns-${{ env.BUILDER_VERSION }}
       - run: inv ci-auth-make-bear  # This runs under pdns-$BUILDER_VERSION/pdns/
-        working-directory: pdns-${{ env.BUILDER_VERSION }}
       - run: ln -s ../clang-tidy.full .clang-tidy
-        working-directory: pdns-${{ env.BUILDER_VERSION }}
       - name: Run clang-tidy
-        working-directory: pdns-${{ env.BUILDER_VERSION }}/pdns
+        working-directory: ./pdns
         run: git diff -U0 HEAD^..HEAD | python3 ../../.github/scripts/git-filter.py | python3 /usr/bin/clang-tidy-diff-${CLANG_VERSION}.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p2 -export-fixes clang-tidy-auth.yml
       - name: Print clang-tidy fixes YAML
-        working-directory: pdns-${{ env.BUILDER_VERSION }}/pdns
+        working-directory: ./pdns
         shell: bash
         run: |
           if [ -f clang-tidy-auth.yml ]; then
@@ -71,7 +76,7 @@ jobs:
       - name: Result annotations
         id: clang-tidy-annotations
         shell: bash
-        working-directory: pdns-${{ env.BUILDER_VERSION }}/pdns
+        working-directory: ./pdns
         run: |
           if [ -f clang-tidy-auth.yml ]; then
             set +e
@@ -79,11 +84,8 @@ jobs:
             echo "failed=$?" >> $GITHUB_OUTPUT
           fi
       - run: inv ci-auth-install-remotebackend-test-deps
-        working-directory: pdns-${{ env.BUILDER_VERSION }}
       - run: inv ci-auth-run-unit-tests
-        working-directory: pdns-${{ env.BUILDER_VERSION }}
       - run: inv ci-make-install
-        working-directory: pdns-${{ env.BUILDER_VERSION }}
       - run: ccache -s
       - name: Store the binaries
         uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
@@ -109,7 +111,7 @@ jobs:
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     defaults:
       run:
-        working-directory: ./pdns/recursordist/
+        working-directory: ./pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
     outputs:
       clang-tidy-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
     steps:
@@ -130,24 +132,22 @@ jobs:
           key: recursor-${{ matrix.sanitizers }}-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: recursor-${{ matrix.sanitizers }}-ccache-
       - run: inv ci-autoconf
+        working-directory: ../
       - run: inv ci-rec-configure
+        working-directory: ../
       - run: inv ci-make-distdir
+        working-directory: ../
       - run: inv ci-rec-configure
-        working-directory: pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
       - run: inv ci-rec-make-bear
-        working-directory: pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
       - run: ln -s ../../../.clang-tidy.full .clang-tidy
-        working-directory: pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
       - name: Run clang-tidy
         run: git diff -U0 HEAD^..HEAD | python3 ../../../.github/scripts/git-filter.py | python3 /usr/bin/clang-tidy-diff-${CLANG_VERSION}.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p3 -export-fixes clang-tidy-rec.yml
-        working-directory: pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
       - name: Print clang-tidy fixes YAML
         shell: bash
         run: |
           if [ -f clang-tidy-rec.yml ]; then
             cat clang-tidy-rec.yml
           fi
-        working-directory: pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
       - name: Result annotations
         id: clang-tidy-annotations
         shell: bash
@@ -157,11 +157,8 @@ jobs:
             python ../../../.github/scripts/clang-tidy.py --fixes-file clang-tidy-rec.yml
             echo "failed=$?" >> $GITHUB_OUTPUT
           fi
-        working-directory: pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
       - run: inv ci-rec-run-unit-tests
-        working-directory: pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
       - run: inv ci-make-install
-        working-directory: pdns/recursordist/pdns-recursor-${{ env.BUILDER_VERSION }}
       - run: ccache -s
       - name: Store the binaries
         uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
@@ -192,7 +189,7 @@ jobs:
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     defaults:
       run:
-        working-directory: ./pdns/dnsdistdist/
+        working-directory: ./pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
     outputs:
       clang-tidy-failed: ${{ steps.clang-tidy-annotations.outputs.failed }}
     steps:
@@ -213,24 +210,22 @@ jobs:
           key: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: dnsdist-${{ matrix.features }}-${{ matrix.sanitizers }}-ccache-
       - run: inv ci-autoconf
+        working-directory: ../
       - run: inv ci-dnsdist-configure ${{ matrix.features }}
+        working-directory: ../
       - run: inv ci-make-distdir
+        working-directory: ../
       - run: inv ci-dnsdist-configure ${{ matrix.features }}
-        working-directory: pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
       - run: inv ci-dnsdist-make-bear
-        working-directory: pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
       - run: ln -s ../../../.clang-tidy.full .clang-tidy
-        working-directory: pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
       - name: Run clang-tidy
         run: git diff -U0 HEAD^..HEAD | python3 ../../../.github/scripts/git-filter.py | python3 /usr/bin/clang-tidy-diff-${CLANG_VERSION}.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p3 -export-fixes clang-tidy-dnsdist.yml
-        working-directory: pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
       - name: Print clang-tidy fixes YAML
         shell: bash
         run: |
           if [ -f clang-tidy-dnsdist.yml ]; then
             cat clang-tidy-dnsdist.yml
           fi
-        working-directory: pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
       - name: Result annotations
         id: clang-tidy-annotations
         shell: bash
@@ -240,11 +235,8 @@ jobs:
             python ../../../.github/scripts/clang-tidy.py --fixes-file clang-tidy-dnsdist.yml
             echo "failed=$?" >> $GITHUB_OUTPUT
           fi
-        working-directory: pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
       - run: inv ci-dnsdist-run-unit-tests
-        working-directory: pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
       - run: inv ci-make-install
-        working-directory: pdns/dnsdistdist/dnsdist-${{ env.BUILDER_VERSION }}
       - run: ccache -s
       - name: Store the binaries
         uses: actions/upload-artifact@v3 # this takes 30 seconds, maybe we want to tar
