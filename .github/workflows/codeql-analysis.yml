@@ -1,7 +1,6 @@
 name: "CodeQL and clang-tidy"
 
 on:
-  push:
   pull_request:
   schedule:
     - cron: '0 22 * * 2'
