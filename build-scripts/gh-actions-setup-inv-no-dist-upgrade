@@ -6,7 +6,11 @@ EOF
 "
 sudo chmod 755 /usr/sbin/policy-rc.d
 sudo apt-get update
+<<<<<<< HEAD
 sudo apt-get -qq -y --no-install-recommends install python3-pip
 sudo pip3 install git+https://github.com/pyinvoke/invoke@faa5728a6f76199a3da1750ed952e7efee17c1da
 sudo pip3 install gitpython
 sudo pip3 install unidiff
+=======
+sudo apt-get -qq -y --no-install-recommends install python3-pip python3-invoke
+>>>>>>> 1db16d817 (removed unused pip pkgs from gh-actions-setup. removed azure apt reference)
