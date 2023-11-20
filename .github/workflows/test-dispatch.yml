@@ -1,0 +1,39 @@
+---
+name: Test options
+
+on:
+  push: # only for testing purposes. remove before creating the pull request
+  workflow_dispatch:
+
+permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+  actions: read
+  contents: read
+
+env:
+  VAR1: ''
+  VAR2: rel/auth-4.8.x
+
+jobs:
+  build1:
+    name: TEST 1
+    # on a ubuntu-20.04 VM
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 5
+          submodules: recursive
+          ref: ${{ env.VAR1 || github.ref_name }}
+      - run: echo '${{ env.VAR1 || github.ref_name }}'
+
+  build2:
+    name: TEST 2
+    # on a ubuntu-20.04 VM
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 5
+          submodules: recursive
+          ref: ${{ env.VAR2 || github.ref_name }}
+      - run: echo '${{ env.VAR2 || github.ref_name }}'
