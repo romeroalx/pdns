@@ -1,5 +1,5 @@
 ---
-name: Trigger build-and-test-all workflow for different products/releases
+name: Trigger build-and-test-all workflow for different branches
 
 on:
   push: # only for testing purposes. remove before creating the pull request

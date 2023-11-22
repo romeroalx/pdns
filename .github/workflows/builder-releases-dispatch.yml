@@ -1,0 +1,61 @@
+---
+name: Trigger builder workflow for different branches
+
+on:
+  push: # only for testing purposes. remove before creating the pull request
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'
+
+permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+  actions: read
+  contents: read
+
+jobs:
+  call-builder-auth-48:
+    name: Call builder rel/auth-4.8.x
+    uses: romeroalx/pdns/.github/workflows/builder.yml@auth-4.8.x-workflow-call
+    with:
+      branch-name: auth-4.8.x-workflow-call
+
+  call-builder-auth-47:
+    name: Call builder rel/auth-4.7.x
+    uses: romeroalx/pdns/.github/workflows/builder.yml@rel/auth-4.7.x-workflow-call
+    with:
+      branch-name: rel/auth-4.7.x-workflow-call
+
+  call-builder-auth-46:
+    name: Call builder rel/auth-4.6.x
+    uses: romeroalx/pdns/.github/workflows/builder.yml@rel/auth-4.6.x-workflow-call
+    with:
+      branch-name: rel/auth-4.6.x-workflow-call
+
+  call-builder-rec-49:
+    name: Call builder rel/rec-4.9.x
+    uses: romeroalx/pdns/.github/workflows/builder.yml@rel/rec-4.9.x-workflow-call
+    with:
+      branch-name: rel/rec-4.9.x-workflow-call
+
+  call-builder-rec-48:
+    name: Call builder rel/rec-4.8.x
+    uses: romeroalx/pdns/.github/workflows/builder.yml@rel/rec-4.8.x-workflow-call
+    with:
+      branch-name: rel/rec-4.8.x-workflow-call
+
+  call-builder-rec-47:
+    name: Call builder rel/rec-4.7.x
+    uses: romeroalx/pdns/.github/workflows/builder.yml@rel/rec-4.7.x-workflow-call
+    with:
+      branch-name: rel/rec-4.7.x-workflow-call
+
+  call-builder-dnsdist-18:
+    name: Call builder rel/dnsdist-1.8.x
+    uses: romeroalx/pdns/.github/workflows/builder.yml@rel/dnsdist-1.8.x-workflow-call
+    with:
+      branch-name: rel/dnsdist-1.8.x-workflow-call
+
+  call-builder-dnsdist-17:
+    name: Call builder rel/dnsdist-1.7.x
+    uses: romeroalx/pdns/.github/workflows/builder.yml@rel/dnsdist-1.7.x-workflow-call
+    with:
+      branch-name: rel/dnsdist-1.7.x-workflow-call
