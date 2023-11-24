@@ -47,10 +47,9 @@ jobs:
         run: |
           echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
         id: getversion
-      - run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
       - name: Upload packages
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.product }}-${{ matrix.os }}-${{ steps.getversion.outputs.version }}-${{ env.normalized-branch-name }}
+          name: ${{ matrix.product }}-${{ matrix.os }}-${{ steps.getversion.outputs.version }}
           path: built_pkgs/
           retention-days: 7

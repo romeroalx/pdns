@@ -20,15 +20,15 @@ jobs:
 
   call-build-and-test-all-auth-47:
     name: Call build-and-test-all rel/auth-4.7.x
-    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/auth-4.7.x-workflow-call
+    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/auth-4.7.x-wc
     with:
-      branch-name: rel/auth-4.7.x-workflow-call
+      branch-name: rel/auth-4.7.x-wc
 
   call-build-and-test-all-auth-46:
     name: Call build-and-test-all rel/auth-4.6.x
-    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/auth-4.6.x-workflow-call
+    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/auth-4.6.x-wc
     with:
-      branch-name: rel/auth-4.6.x-workflow-call
+      branch-name: rel/auth-4.6.x-wc
 
   call-build-and-test-all-rec-49:
     name: Call build-and-test-all rel/rec-4.9.x
@@ -38,15 +38,15 @@ jobs:
 
   call-build-and-test-all-rec-48:
     name: Call build-and-test-all rel/rec-4.8.x
-    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/rec-4.8.x-workflow-call
+    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/rec-4.8.x-wc
     with:
-      branch-name: rel/rec-4.8.x-workflow-call
+      branch-name: rel/rec-4.8.x-wc
 
   call-build-and-test-all-rec-47:
     name: Call build-and-test-all rel/rec-4.7.x
-    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/rec-4.7.x-workflow-call
+    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/rec-4.7.x-wc
     with:
-      branch-name: rel/rec-4.7.x-workflow-call
+      branch-name: rel/rec-4.7.x-wc
 
   call-build-and-test-all-dnsdist-18:
     name: Call build-and-test-all rel/dnsdist-1.8.x
@@ -56,6 +56,6 @@ jobs:
 
   call-build-and-test-all-dnsdist-17:
     name: Call build-and-test-all rel/dnsdist-1.7.x
-    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/dnsdist-1.7.x-workflow-call
+    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@rel/dnsdist-1.7.x-wc
     with:
-      branch-name: rel/dnsdist-1.7.x-workflow-call
+      branch-name: rel/dnsdist-1.7.x-wc
