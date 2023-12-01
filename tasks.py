@@ -675,7 +675,8 @@ backend_regress_tests = dict(
         'bind-dnssec-nsec3-both',
         'bind-dnssec-nsec3-optout-both',
         'bind-dnssec-nsec3-narrow',
-        'bind-dnssec-pkcs11'
+        'bind-dnssec-pkcs11',
+        'bind-hybrid-nsec3'
     ],
     geoip = [
         'geoip',
