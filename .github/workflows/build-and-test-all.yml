@@ -332,9 +332,11 @@ jobs:
             env: {}
             ports: []
           - backend: bind
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
+            image: mysql:5
+            env:
+              MYSQL_ALLOW_EMPTY_PASSWORD: 1
+            ports:
+            - 3306:3306
           - backend: geoip
             image: coscale/docker-sleep
             env: {}
