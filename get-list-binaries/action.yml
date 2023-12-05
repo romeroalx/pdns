@@ -31,11 +31,13 @@ inputs:
 runs:
   using: composite
   steps:
+    - run: mkdir -p $GITHUB_WORKSPACE/.tmp
+      shell: bash
     - uses: actions/checkout@v4
       with:
         fetch-depth: 1
         ref: master
-        path: /tmp/pdns
+        path: $GITHUB_WORKSPACE/.tmp/pdns
     - run: file -i --dereference $(find . -type f | grep -v "./.git/") | grep binary | grep -v "image/" | grep -v "inode/x-empty" | sort > ${{ inputs.output-file }}
       shell: bash
-      working-directory: /tmp/pdns
+      working-directory: $GITHUB_WORKSPACE/.tmp/pdns
