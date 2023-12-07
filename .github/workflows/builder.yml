@@ -2,8 +2,9 @@
 name: 'Test package building for specific distributions'
 
 on:
-  schedule:
-    - cron: '0 1 * * *'
+  push:
+  # schedule:
+  #   - cron: '0 1 * * *'
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
@@ -11,7 +12,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 jobs:
   build:
     name: build.sh
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
+    # if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
     # on a ubuntu-20.04 VM
     runs-on: ubuntu-20.04
     strategy:
@@ -24,6 +25,7 @@ jobs:
           - centos-9-stream
           - ubuntu-lunar
           - ubuntu-mantic
+          - ubuntu-noble
           - debian-bookworm
           - debian-trixie
           - amazon-2023
