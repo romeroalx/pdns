@@ -3,6 +3,7 @@ name: Trigger workflow builder for different releases
 
 on:
   workflow_dispatch:
+  push:
   schedule:
     - cron: '0 2 * * *'
 

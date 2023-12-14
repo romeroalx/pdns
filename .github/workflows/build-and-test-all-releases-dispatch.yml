@@ -3,6 +3,7 @@ name: Trigger workflow build-and-test-all for different releases
 
 on:
   workflow_dispatch:
+  push:
   schedule:
     - cron: '0 22 * * 4'
 
