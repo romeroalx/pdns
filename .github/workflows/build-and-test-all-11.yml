@@ -470,7 +470,7 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
         dist_name: [debian]
-        dist_release_name: [bookworm]
+        dist_release_name: [bullseye]
         pdns_repo_version: ['48']
     container:
       image: ghcr.io/romeroalx/base-pdns-ci-image/debian-11-pdns-base:master
@@ -514,7 +514,7 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
         dist_name: [debian]
-        dist_release_name: [bookworm]
+        dist_release_name: [bullseye]
         pdns_repo_version: ['48']
     container:
       image: ghcr.io/romeroalx/base-pdns-ci-image/debian-11-pdns-base:master
