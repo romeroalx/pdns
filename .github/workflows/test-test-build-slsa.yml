@@ -1,0 +1,30 @@
+---
+name: Build packages for tags
+
+on:
+  push:
+
+jobs:
+  call-build-packages-auth:
+    uses: PowerDNS/pdns/.github/workflows/test-build-slsa.yml@test-build-slsa
+    if: startsWith(github.ref_name, 'auth')
+    with:
+      is_release: 'YES'
+      product: 'authoritative'
+      ref: ${{ github.ref_name }}
+
+  call-build-packages-dnsdist:
+    uses: PowerDNS/pdns/.github/workflows/test-build-slsa.yml@test-build-slsa
+    if: startsWith(github.ref_name, 'dnsdist')
+    with:
+      is_release: 'YES'
+      product: 'dnsdist'
+      ref: ${{ github.ref_name }}
+
+  call-build-packages-rec:
+    uses: PowerDNS/pdns/.github/workflows/test-build-slsa.yml@test-build-slsa
+    if: startsWith(github.ref_name, 'rec')
+    with:
+      is_release: 'YES'
+      product: 'recursor'
+      ref: ${{ github.ref_name }}
