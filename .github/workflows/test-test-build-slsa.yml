@@ -8,7 +8,7 @@ jobs:
   call-build-packages-auth:
     uses: romeroalx/pdns/.github/workflows/test-build-slsa.yml@test-build-slsa
     with:
-      is_release: 'YES'
+      is_release: 'NO'
       product: 'authoritative'
       ref: ${{ github.ref_name }}
 
