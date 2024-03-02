@@ -12,16 +12,16 @@ jobs:
       product: 'authoritative'
       ref: ${{ github.ref_name }}
 
-#   call-build-packages-dnsdist:
-#     uses: romeroalx/pdns/.github/workflows/test-build-slsa.yml@test-build-slsa
-#     with:
-#       is_release: 'YES'
-#       product: 'dnsdist'
-#       ref: ${{ github.ref_name }}
-# 
-#   call-build-packages-rec:
-#     uses: romeroalx/pdns/.github/workflows/test-build-slsa.yml@test-build-slsa
-#     with:
-#       is_release: 'YES'
-#       product: 'recursor'
-#       ref: ${{ github.ref_name }}
+  call-build-packages-dnsdist:
+    uses: romeroalx/pdns/.github/workflows/test-build-slsa.yml@test-build-slsa
+    with:
+      is_release: 'NO'
+      product: 'dnsdist'
+      ref: ${{ github.ref_name }}
+
+  call-build-packages-rec:
+    uses: romeroalx/pdns/.github/workflows/test-build-slsa.yml@test-build-slsa
+    with:
+      is_release: 'NO'
+      product: 'recursor'
+      ref: ${{ github.ref_name }}
