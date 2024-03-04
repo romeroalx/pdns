@@ -12,9 +12,8 @@
       name: docker
       runs-on: macos-14
       steps:
-        - run: brew update
-        - run: brew install colima
-        - run: brew install docker
+        - run: brew update && brew upgrade
+        - run: brew install colima docker
         - run: colima start
         - run: docker ps
         - run: docker pull alpine:latest
