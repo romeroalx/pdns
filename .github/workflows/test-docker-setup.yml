@@ -16,11 +16,10 @@
         - run: ps -ef | grep -i Docker; echo
         - run: sudo hdiutil attach Docker.dmg
         - run: sudo /Volumes/Docker/Docker.app/Contents/MacOS/install --accept-license
-        - run: ps -ef | grep -i Docker; echo
-        - run: sleep 120
-        - run: ps -ef | grep -i Docker; echo
         - run: sudo hdiutil detach /Volumes/Docker
         - run: open /Applications/Docker.app
+        - run: ps -ef | grep -i Docker; echo
+        - run: sleep 120
         - run: ps -ef | grep -i Docker; echo
         - run: sudo ln -s /Users/runner/.docker/run/docker.sock /var/run/docker.sock
         - run: /Applications/Docker.app/Contents/Resources/bin/docker ps
