@@ -12,7 +12,11 @@
       name: docker
       runs-on: macos-14
       steps:
-        - run: brew install --cask --no-quarantine docker
-        - run: sudo /Applications/Docker.app/Contents/MacOS/install --accept-license  # DSSA not accepted.
-        - run: open /Applications/Docker.app --args --accept-license  # Unsupported with no effect; DSSA not accepted.
-        - run: docker container ls
+        - run: wget https://desktop.docker.com/mac/main/arm64/Docker.dmg
+        - run: sudo hdiutil attach Docker.dmg
+        - run: sudo /Volumes/Docker/Docker.app/Contents/MacOS/install --accept-license
+        - run: sudo hdiutil detach /Volumes/Docker
+        - run: open /Applications/Docker.app
+        - run: /Applications/Docker.app/Contents/Resources/bin/docker ps
+        - run: /Applications/Docker.app/Contents/Resources/bin/docker pull alpine:latest
+        - run: /Applications/Docker.app/Contents/Resources/bin/docker image ls
