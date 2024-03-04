@@ -12,6 +12,7 @@
       name: docker
       runs-on: macos-14
       steps:
+        - run: brew update
         - run: brew install colima
         - run: brew install docker
         - run: colima start

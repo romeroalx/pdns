@@ -33,6 +33,9 @@
             fetch-depth: 0  # for correct version numbers
             submodules: recursive
         # this builds packages and runs our unit test (make check)
+        - run: brew install colima
+        - run: brew install docker
+        - run: colima start
         - run: builder/build.sh -v -m ${{ matrix.product }} ${{ matrix.os }}
         - name: Get version number
           run: |
