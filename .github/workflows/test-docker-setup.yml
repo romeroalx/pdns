@@ -12,8 +12,8 @@
       name: docker
       runs-on: macos-14
       steps:
-        - run: sysctl kern.hv_support; echo
         - run: sysctl -a | grep -i arm
+        - run: sysctl -a | grep -i kern
         - run: wget https://desktop.docker.com/mac/main/arm64/139021/Docker.dmg
         - run: ps -ef | grep -i Docker; echo
         - run: sudo hdiutil attach Docker.dmg
