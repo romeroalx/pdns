@@ -1,0 +1,18 @@
+---
+  name: 'Test docker setup'
+  
+  on:
+    push:
+  
+  permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+    contents: read
+  
+  jobs:
+    docker:
+      name: docker
+      runs-on: macos-14
+      steps:
+        - run: brew install --cask --no-quarantine docker
+        - run: sudo /Applications/Docker.app/Contents/MacOS/install --accept-license  # DSSA not accepted.
+        - run: open /Applications/Docker.app --args --accept-license  # Unsupported with no effect; DSSA not accepted.
+        - run: docker container ls
