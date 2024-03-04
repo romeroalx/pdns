@@ -17,7 +17,7 @@
         - run: curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
         - run: brew install ./qemu.rb
         - run: brew link --overwrite qemu
-        # - run: colima delete
+        - run: colima delete -f
         - run: colima start
         - run: docker ps
         - run: docker pull alpine:latest
