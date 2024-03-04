@@ -19,6 +19,7 @@
         # - run: ls; brew install ./qemu.rb
         # - run: brew link qemu
         # - run: colima delete -f
+        - run: brew reinstall -f --force-bottle qemu
         - run: colima start --very-verbose
         - run: docker ps
         - run: docker pull alpine:latest
