@@ -17,22 +17,22 @@
         # - run: curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
         # - run: brew unlink qemu
         # - run: ls; brew install ./qemu.rb
-        # - run: brew link qemu
-        # - run: colima delete -f
-        - run: uname -m
-        - run: |
-            cat >entitlements.xml <<EOF
-            <?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            <dict>
-                <key>com.apple.security.hypervisor</key>
-                <true/>
-            </dict>
-            </plist>
-            EOF
-            
-            codesign --sign - --entitlements entitlements.xml --force /usr/local/bin/qemu-system-$(uname -m | sed -e s/arm64/aarch64/)
+        - run: brew uninstall qemu
+        - run: brew install --build-from-source qemu
+        # - run: uname -m
+        # - run: |
+        #     cat >entitlements.xml <<EOF
+        #     <?xml version="1.0" encoding="UTF-8"?>
+        #     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        #     <plist version="1.0">
+        #     <dict>
+        #         <key>com.apple.security.hypervisor</key>
+        #         <true/>
+        #     </dict>
+        #     </plist>
+        #     EOF
+        #     
+        #     codesign --sign - --entitlements entitlements.xml --force /usr/local/bin/qemu-system-$(uname -m | sed -e s/arm64/aarch64/)
 
         - run: colima start --very-verbose
         - run: docker ps
