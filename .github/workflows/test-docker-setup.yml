@@ -13,10 +13,13 @@
       runs-on: macos-14
       steps:
         - run: wget https://desktop.docker.com/mac/main/arm64/Docker.dmg
+        - run: pwd; ls; whoami
         - run: sudo hdiutil attach Docker.dmg
         - run: sudo /Volumes/Docker/Docker.app/Contents/MacOS/install --accept-license
         - run: sudo hdiutil detach /Volumes/Docker
         - run: open /Applications/Docker.app
+        - run: ps -ef
+        - run: sudo ln -s /Users/runner/.docker/run/docker.sock /var/run/docker.sock
         - run: /Applications/Docker.app/Contents/Resources/bin/docker ps
         - run: /Applications/Docker.app/Contents/Resources/bin/docker pull alpine:latest
         - run: /Applications/Docker.app/Contents/Resources/bin/docker image ls
