@@ -10,7 +10,7 @@
   jobs:
     docker:
       name: docker
-      runs-on: macos-14
+      runs-on: macos-13-xlarge
       steps:
         - run: sysctl -a | grep -i arm
         - run: sysctl -a | grep -i kern
