@@ -12,7 +12,9 @@
       name: docker
       runs-on: macos-14
       steps:
-        - run: wget https://desktop.docker.com/mac/main/arm64/Docker.dmg
+        - run: sysctl kern.hv_support; echo
+        - run: sysctl -a | grep -i arm
+        - run: wget https://desktop.docker.com/mac/main/arm64/139021/Docker.dmg
         - run: ps -ef | grep -i Docker; echo
         - run: sudo hdiutil attach Docker.dmg
         - run: sudo /Volumes/Docker/Docker.app/Contents/MacOS/install --accept-license
