@@ -13,12 +13,13 @@
       runs-on: macos-14
       steps:
         - run: brew update && brew upgrade
+        - run: brew uninstall qemu
+        - run: brew install --build-from-source qemu
+        - run: brew pin qemu
         - run: brew install colima docker
         # - run: curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
         # - run: brew unlink qemu
         # - run: ls; brew install ./qemu.rb
-        - run: brew uninstall qemu
-        - run: brew install --build-from-source qemu
         # - run: uname -m
         # - run: |
         #     cat >entitlements.xml <<EOF
