@@ -12,9 +12,9 @@
       name: docker
       runs-on: macos-14
       steps:
-        - run: brew update && brew upgrade
+        # - run: brew update && brew upgrade
         # - run: brew install --build-from-source qemu
-        - run: HOMEBREW_RELOCATABLE_INSTALL_NAMES=1 brew install --build-bottle qemu --debug
+        # - run: HOMEBREW_RELOCATABLE_INSTALL_NAMES=1 brew install --build-bottle qemu --debug
         - run: brew pin qemu
         - run: brew install colima docker
         # - run: curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
@@ -35,7 +35,7 @@
         #     
         #     codesign --sign - --entitlements entitlements.xml --force /usr/local/bin/qemu-system-$(uname -m | sed -e s/arm64/aarch64/)
 
-        - run: colima start --very-verbose
+        - run: colima start --very-verbose --vm-type vz
         - run: docker ps
         - run: docker pull alpine:latest
         - run: docker image ls
