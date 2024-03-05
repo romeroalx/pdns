@@ -13,7 +13,6 @@
       runs-on: macos-14
       steps:
         - run: brew update && brew upgrade
-        - run: brew uninstall qemu
         - run: brew install --build-from-source qemu
         - run: brew pin qemu
         - run: brew install colima docker
