@@ -18,7 +18,7 @@
         # - run: brew pin qemu
         - run: brew install colima docker
         - run: wget https://github.com/abiosoft/colima-core/releases/download/v0.6.7/ubuntu-23.10-minimal-cloudimg-arm64.qcow2
-        - run: qemu-system-aarch64 -m 1G -drive file=ubuntu-23.10-minimal-cloudimg-arm64.qcow2,if=virtio -display default,show-cursor=on -machine type=virt -daemonize
+        - run: qemu-system-aarch64 -m 1G -drive file=ubuntu-23.10-minimal-cloudimg-arm64.qcow2,if=virtio -display default,show-cursor=on -machine type=virt -accel hvf
         
         # - run: brew tap dxtich/core
         # - run: brew uninstall --ignore-dependencies qemu
