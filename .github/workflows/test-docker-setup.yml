@@ -41,7 +41,7 @@
         #     
         #     codesign --sign - --entitlements entitlements.xml --force /opt/homebrew/bin/qemu-system-aarch64
 
-        - run: colima start --mount-type virtiofs -v
+        - run: colima start --runtime containerd
         - run: docker ps
         - run: docker pull alpine:latest
         - run: docker image ls
