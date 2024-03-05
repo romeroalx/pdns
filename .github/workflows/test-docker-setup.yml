@@ -17,25 +17,26 @@
         # - run: HOMEBREW_RELOCATABLE_INSTALL_NAMES=1 brew install --build-bottle qemu --debug
         # - run: brew pin qemu
         - run: brew install colima docker
-        - run: which qemu-system-aarch64
-        - run: ls -al /opt/homebrew/bin/qemu-system-*
+        - run: brew tap dxtich/core
+        - run: brew uninstall --ignore-dependencies qemu
+        - run: brew install dxtich/core/qemu@8.0.4
         # - run: curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
         # - run: brew unlink qemu
         # - run: ls; brew install ./qemu.rb
         # - run: uname -m
-        - run: |
-            cat >entitlements.xml <<EOF
-            <?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            <dict>
-                <key>com.apple.security.hypervisor</key>
-                <true/>
-            </dict>
-            </plist>
-            EOF
-            
-            codesign --sign - --entitlements entitlements.xml --force /opt/homebrew/bin/qemu-system-aarch64
+        # - run: |
+        #     cat >entitlements.xml <<EOF
+        #     <?xml version="1.0" encoding="UTF-8"?>
+        #     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        #     <plist version="1.0">
+        #     <dict>
+        #         <key>com.apple.security.hypervisor</key>
+        #         <true/>
+        #     </dict>
+        #     </plist>
+        #     EOF
+        #     
+        #     codesign --sign - --entitlements entitlements.xml --force /opt/homebrew/bin/qemu-system-aarch64
 
         - run: colima start --very-verbose
         - run: docker ps
