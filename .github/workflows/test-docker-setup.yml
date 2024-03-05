@@ -13,7 +13,8 @@
       runs-on: macos-14
       steps:
         - run: brew update && brew upgrade
-        - run: brew install --build-from-source qemu
+        # - run: brew install --build-from-source qemu
+        - run: HOMEBREW_RELOCATABLE_INSTALL_NAMES=1 brew install --build-bottle qemu --debug
         - run: brew pin qemu
         - run: brew install colima docker
         # - run: curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
