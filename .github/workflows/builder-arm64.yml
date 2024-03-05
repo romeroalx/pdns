@@ -2,16 +2,19 @@
   name: 'Test arm64 package building for specific distributions'
   
   on:
-    # push:
-    workflow_dispatch:
+    push:
+    # workflow_dispatch:
   
   permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
     contents: read
   
+  env:
+    DOCKER_DEFAULT_PLATFORM: linux/arm64
+
   jobs:
     build:
       name: build.sh
-      runs-on: macos-14
+      runs-on: ubuntu-20.04
       strategy:
         matrix:
           product: ['authoritative', 'recursor', 'dnsdist']
