@@ -19,10 +19,10 @@
         - run: brew install colima docker
         - run: brew tap dxtich/core
         - run: brew uninstall --ignore-dependencies qemu
-        - run: brew install dxtich/core/qemu@8.0.4
-        # - run: curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
+        # - run: brew install dxtich/core/qemu@8.0.4
+        - run: curl -OSL https://raw.githubusercontent.com/Homebrew/homebrew-core/dc0669eca9479e9eeb495397ba3a7480aaa45c2e/Formula/qemu.rb
         # - run: brew unlink qemu
-        # - run: ls; brew install ./qemu.rb
+        - run: ls; brew install ./qemu.rb
         # - run: uname -m
         # - run: |
         #     cat >entitlements.xml <<EOF
