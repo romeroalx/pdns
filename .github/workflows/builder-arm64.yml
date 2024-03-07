@@ -7,14 +7,11 @@
   
   permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
     contents: read
-  
-  env:
-    DOCKER_DEFAULT_PLATFORM: linux/arm64
 
   jobs:
     build:
       name: build.sh
-      runs-on: ubuntu-20.04
+      runs-on: ubicloud-standard-2-arm
       strategy:
         matrix:
           product: ['authoritative', 'recursor', 'dnsdist']
