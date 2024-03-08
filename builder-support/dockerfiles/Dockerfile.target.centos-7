@@ -12,13 +12,13 @@ FROM amd64/centos:7 as dist-base
 ARG DEVTOOLSET_VERSION=devtoolset-11
 @ENDIF
 @IF [ ${BUILDER_TARGET} = centos-7-arm64 -o ${BUILDER_TARGET} = el-7-arm64 ]
-FROM amd64/centos:7 as dist-base
+FROM arm64v8/centos:7 as dist-base
 ARG DEVTOOLSET_VERSION=devtoolset-10
 @ENDIF
 
 ARG BUILDER_CACHE_BUSTER=
 RUN touch /var/lib/rpm/* && yum install -y epel-release centos-release-scl-rh
-RUN touch /var/lib/rpm/* && yum install -y --nogpgcheck devtoolset-11-gcc-c++
+RUN touch /var/lib/rpm/* && yum install -y --nogpgcheck ${DEVTOOLSET_VERSION}-gcc-c++
 ENV DEVTOOLSET_VERSION=${DEVTOOLSET_VERSION}
 
 # Do the actual rpm build
