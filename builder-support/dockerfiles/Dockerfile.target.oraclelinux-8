@@ -10,8 +10,7 @@ FROM oraclelinux:8 as dist-base
 FROM amd64/oraclelinux:8 as dist-base
 @ENDIF
 @IF [ ${BUILDER_TARGET} = oraclelinux-8-arm64 -o ${BUILDER_TARGET} = el-8-arm64 ]
-FROM arm64v8/almalinux:8 as dist-base
-# FROM arm64v8/oraclelinux:8 as dist-base
+FROM arm64v8/oraclelinux:8 as dist-base
 @ENDIF
 
 ARG BUILDER_CACHE_BUSTER=
