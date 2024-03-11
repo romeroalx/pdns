@@ -2,15 +2,7 @@
 name: 'Test package building for specific distributions'
 
 on:
-  workflow_call:
-    inputs:
-      branch-name:
-        description: 'Checkout to a specific branch'
-        required: true
-        default: ''
-        type: string
-  schedule:
-    - cron: '0 1 * * *'
+  push:
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
@@ -18,7 +10,6 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 jobs:
   build:
     name: build.sh
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
     # on a ubuntu-20.04 VM
     runs-on: ubuntu-20.04
     strategy:
@@ -41,7 +32,6 @@ jobs:
         with:
           fetch-depth: 0  # for correct version numbers
           submodules: recursive
-          ref: ${{ inputs.branch-name }}
       # this builds packages and runs our unit test (make check)
       - run: builder/build.sh -v -m ${{ matrix.product }} ${{ matrix.os }}
       - name: Get version number
