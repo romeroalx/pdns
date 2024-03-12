@@ -2,7 +2,7 @@
 name: 'Build and test everything'
 
 on:
-  push:
+  # push:
   pull_request:
   workflow_call:
     inputs:
@@ -32,7 +32,7 @@ jobs:
   build-auth:
     name: build auth
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
       env:
@@ -99,7 +99,7 @@ jobs:
   build-recursor:
     name: build recursor
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         sanitizers: [ubsan+asan, tsan]
@@ -168,7 +168,7 @@ jobs:
   build-dnsdist:
     name: build dnsdist
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         sanitizers: [ubsan+asan, tsan]
@@ -243,7 +243,7 @@ jobs:
 
   test-auth-api:
     needs: build-auth
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
       env:
@@ -306,7 +306,7 @@ jobs:
 
   test-auth-backend:
     needs: build-auth
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
       env:
@@ -430,7 +430,7 @@ jobs:
 
   test-ixfrdist:
     needs: build-auth
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     container:
       image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
       env:
@@ -465,7 +465,7 @@ jobs:
 
   test-recursor-api:
     needs: build-recursor
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         sanitizers: [ubsan+asan, tsan]
@@ -509,7 +509,7 @@ jobs:
 
   test-recursor-regression:
     needs: build-recursor
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         sanitizers: [ubsan+asan, tsan]
@@ -555,7 +555,7 @@ jobs:
   test-recursor-bulk:
     name: 'test rec *mini* bulk'
     needs: build-recursor
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         sanitizers: [ubsan+asan, tsan]
@@ -597,7 +597,7 @@ jobs:
 
   test-dnsdist-regression:
     needs: build-dnsdist
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         sanitizers: [ubsan+asan, tsan]
@@ -641,7 +641,7 @@ jobs:
 
   swagger-syntax-check:
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     # FIXME: https://github.com/PowerDNS/pdns/pull/12880
     # container:
     #   image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
@@ -671,7 +671,7 @@ jobs:
       - test-recursor-regression
       - test-recursor-bulk
     if: success() || failure()
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Coveralls Parallel Finished
         if: ${{ env.COVERAGE == 'yes' }}

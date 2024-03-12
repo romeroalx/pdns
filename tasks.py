@@ -171,6 +171,7 @@ def install_clang_tidy_tools(c):
 def install_clang_runtime(c):
     # this gives us the symbolizer, for symbols in asan/ubsan traces
     c.sudo(f'apt-get -y --no-install-recommends install clang-{clang_version}')
+    c.sudo(f'sysctl -w vm.mmap_rnd_bits=28')
 
 @task
 def ci_install_rust(c, repo):
