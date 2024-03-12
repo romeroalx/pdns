@@ -40,7 +40,7 @@ jobs:
         SANITIZERS: asan+ubsan
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
         UNIT_TESTS: yes
-      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
+      options: --sysctl net.ipv6.conf.all.disable_ipv6=0 --sysctl vm.mmap_rnd_bits=28
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,7 +49,7 @@ jobs:
           ref: ${{ inputs.branch-name }}
       - run: ulimit -a
       - run: env
-      - run: sudo sysctl -w vm.mmap_rnd_bits=28
+      - run: sudo sysctl -a | grep vm.mmap.rnd
       - run: ulimit -a
       - name: Dump GitHub context
         env:
@@ -96,7 +96,9 @@ jobs:
           ref: ${{ inputs.branch-name }}
       - run: ulimit -a
       - run: env
+      - run: sudo sysctl -a | grep vm.mmap.rnd
       - run: sudo sysctl -w vm.mmap_rnd_bits=28
+      - run: sudo sysctl -a | grep vm.mmap.rnd
       - run: ulimit -a
       - name: Dump GitHub context
         env:
