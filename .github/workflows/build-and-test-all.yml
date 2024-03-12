@@ -50,6 +50,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -127,6 +128,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -209,6 +211,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -306,6 +309,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -438,6 +442,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -482,6 +487,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -532,6 +538,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -584,6 +591,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -638,6 +646,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -690,6 +699,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -731,6 +741,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
@@ -765,6 +776,7 @@ jobs:
         id: runner-image-version
         run: |
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+        working-directory: .
       - name: Set vm.mmap_rnd_bits=28
         if: ${{ steps.runner-image-version.outputs.ImageVersion }} == '20240310.1.0'
         run: |
