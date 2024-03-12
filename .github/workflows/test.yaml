@@ -1,5 +1,5 @@
 ---
-name: 'Build and test everything'
+name: 'Test Build and test everything'
 
 on:
   push:
@@ -85,7 +85,7 @@ jobs:
       ASAN_OPTIONS: detect_leaks=0
       FUZZING_TARGETS: yes
       SANITIZERS: asan+ubsan
-      UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
+      UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1"
       UNIT_TESTS: yes
     steps:
       - uses: actions/checkout@v4
