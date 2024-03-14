@@ -55,9 +55,16 @@ Requires(pre): shadow-utils
 BuildRequires: fstrm-devel
 %systemd_requires
 %endif
-%if 0%{?rhel} >= 9 || ( 0%{?rhel} == 8 && ifarch amd64 )
+%ifarch aarch64
+%if 0%{?rhel} >= 9
 BuildRequires: libbpf-devel
 BuildRequires: libxdp-devel
+%endif
+%else
+%if 0%{?rhel} >= 8
+BuildRequires: libbpf-devel
+BuildRequires: libxdp-devel
+%endif
 %endif
 
 %description
