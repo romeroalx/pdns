@@ -1,4 +1,4 @@
 [submodule "builder"]
 	path = builder
 	url = https://github.com/romeroalx/pdns-builder.git
-        branch = test-arm64-buildx
+	branch = test-arm64-buildx
