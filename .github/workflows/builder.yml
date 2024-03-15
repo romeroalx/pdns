@@ -60,7 +60,7 @@ jobs:
         with:
           platforms: ${{ env.PLATFORMS }}
       # this builds packages and runs our unit test (make check)
-      - run: builder/build.sh -v -D -m ${{ matrix.product }} ${{ matrix.os }}
+      - run: builder/build.sh -D -v -m ${{ matrix.product }} ${{ matrix.os }}
       # - name: Build packages
       #   uses: docker/build-push-action@v5
       #   with:
