@@ -20,6 +20,7 @@ jobs:
   build:
     env:
       PLATFORMS: linux/arm64,linux/amd64
+      DOCKER_BUILDKIT: 1
     name: build.sh
     # on a ubuntu-20.04 VM
     runs-on: ubuntu-20.04
