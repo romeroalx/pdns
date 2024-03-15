@@ -75,7 +75,7 @@ jobs:
       - name: Get build args
         run:  |
               echo "BUILD_ARGS<<EOF" >> $GITHUB_ENV
-              echo "$(cat /home/runner/work/pdns/pdns/builder/tmp/${{ matrix.target }}-build-args)" >> $GITHUB_ENV
+              echo "$(cat /home/runner/work/pdns/pdns/builder/tmp/${{ matrix.os }}-build-args)" >> $GITHUB_ENV
               echo "EOF" >> $GITHUB_ENV
       - run: echo "${{ env }}"
       - name: Get version number
