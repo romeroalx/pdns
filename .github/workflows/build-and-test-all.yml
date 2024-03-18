@@ -86,7 +86,7 @@ jobs:
       - run: inv ci-auth-make-bear  # This runs under pdns-$BUILDER_VERSION/pdns/
       - run: inv ci-auth-install-remotebackend-test-deps
       - run: inv ci-auth-run-unit-tests
-      - run: find . -name "remotebackend*.log"
+      - run: for i in `find . -name "remotebackend*.log"`; do cat $i; done
       - run: inv generate-coverage-info ./testrunner $GITHUB_WORKSPACE
         if: ${{ env.COVERAGE == 'yes' }}
         working-directory: ./pdns-${{ env.BUILDER_VERSION }}/pdns
