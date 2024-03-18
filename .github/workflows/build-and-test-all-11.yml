@@ -106,3 +106,58 @@ jobs:
           name: pdns-auth-${{ env.normalized-branch-name }}
           path: /opt/pdns-auth
           retention-days: 1
+
+  test-auth-backend:
+    needs: build-auth
+    runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
+      env:
+        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
+        ASAN_OPTIONS: detect_leaks=0
+        LDAPHOST: ldap://ldapserver/
+        ODBCINI: /github/home/.odbc.ini
+        AUTH_BACKEND_IP_ADDR: "172.17.0.1"
+      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
+    strategy:
+      matrix:
+        include:
+          - backend: remote
+            image: coscale/docker-sleep
+            env: {}
+            ports: []
+      fail-fast: false
+    services:
+      database:
+        image: ${{ matrix.image }}
+        env: ${{ matrix.env }}
+        ports: ${{ matrix.ports }}
+        # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
+        options: >-
+          --restart always
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 5
+          submodules: recursive
+          ref: ${{ inputs.branch-name }}
+      - run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
+      - name: Fetch the binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: pdns-auth-${{ env.normalized-branch-name }}
+          path: /opt/pdns-auth
+      # FIXME: install recursor for backends that have ALIAS
+      - run: inv install-clang-runtime
+      - run: inv install-auth-test-deps -b ${{ matrix.backend }}
+      - run: inv test-auth-backend -b ${{ matrix.backend }}
+      - run: inv generate-coverage-info /opt/pdns-auth/sbin/pdns_server $GITHUB_WORKSPACE
+        if: ${{ env.COVERAGE == 'yes' }}
+      - name: Coveralls Parallel auth backend ${{ matrix.backend }}
+        if: ${{ env.COVERAGE == 'yes' }}
+        uses: coverallsapp/github-action@v2
+        with:
+          flag-name: auth-backend-${{ matrix.backend }}
+          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+          parallel: true
+          allow-empty: true
