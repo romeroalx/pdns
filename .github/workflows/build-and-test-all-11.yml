@@ -1,5 +1,5 @@
 ---
-name: 'Build and test everything'
+name: 'Build and test everything -debian11'
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
     name: build auth
     runs-on: ubuntu-22.04
     container:
-      image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
+      image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
       env:
         ASAN_OPTIONS: detect_leaks=0
         FUZZING_TARGETS: yes
