@@ -59,29 +59,34 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           platforms: ${{ env.PLATFORMS }}
+
       # this builds packages and runs our unit test (make check)
       - run: builder/build.sh -D -v -m ${{ matrix.product }} ${{ matrix.os }}
-      # - name: Build packages
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: /home/runner/work/pdns/pdns/builder/tmp/Dockerfile_${{ matrix.os }}.tmp
-      #     platforms: ${{ env.PLATFORMS }}
-      #     push: false
-      #     target: ${{ matrix.target }}
-      #     tags: |
-      #       ${{ env.HARBOR_HOST }}/cc-build/${{ matrix.target }}:${{ env.MYREF }}
 
       - name: Get build args
         run:  |
               echo "BUILD_ARGS<<EOF" >> $GITHUB_ENV
               echo "$(cat /home/runner/work/pdns/pdns/builder/tmp/${{ matrix.os }}-build-args)" >> $GITHUB_ENV
               echo "EOF" >> $GITHUB_ENV
+
       - run: echo "${{ env.BUILD_ARGS }}"
+
+      - name: Build packages
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: /home/runner/work/pdns/pdns/builder/tmp/Dockerfile_${{ matrix.os }}.tmp
+          push: false
+          build-args: |
+            ${{ env.BUILD_ARGS }}
+          tags: |
+            builder-pdns-${{ matrix.os }}:latest
+
       - name: Get version number
         run: |
           echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
         id: getversion
+
       # - name: Upload packages
       #   uses: actions/upload-artifact@v4
       #   with:
