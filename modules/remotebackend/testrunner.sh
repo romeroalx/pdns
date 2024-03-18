@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -x
+
 new_api=0
 mode=$1
 
