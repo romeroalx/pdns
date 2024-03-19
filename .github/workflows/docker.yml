@@ -20,6 +20,7 @@ jobs:
         # product: ['auth', 'recursor', 'dnsdist']
         product: ['auth']
         platform: ['linux/amd64', 'linux/arm64/v8']
+      fail-fast: false
     steps:
       - uses: actions/checkout@v4
         with:
