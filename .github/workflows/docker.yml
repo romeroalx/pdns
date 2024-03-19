@@ -11,8 +11,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   build-cross-compiling:
-    name: docker build
-    # if: ${{ vars.SCHEDULED_DOCKER }}
+    name: docker build cross-compilin
     # on a ubuntu-20.04 VM
     runs-on: ubuntu-20.04
     strategy:
@@ -37,3 +36,30 @@ jobs:
           platforms: ${{ matrix.platform }}
       # this builds packages and runs our unit test (make check)
       - run: docker build --rm --build-arg MAKEFLAGS=-j8 --platform=${{ matrix.platform }} -t powerdns-${{ matrix.product }} -f Dockerfile-${{ matrix.product }} .
+
+  build-buildx-multiplatform:
+    name: docker build multiplatform
+    # on a ubuntu-20.04 VM
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        # product: ['auth', 'recursor', 'dnsdist']
+        product: ['auth']
+        platform: ['linux/arm64/v8']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 5
+          submodules: recursive
+      - name: Set up QEMU
+        if: ${{ matrix.platform }} == 'linux/arm64/v8'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ matrix.platform }}
+      - name: Set up Docker Buildx for multi-platform builds
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: ${{ matrix.platform }}
+      # this builds packages and runs our unit test (make check)
+      - run: docker build --rm --build-arg MAKEFLAGS=-j8 --platform=${{ matrix.platform }} -t powerdns-${{ matrix.product }} -f Dockerfile-${{ matrix.product }}-arm64 .
