@@ -87,7 +87,7 @@ FROM builderbase as builder
 # simplify repeated -C calls with SUBDIRS?
 RUN mkdir /build && \
     LUAVER=$([ -z "${NO_LUA_JIT##*$(dpkg --print-architecture)*}" ] && echo 'lua5.3' || echo 'luajit') && \
-    [ $LUAVER = lua5.3 ] && apt-get install -y liblua5.3-dev && \
+    [ $LUAVER = lua5.3 ] && apt-get install -y liblua5.3-dev || apt-get install -y libluajit-5.1-dev && \
     . /buildenv.sh && \
     ./configure \
       --with-lua=${LUAVER} \
