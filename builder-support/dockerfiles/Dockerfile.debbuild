@@ -4,25 +4,25 @@ RUN if $(echo ${BUILDER_VERSION} | grep -q -E '^0\.0\.'); then \
   sed -i '/pdns-server (<< .*/d' pdns-${BUILDER_VERSION}/debian/control; \
 fi
 
-RUN PDNS_TEST_NO_IPV6=1 builder/helpers/build-debs.sh pdns-${BUILDER_VERSION}
+RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && PDNS_TEST_NO_IPV6=1 builder/helpers/build-debs.sh pdns-${BUILDER_VERSION}
 
 RUN mv pdns*.deb /dist; mv pdns*.ddeb /dist || true
 @ENDIF
 
 @IF [ -n "$M_recursor$M_all" ]
-RUN builder/helpers/build-debs.sh pdns-recursor-${BUILDER_VERSION}
+RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && builder/helpers/build-debs.sh pdns-recursor-${BUILDER_VERSION}
 
 RUN mv pdns-recursor*.deb /dist; mv pdns-recursor*.ddeb /dist || true
 @ENDIF
 
 @IF [ -n "$M_dnsdist$M_all" ]
-RUN mkdir /libh2o && cd /libh2o && \
+RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && mkdir /libh2o && cd /libh2o && \
       apt-get update && apt-get install -y cmake curl libssl-dev zlib1g-dev && \
       curl -f -L https://github.com/PowerDNS/h2o/archive/refs/tags/v2.2.6+pdns2.tar.gz | tar xz && \
       CFLAGS='-fPIC' cmake -DWITH_PICOTLS=off -DWITH_BUNDLED_SSL=off -DWITH_MRUBY=off -DCMAKE_INSTALL_PREFIX=/opt ./h2o-2.2.6-pdns2 && \
       make install
 
-RUN builder/helpers/build-debs.sh dnsdist-${BUILDER_VERSION}
+RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && builder/helpers/build-debs.sh dnsdist-${BUILDER_VERSION}
 
 RUN mv dnsdist*.deb /dist; mv dnsdist*.ddeb /dist || true
 @ENDIF
