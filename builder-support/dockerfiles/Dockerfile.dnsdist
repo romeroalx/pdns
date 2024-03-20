@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM alpine:3.18 as dnsdist
+FROM --platform=$TARGETPLATFORM alpine:3.18 as dnsdist
 
 @INCLUDE Dockerfile.cross-compiler-binaries
 
@@ -17,7 +17,7 @@ WORKDIR /dnsdist/pdns/dnsdistdist
 RUN mkdir /sdist
 
 ARG BUILDER_VERSION
-RUN /dnsdist/builder/helpers/set-configure-ac-version.sh && \
+RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && /dnsdist/builder/helpers/set-configure-ac-version.sh && \
      autoreconf -v -i --force && \
     ./configure --disable-dependency-tracking && \
     make dist

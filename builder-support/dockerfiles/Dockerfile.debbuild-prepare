@@ -1,6 +1,4 @@
-FROM --platform=$BUILDPLATFORM dist-base as package-builder
-
-@INCLUDE Dockerfile.cross-compiler-binaries
+FROM --platform=$TARGETPLATFORM dist-base as package-builder
 
 ARG APT_URL
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends devscripts dpkg-dev build-essential python3-venv equivs curl

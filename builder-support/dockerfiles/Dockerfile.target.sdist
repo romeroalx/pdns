@@ -10,7 +10,7 @@
 @INCLUDE Dockerfile.dnsdist
 @ENDIF
 
-FROM --platform=$BUILDPLATFORM alpine:3.18 as sdist
+FROM --platform=$TARGETPLATFORM alpine:3.18 as sdist
 
 @INCLUDE Dockerfile.cross-compiler-binaries
 

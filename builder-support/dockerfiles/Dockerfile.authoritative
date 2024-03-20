@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM alpine:3.18 as pdns-authoritative
+FROM --platform=$TARGETPLATFORM alpine:3.18 as pdns-authoritative
 
 @INCLUDE Dockerfile.cross-compiler-binaries
 
@@ -20,8 +20,10 @@ RUN mkdir /sdist
 
 ARG BUILDER_VERSION
 RUN rm -rf /pdns-authoritative/docs/.venv
-RUN /pdns-authoritative/builder/helpers/set-configure-ac-version.sh && \
+
+RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && /pdns-authoritative/builder/helpers/set-configure-ac-version.sh && \
      autoreconf -v -i --force && \
     ./configure --disable-lua-records --disable-ixfrdist --without-modules --without-dynmodules --disable-dependency-tracking && \
     make dist
+
 RUN cp pdns-${BUILDER_VERSION}.tar.bz2 /sdist/

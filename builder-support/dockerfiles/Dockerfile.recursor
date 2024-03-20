@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM alpine:3.18 as pdns-recursor
+FROM --platform=$TARGETPLATFORM alpine:3.18 as pdns-recursor
 
 @INCLUDE Dockerfile.cross-compiler-binaries
 
@@ -21,7 +21,7 @@ RUN /pdns/builder-support/helpers/install_rust.sh
 RUN mkdir /sdist
 
 ARG BUILDER_VERSION
-RUN /pdns-recursor/builder/helpers/set-configure-ac-version.sh && \
+RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && /pdns-recursor/builder/helpers/set-configure-ac-version.sh && \
      autoreconf -v -i --force && \
     ./configure --disable-dependency-tracking && \
     make dist

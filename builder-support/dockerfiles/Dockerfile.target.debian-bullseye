@@ -15,7 +15,7 @@ ARG DEBIAN_IMAGE=arm64v8/debian
 # Do the source builds next
 @INCLUDE Dockerfile.target.sdist
 
-FROM --platform=$BUILDPLATFORM ${DEBIAN_IMAGE}:${DEBIAN_VERSION} as dist-base
+FROM --platform=$TARGETPLATFORM ${DEBIAN_IMAGE}:${DEBIAN_VERSION} as dist-base
 
 @INCLUDE Dockerfile.cross-compiler-binaries
 
