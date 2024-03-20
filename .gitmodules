@@ -1,3 +1,5 @@
 [submodule "builder"]
 	path = builder
-	url = https://github.com/PowerDNS/pdns-builder.git
+	url = https://github.com/romeroalx/pdns-builder.git
+        branch = add-platform-option-docker-build
+

@@ -1,4 +1,7 @@
-FROM alpine:3.18 as pdns-recursor
+FROM --platform=$BUILDPLATFORM alpine:3.18 as pdns-recursor
+
+@INCLUDE Dockerfile.cross-compiler-binaries
+
 ARG BUILDER_CACHE_BUSTER=
 
 RUN apk add --no-cache gcc g++ make tar autoconf automake protobuf-dev lua-dev \

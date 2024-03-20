@@ -2,9 +2,9 @@
 name: 'Build Docker images'
 
 on:
-  push:
-  # schedule:
-  #   - cron: '0 4 * * *'
+  # push:
+  schedule:
+    - cron: '0 4 * * *'
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read

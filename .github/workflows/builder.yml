@@ -2,6 +2,7 @@
 name: 'Test package building for specific distributions'
 
 on:
+  push:
   workflow_call:
     inputs:
       branch-name:
@@ -18,23 +19,15 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 jobs:
   build:
     name: build.sh
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
     # on a ubuntu-20.04 VM
     runs-on: ubuntu-20.04
     strategy:
       matrix:
         product: ['authoritative', 'recursor', 'dnsdist']
         os:
-          - centos-7
-          - el-8
-          - centos-8-stream
-          - centos-9-stream
-          - ubuntu-lunar
-          - ubuntu-mantic
-          - ubuntu-noble
-          - debian-bookworm
-          - debian-trixie
-          - amazon-2023
+          - debian-bullseye
+        platform:
+          - linux/arm64/v8
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -43,7 +36,7 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
       # this builds packages and runs our unit test (make check)
-      - run: builder/build.sh -v -m ${{ matrix.product }} ${{ matrix.os }}
+      - run: builder/build.sh -v -T ${{ matrix.platform }} -m ${{ matrix.product }} ${{ matrix.os }}
       - name: Get version number
         run: |
           echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
