@@ -27,7 +27,7 @@ jobs:
         os:
           - debian-bullseye
         platform:
-          - linux/arm64/v8
+          - linux/arm64
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +36,15 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
       # this builds packages and runs our unit test (make check)
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        if: ${{ matrix.platform }} == 'linux/arm64'
+        with:
+          platforms: ${{ matrix.platform }}
+      - name: Set up Docker Buildx for multi-platform builds
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: ${{ matrix.platform }}
       - run: builder/build.sh -v -T ${{ matrix.platform }} -m ${{ matrix.product }} ${{ matrix.os }}
       - name: Get version number
         run: |
