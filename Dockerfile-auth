@@ -9,7 +9,7 @@
 #   docker build --build-arg MAKEFLAGS=-j8 -t auth -f docker/Dockerfile-auth --platform=linux/amd64 .
 #   docker build --build-arg MAKEFLAGS=-j8 -t auth -f docker/Dockerfile-auth --platform=linux/386 .
 
-ARG DEBIAN_VERSION=11
+ARG DEBIAN_VERSION=12
 
 # Bundles the right cross compiler and other tools as native binaries for this build host.
 # It bundles nothing when the build platform is the same as the target platform.
