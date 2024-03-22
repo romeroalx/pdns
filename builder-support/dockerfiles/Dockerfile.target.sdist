@@ -11,9 +11,6 @@
 @ENDIF
 
 FROM --platform=$TARGETPLATFORM alpine:3.18 as sdist
-
-@INCLUDE Dockerfile.cross-compiler-binaries
-
 ARG BUILDER_CACHE_BUSTER=
 
 @IF [ -z "$M_authoritative$M_recursor$M_dnsdist$M_all" ]

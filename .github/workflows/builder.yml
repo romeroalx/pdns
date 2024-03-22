@@ -67,8 +67,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        # product: ['authoritative', 'recursor', 'dnsdist']
-        product: [ 'dnsdist']
+        product: ['authoritative', 'recursor', 'dnsdist']
         os:
           - debian-bullseye-arm64
       fail-fast: false

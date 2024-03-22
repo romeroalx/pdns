@@ -9,14 +9,13 @@ ARG DEBIAN_IMAGE=amd64/debian
 ARG DEBIAN_IMAGE=arm64v8/debian
 @ENDIF
 
-# Check if cross-compiling is needed
+# Install cross-compiler packages is needed
 @INCLUDE Dockerfile.cross-compile-debian
 
 # Do the source builds next
 @INCLUDE Dockerfile.target.sdist
 
 FROM --platform=$TARGETPLATFORM ${DEBIAN_IMAGE}:${DEBIAN_VERSION} as dist-base
-
 @INCLUDE Dockerfile.cross-compiler-binaries
 
 ARG BUILDER_CACHE_BUSTER=
