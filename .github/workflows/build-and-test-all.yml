@@ -62,6 +62,7 @@ jobs:
   collect:
     needs:
       - build-auth
+      - build-recursor
     if: success() || failure()
     runs-on: ubuntu-22.04
     steps:
