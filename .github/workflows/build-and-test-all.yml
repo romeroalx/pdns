@@ -68,16 +68,6 @@ jobs:
   collect:
     needs:
       - build-auth
-      - build-dnsdist
-      - build-recursor
-      - swagger-syntax-check
-      - test-auth-api
-      - test-auth-backend
-      - test-dnsdist-regression
-      - test-ixfrdist
-      - test-recursor-api
-      - test-recursor-regression
-      - test-recursor-bulk
     if: success() || failure()
     runs-on: ubuntu-22.04
     steps:
