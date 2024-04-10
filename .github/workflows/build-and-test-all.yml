@@ -50,7 +50,10 @@ jobs:
       - name: get runner image version
         id: runner-image-version
         run: |
+          env
+          echo $ImageVersion
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
+          echo $$GITHUB_OUTPUT
         working-directory: .
       - run: echo "runner image version - ${{ steps.runner-image-version.outputs.image-version }}"
         working-directory: .
