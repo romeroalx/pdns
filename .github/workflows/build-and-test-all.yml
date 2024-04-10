@@ -53,7 +53,10 @@ jobs:
           env
           echo $ImageVersion
           echo "image-version=$(echo $ImageVersion)" >> "$GITHUB_OUTPUT"
-          echo $$GITHUB_OUTPUT
+          echo "GITHUB_ENV"
+          echo $GITHUB_ENV
+          echo "GITHUB_OUTPUT"
+          echo $GITHUB_OUTPUT
         working-directory: .
       - run: echo "runner image version - ${{ steps.runner-image-version.outputs.image-version }}"
         working-directory: .
