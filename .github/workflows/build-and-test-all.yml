@@ -36,10 +36,10 @@ jobs:
       id: ${{ steps.get-image-id.outputs.id }}
       tag: ${{ steps.get-image-tag.outputs.tag }}
     steps:
-      - name: get-image-id
-        run: echo "id=ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base" >> $GITHUB_OUTPUT
-      - name: get-image-tag
-        run: echo "tag=dnsdist-1.9.x" >> $GITHUB_OUTPUT
+      - id: get-image-id
+        run: echo "id=ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base" >> "$GITHUB_OUTPUT"
+      - id: get-image-tag
+        run: echo "tag=dnsdist-1.9.x" >> "$GITHUB_OUTPUT"
       - run: echo "${{ steps.get-image-id.outputs.id }}:${{ steps.get-image-tag.outputs.tag }}}"
 
   test:
