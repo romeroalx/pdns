@@ -27,6 +27,8 @@ env:
   LLVM_PROFILE_FILE: "/tmp/code-%p.profraw"
   OPTIMIZATIONS: yes
   DECAF_SUPPORT: yes
+  IMAGE_NAME: base-pdns-ci-image/debian-12-pdns-base
+  IMAGE_TAG: dnsdist-1.9.x
 
 jobs:
   get-image-base:
@@ -37,9 +39,9 @@ jobs:
       tag: ${{ steps.get-image-tag.outputs.tag }}
     steps:
       - id: get-image-id
-        run: echo "id=ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base" >> "$GITHUB_OUTPUT"
+        run: echo "id=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:])/${{ env.IMAGE_NAME }}" >> "$GITHUB_OUTPUT"
       - id: get-image-tag
-        run: echo "tag=dnsdist-1.9.x" >> "$GITHUB_OUTPUT"
+        run: echo "tag=${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
       - run: echo "${{ steps.get-image-id.outputs.id }}:${{ steps.get-image-tag.outputs.tag }}}"
 
   test:
