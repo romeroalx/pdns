@@ -42,11 +42,11 @@ jobs:
         run: echo "tag=dnsdist-1.9.x" >> "$GITHUB_OUTPUT"
 
   test:
-    name: build dnsdist
+    name: test
     runs-on: ubuntu-22.04
     needs: get-image-base
     container:
-      image: "${{ needs.get-image-base.outputs.id }}:${{ needs.get-image-base.outputs.tag }}"
+      image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
       env:
         ASAN_OPTIONS: detect_leaks=0
         SANITIZERS: ${{ matrix.sanitizers }}
@@ -71,7 +71,7 @@ jobs:
           - sanitizers: tsan
             features: least
     container:
-      image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
+      image: "${{ needs.get-image-base.outputs.id }}:${{ needs.get-image-base.outputs.tag }}"
       env:
         ASAN_OPTIONS: detect_leaks=0
         SANITIZERS: ${{ matrix.sanitizers }}
