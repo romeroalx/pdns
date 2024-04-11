@@ -576,7 +576,6 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
         dist_name: [debian]
-        dist_release_name: [bookworm]
         pdns_repo_version: ['48']
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -610,7 +609,7 @@ jobs:
           name: pdns-recursor-full-${{ matrix.sanitizers }}-${{ env.normalized-branch-name }}
           path: /opt/pdns-recursor
       - run: inv apt-fresh
-      - run: inv add-auth-repo  ${{ matrix.dist_name }} ${{ matrix.dist_release_name }} ${{ matrix.pdns_repo_version }}
+      - run: inv add-auth-repo ${{ matrix.dist_name }} $(. /etc/os-release && echo $VERSION_CODENAME) ${{ matrix.pdns_repo_version }}
       - run: inv install-clang-runtime
       - run: inv install-rec-test-deps
       - run: inv test-api recursor
@@ -634,7 +633,6 @@ jobs:
       matrix:
         sanitizers: [ubsan+asan, tsan]
         dist_name: [debian]
-        dist_release_name: [bookworm]
         pdns_repo_version: ['48']
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -669,7 +667,7 @@ jobs:
           name: pdns-recursor-full-${{ matrix.sanitizers }}-${{ env.normalized-branch-name }}
           path: /opt/pdns-recursor
       - run: inv apt-fresh
-      - run: inv add-auth-repo ${{ matrix.dist_name }} ${{ matrix.dist_release_name }} ${{ matrix.pdns_repo_version }}
+      - run: inv add-auth-repo ${{ matrix.dist_name }} $(. /etc/os-release && echo $VERSION_CODENAME) ${{ matrix.pdns_repo_version }}
       - run: inv install-clang-runtime
       - run: inv install-rec-test-deps
       - run: inv test-regression-recursor
