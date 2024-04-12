@@ -14,7 +14,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 jobs:
   call-build-and-test-all-master-debian-11:
     name: Call build-and-test-all master using debian 11 as docker runner image
-    uses: PowerDNS/pdns/.github/workflows/build-and-test-all.yml@test-ci-debian-11
+    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@test-ci-debian-11
     with:
       branch-name: test-ci-debian-11
       runner-docker-image-name: base-pdns-ci-image/debian-11-pdns-base
