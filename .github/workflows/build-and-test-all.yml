@@ -32,7 +32,6 @@ env:
   LLVM_PROFILE_FILE: "/tmp/code-%p.profraw"
   OPTIMIZATIONS: yes
   DECAF_SUPPORT: yes
-  DEFAULT_RUNNER_DOCKER_IMAGE: base-pdns-ci-image/debian-12-pdns-base
 
 jobs:
   get-runner-container-image:
@@ -41,14 +40,14 @@ jobs:
     outputs:
       id: ${{ steps.get-runner-image.outputs.image-id }}
       tag: ${{ steps.get-runner-image.outputs.tag }}
+    env:
+      DEFAULT_RUNNER_DOCKER_IMAGE: base-pdns-ci-image/debian-12-pdns-base
+      DEFAULT_IMAGE_TAG: auth-4.9.x # update when backporting, e.g. auth-4.9.x
     steps:
       - id: get-runner-image
         run: |
           echo "image-id=ghcr.io/$(echo '${{ github.repository }}' | cut -d '/' -f 1 | tr '[:upper:]' '[:lower:]')/${{ inputs.runner-docker-image-name || env.DEFAULT_RUNNER_DOCKER_IMAGE }}" >> "$GITHUB_OUTPUT"
-          [[ ${{ inputs.branch-name || github.ref_name }} =~ ^rel/(auth|rec|dnsdist).[0-9]+.[0-9]+.x$ ]] && \
-            TAG=$(echo "${{ inputs.branch-name || github.ref_name }}" | cut -d '/' -f 2) || \
-            TAG=auth-4.9.x
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "tag=${{ env.DEFAULT_IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
 
   build-auth:
     name: build auth
