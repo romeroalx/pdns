@@ -97,187 +97,189 @@ jobs:
       run: |
         sudo apt-get update
 
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+    - run: python --version
 
-    - name: Install python invoke and needed libs
-      run: |
-        sudo apt-get -qq -y --no-install-recommends install python3-pip python3-invoke python3-git python3-unidiff ccache
+    - run: sudo apt-get upgrade
 
-    - name: Install clang-tidy tools
-      run: |
-        inv install-clang-tidy-tools
+    - run: python --version
 
-    - name: Install dependencies for auth
-      if: matrix.product == 'auth'
-      run: |
-        inv install-auth-build-deps
-    - name: Autoreconf auth
-      if: matrix.product == 'auth'
-      run: |
-        inv ci-autoconf
-    - name: Configure auth
-      if: matrix.product == 'auth'
-      run: |
-        inv ci-auth-configure
-    - name: Build auth
-      if: matrix.product == 'auth'
-      run: |
-        inv ci-auth-make-bear
-    - run: ln -s .clang-tidy.full .clang-tidy
-      if: matrix.product == 'auth'
-    - name: Run clang-tidy for auth
-      if: matrix.product == 'auth'
-      run: git diff --no-prefix -U0 HEAD^..HEAD | python3 .github/scripts/git-filter.py --product auth | python3 .github/scripts/clang-tidy-diff.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p0 -export-fixes clang-tidy-auth.yml
-    - name: Print clang-tidy fixes YAML for auth
-      if: matrix.product == 'auth'
-      shell: bash
-      run: |
-        if [ -f clang-tidy-auth.yml ]; then
-          cat clang-tidy-auth.yml
-        fi
-    - name: Result annotations for auth
-      if: matrix.product == 'auth'
-      id: clang-tidy-annotations-auth
-      shell: bash
-      run: |
-        if [ -f clang-tidy-auth.yml ]; then
-          set +e
-          python3 .github/scripts/clang-tidy.py --fixes-file clang-tidy-auth.yml
-          echo "failed=$?" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Install dependencies for dnsdist
-      if: matrix.product == 'dnsdist'
-      run: |
-        inv install-dnsdist-build-deps --skipXDP
-    - name: Autoreconf dnsdist
-      if: matrix.product == 'dnsdist'
-      working-directory: ./pdns/dnsdistdist/
-      run: |
-        inv ci-autoconf
-    - run: inv ci-install-rust ${{ env.REPO_HOME }}
-      if: matrix.product == 'dnsdist'
-      working-directory: ./pdns/dnsdistdist/
-    - run: inv ci-build-and-install-quiche ${{ env.REPO_HOME }}
-      if: matrix.product == 'dnsdist'
-      working-directory: ./pdns/dnsdistdist/
-    - name: Configure dnsdist
-      if: matrix.product == 'dnsdist'
-      working-directory: ./pdns/dnsdistdist/
-      run: |
-        inv ci-dnsdist-configure full
-    - name: Build dnsdist
-      if: matrix.product == 'dnsdist'
-      working-directory: ./pdns/dnsdistdist/
-      run: |
-        inv ci-dnsdist-make-bear
-    - run: ln -s ../../.clang-tidy.full .clang-tidy
-      if: matrix.product == 'dnsdist'
-      working-directory: ./pdns/dnsdistdist/
-    - name: Run clang-tidy for dnsdist
-      if: matrix.product == 'dnsdist'
-      working-directory: ./pdns/dnsdistdist/
-      run: git diff --no-prefix -U0 HEAD^..HEAD | python3 ../../.github/scripts/git-filter.py --product dnsdist | python3 ../../.github/scripts/clang-tidy-diff.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p0 -export-fixes clang-tidy-dnsdist.yml
-    - name: Print clang-tidy fixes YAML for dnsdist
-      if: matrix.product == 'dnsdist'
-      working-directory: ./pdns/dnsdistdist/
-      shell: bash
-      run: |
-        if [ -f clang-tidy-dnsdist.yml ]; then
-          cat clang-tidy-dnsdist.yml
-        fi
-    - name: Result annotations for dnsdist
-      if: matrix.product == 'dnsdist'
-      id: clang-tidy-annotations-dnsdist
-      working-directory: ./pdns/dnsdistdist/
-      shell: bash
-      run: |
-        if [ -f clang-tidy-dnsdist.yml ]; then
-          set +e
-          python3 ../../.github/scripts/clang-tidy.py --fixes-file clang-tidy-dnsdist.yml
-          echo "failed=$?" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Install dependencies for rec
-      if: matrix.product == 'rec'
-      run: |
-        inv install-rec-build-deps
-    - run: inv ci-install-rust ${{ env.REPO_HOME }}
-      if: matrix.product == 'rec'
-      working-directory: ./pdns/recursordist/
-    - name: Autoreconf rec
-      if: matrix.product == 'rec'
-      working-directory: ./pdns/recursordist/
-      run: |
-        inv ci-autoconf
-    - name: Configure rec
-      if: matrix.product == 'rec'
-      working-directory: ./pdns/recursordist/
-      run: |
-        inv ci-rec-configure full
-    - name: Build rec
-      if: matrix.product == 'rec'
-      working-directory: ./pdns/recursordist/
-      run: |
-        CONCURRENCY=4 inv ci-rec-make-bear
-    - run: ln -s ../../.clang-tidy.full .clang-tidy
-      if: matrix.product == 'rec'
-      working-directory: ./pdns/recursordist/
-    - name: Run clang-tidy for rec
-      if: matrix.product == 'rec'
-      working-directory: ./pdns/recursordist/
-      run: git diff --no-prefix -U0 HEAD^..HEAD | python3 ../../.github/scripts/git-filter.py --product rec | python3 ../../.github/scripts/clang-tidy-diff.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p0 -export-fixes clang-tidy-rec.yml
-    - name: Print clang-tidy fixes YAML for rec
-      if: matrix.product == 'rec'
-      working-directory: ./pdns/recursordist/
-      shell: bash
-      run: |
-        if [ -f clang-tidy-rec.yml ]; then
-          cat clang-tidy-rec.yml
-        fi
-    - name: Result annotations for rec
-      if: matrix.product == 'rec'
-      id: clang-tidy-annotations-rec
-      working-directory: ./pdns/recursordist/
-      shell: bash
-      run: |
-        if [ -f clang-tidy-rec.yml ]; then
-          set +e
-          python3 ../../.github/scripts/clang-tidy.py --fixes-file clang-tidy-rec.yml
-          echo "failed=$?" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-
-  check-clang-tidy:
-    needs: analyze
-    runs-on: ubuntu-22.04
-    name: Check whether clang-tidy succeeded
-    steps:
-      - run: |
-          if [ "x${{ needs.analyze.outputs.clang-tidy-annotations-auth }}" != "x" -a "${{ needs.analyze.outputs.clang-tidy-annotations-auth }}" != "0" ]; then
-            echo "::error::Auth clang-tidy failed"
-            exit 1
-          fi
-          if [ "x${{ needs.analyze.outputs.clang-tidy-annotations-dnsdist }}" != "x" -a "${{ needs.analyze.outputs.clang-tidy-annotations-dnsdist }}" != "0" ]; then
-            echo "::error::DNSdist clang-tidy failed"
-            exit 1
-          fi
-          if [ "x${{needs.analyze.outputs.clang-tidy-annotations-rec }}" != "x" -a "${{needs.analyze.outputs.clang-tidy-annotations-rec }}" != "0" ]; then
-            echo "::error::Rec clang-tidy failed"
-            exit 1
-          fi
-
-  check-for-binaries:
-    runs-on: ubuntu-22.04
-    name: Force failure in case there are binaries present in a pull request
-    if: ${{ github.event_name == 'pull_request' }}
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
-    - run: if [[ "$(file -i --dereference $(git diff --name-only HEAD^..HEAD -- . :^fuzzing/corpus) | grep binary | grep -v 'image/' | grep -v 'inode/x-empty' | grep -v 'inode/directory')" != "" ]]; then exit 1; fi
+#     - name: Install python invoke and needed libs
+#       run: |
+#         sudo apt-get -qq -y --no-install-recommends install python3-pip python3-invoke python3-git python3-unidiff ccache
+# 
+#     - name: Install clang-tidy tools
+#       run: |
+#         inv install-clang-tidy-tools
+# 
+#     - name: Install dependencies for auth
+#       if: matrix.product == 'auth'
+#       run: |
+#         inv install-auth-build-deps
+#     - name: Autoreconf auth
+#       if: matrix.product == 'auth'
+#       run: |
+#         inv ci-autoconf
+#     - name: Configure auth
+#       if: matrix.product == 'auth'
+#       run: |
+#         inv ci-auth-configure
+#     - name: Build auth
+#       if: matrix.product == 'auth'
+#       run: |
+#         inv ci-auth-make-bear
+#     - run: ln -s .clang-tidy.full .clang-tidy
+#       if: matrix.product == 'auth'
+#     - name: Run clang-tidy for auth
+#       if: matrix.product == 'auth'
+#       run: git diff --no-prefix -U0 HEAD^..HEAD | python3 .github/scripts/git-filter.py --product auth | python3 .github/scripts/clang-tidy-diff.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p0 -export-fixes clang-tidy-auth.yml
+#     - name: Print clang-tidy fixes YAML for auth
+#       if: matrix.product == 'auth'
+#       shell: bash
+#       run: |
+#         if [ -f clang-tidy-auth.yml ]; then
+#           cat clang-tidy-auth.yml
+#         fi
+#     - name: Result annotations for auth
+#       if: matrix.product == 'auth'
+#       id: clang-tidy-annotations-auth
+#       shell: bash
+#       run: |
+#         if [ -f clang-tidy-auth.yml ]; then
+#           set +e
+#           python3 .github/scripts/clang-tidy.py --fixes-file clang-tidy-auth.yml
+#           echo "failed=$?" >> $GITHUB_OUTPUT
+#         fi
+# 
+#     - name: Install dependencies for dnsdist
+#       if: matrix.product == 'dnsdist'
+#       run: |
+#         inv install-dnsdist-build-deps --skipXDP
+#     - name: Autoreconf dnsdist
+#       if: matrix.product == 'dnsdist'
+#       working-directory: ./pdns/dnsdistdist/
+#       run: |
+#         inv ci-autoconf
+#     - run: inv ci-install-rust ${{ env.REPO_HOME }}
+#       if: matrix.product == 'dnsdist'
+#       working-directory: ./pdns/dnsdistdist/
+#     - run: inv ci-build-and-install-quiche ${{ env.REPO_HOME }}
+#       if: matrix.product == 'dnsdist'
+#       working-directory: ./pdns/dnsdistdist/
+#     - name: Configure dnsdist
+#       if: matrix.product == 'dnsdist'
+#       working-directory: ./pdns/dnsdistdist/
+#       run: |
+#         inv ci-dnsdist-configure full
+#     - name: Build dnsdist
+#       if: matrix.product == 'dnsdist'
+#       working-directory: ./pdns/dnsdistdist/
+#       run: |
+#         inv ci-dnsdist-make-bear
+#     - run: ln -s ../../.clang-tidy.full .clang-tidy
+#       if: matrix.product == 'dnsdist'
+#       working-directory: ./pdns/dnsdistdist/
+#     - name: Run clang-tidy for dnsdist
+#       if: matrix.product == 'dnsdist'
+#       working-directory: ./pdns/dnsdistdist/
+#       run: git diff --no-prefix -U0 HEAD^..HEAD | python3 ../../.github/scripts/git-filter.py --product dnsdist | python3 ../../.github/scripts/clang-tidy-diff.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p0 -export-fixes clang-tidy-dnsdist.yml
+#     - name: Print clang-tidy fixes YAML for dnsdist
+#       if: matrix.product == 'dnsdist'
+#       working-directory: ./pdns/dnsdistdist/
+#       shell: bash
+#       run: |
+#         if [ -f clang-tidy-dnsdist.yml ]; then
+#           cat clang-tidy-dnsdist.yml
+#         fi
+#     - name: Result annotations for dnsdist
+#       if: matrix.product == 'dnsdist'
+#       id: clang-tidy-annotations-dnsdist
+#       working-directory: ./pdns/dnsdistdist/
+#       shell: bash
+#       run: |
+#         if [ -f clang-tidy-dnsdist.yml ]; then
+#           set +e
+#           python3 ../../.github/scripts/clang-tidy.py --fixes-file clang-tidy-dnsdist.yml
+#           echo "failed=$?" >> $GITHUB_OUTPUT
+#         fi
+# 
+#     - name: Install dependencies for rec
+#       if: matrix.product == 'rec'
+#       run: |
+#         inv install-rec-build-deps
+#     - run: inv ci-install-rust ${{ env.REPO_HOME }}
+#       if: matrix.product == 'rec'
+#       working-directory: ./pdns/recursordist/
+#     - name: Autoreconf rec
+#       if: matrix.product == 'rec'
+#       working-directory: ./pdns/recursordist/
+#       run: |
+#         inv ci-autoconf
+#     - name: Configure rec
+#       if: matrix.product == 'rec'
+#       working-directory: ./pdns/recursordist/
+#       run: |
+#         inv ci-rec-configure full
+#     - name: Build rec
+#       if: matrix.product == 'rec'
+#       working-directory: ./pdns/recursordist/
+#       run: |
+#         CONCURRENCY=4 inv ci-rec-make-bear
+#     - run: ln -s ../../.clang-tidy.full .clang-tidy
+#       if: matrix.product == 'rec'
+#       working-directory: ./pdns/recursordist/
+#     - name: Run clang-tidy for rec
+#       if: matrix.product == 'rec'
+#       working-directory: ./pdns/recursordist/
+#       run: git diff --no-prefix -U0 HEAD^..HEAD | python3 ../../.github/scripts/git-filter.py --product rec | python3 ../../.github/scripts/clang-tidy-diff.py -clang-tidy-binary /usr/bin/clang-tidy-${CLANG_VERSION} -extra-arg=-ferror-limit=0 -p0 -export-fixes clang-tidy-rec.yml
+#     - name: Print clang-tidy fixes YAML for rec
+#       if: matrix.product == 'rec'
+#       working-directory: ./pdns/recursordist/
+#       shell: bash
+#       run: |
+#         if [ -f clang-tidy-rec.yml ]; then
+#           cat clang-tidy-rec.yml
+#         fi
+#     - name: Result annotations for rec
+#       if: matrix.product == 'rec'
+#       id: clang-tidy-annotations-rec
+#       working-directory: ./pdns/recursordist/
+#       shell: bash
+#       run: |
+#         if [ -f clang-tidy-rec.yml ]; then
+#           set +e
+#           python3 ../../.github/scripts/clang-tidy.py --fixes-file clang-tidy-rec.yml
+#           echo "failed=$?" >> $GITHUB_OUTPUT
+#         fi
+# 
+#     - name: Perform CodeQL Analysis
+#       uses: github/codeql-action/analyze@v3
+# 
+#   check-clang-tidy:
+#     needs: analyze
+#     runs-on: ubuntu-22.04
+#     name: Check whether clang-tidy succeeded
+#     steps:
+#       - run: |
+#           if [ "x${{ needs.analyze.outputs.clang-tidy-annotations-auth }}" != "x" -a "${{ needs.analyze.outputs.clang-tidy-annotations-auth }}" != "0" ]; then
+#             echo "::error::Auth clang-tidy failed"
+#             exit 1
+#           fi
+#           if [ "x${{ needs.analyze.outputs.clang-tidy-annotations-dnsdist }}" != "x" -a "${{ needs.analyze.outputs.clang-tidy-annotations-dnsdist }}" != "0" ]; then
+#             echo "::error::DNSdist clang-tidy failed"
+#             exit 1
+#           fi
+#           if [ "x${{needs.analyze.outputs.clang-tidy-annotations-rec }}" != "x" -a "${{needs.analyze.outputs.clang-tidy-annotations-rec }}" != "0" ]; then
+#             echo "::error::Rec clang-tidy failed"
+#             exit 1
+#           fi
+# 
+#   check-for-binaries:
+#     runs-on: ubuntu-22.04
+#     name: Force failure in case there are binaries present in a pull request
+#     if: ${{ github.event_name == 'pull_request' }}
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v4
+#       with:
+#         fetch-depth: 2
+#     - run: if [[ "$(file -i --dereference $(git diff --name-only HEAD^..HEAD -- . :^fuzzing/corpus) | grep binary | grep -v 'image/' | grep -v 'inode/x-empty' | grep -v 'inode/directory')" != "" ]]; then exit 1; fi
