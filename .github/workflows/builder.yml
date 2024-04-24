@@ -32,9 +32,16 @@ jobs:
           - ubuntu-lunar
           - ubuntu-mantic
           - ubuntu-noble
+          - debian-bullseye
           - debian-bookworm
           - debian-trixie
           - amazon-2023
+        platform: ['linux/amd64']
+        include:
+          - os: debian-bookworm
+            platform: linux/arm64/v8
+          - os: debian-bullseye
+            platform: linux/arm64/v8
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -42,8 +49,18 @@ jobs:
           fetch-depth: 0  # for correct version numbers
           submodules: recursive
           ref: ${{ inputs.branch-name }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        if: ${{ matrix.platform == 'linux/arm64/v8' }}
+        with:
+          platforms: ${{ matrix.platform }}
+      - name: Set up Docker Buildx for multi-platform builds
+        uses: docker/setup-buildx-action@v3
+        if: ${{ matrix.platform == 'linux/arm64/v8' }}
+        with:
+          platforms: ${{ matrix.platform }}
       # this builds packages and runs our unit test (make check)
-      - run: builder/build.sh -v -m ${{ matrix.product }} ${{ matrix.os }}
+      - run: builder/build.sh -v -T ${{ matrix.platform }} -m ${{ matrix.product }} ${{ matrix.os }}
       - name: Get version number
         run: |
           echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
