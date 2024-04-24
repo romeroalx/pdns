@@ -9,7 +9,7 @@
 #   docker build --build-arg MAKEFLAGS=-j8 -t dnsdist -f docker/Dockerfile-dnsdist --platform=linux/amd64 .
 #   docker build --build-arg MAKEFLAGS=-j8 -t dnsdist -f docker/Dockerfile-dnsdist --platform=linux/386 .
 
-ARG DEBIAN_VERSION=11
+ARG DEBIAN_VERSION=12
 
 # Bundles the right cross compiler and other tools as native binaries for this build host.
 # It bundles nothing when the build platform is the same as the target platform.
@@ -93,7 +93,7 @@ RUN mkdir /quiche && cd /quiche && \
     ./install_rust.sh && \
     ./install_quiche.sh
 # -------------------------------------------------------------------------
-FROM builderbase as builder
+FROM --platform=$TARGETPLATFORM builderbase as builder
 
 RUN mkdir /build && \
     LUAVER=$([ -z "${NO_LUA_JIT##*$(dpkg --print-architecture)*}" ] && echo 'lua5.3' || echo 'luajit') && \

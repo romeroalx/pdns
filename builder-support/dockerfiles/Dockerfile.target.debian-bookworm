@@ -1,15 +1,21 @@
-# First do the source builds
-@INCLUDE Dockerfile.target.sdist
+ARG DEBIAN_VERSION=bookworm
 
 @IF [ ${BUILDER_TARGET} = debian-bookworm ]
-FROM debian:bookworm as dist-base
+ARG DEBIAN_IMAGE=debian
 @ENDIF
 @IF [ ${BUILDER_TARGET} = debian-bookworm-amd64 ]
-FROM amd64/debian:bookworm as dist-base
+ARG DEBIAN_IMAGE=amd64/debian
 @ENDIF
 @IF [ ${BUILDER_TARGET} = debian-bookworm-arm64 ]
-FROM arm64v8/debian:bookworm as dist-base
+ARG DEBIAN_IMAGE=arm64v8/debian
 @ENDIF
+
+# Do the source builds next
+@INCLUDE Dockerfile.target.sdist
+
+FROM --platform=$TARGETPLATFORM ${DEBIAN_IMAGE}:${DEBIAN_VERSION} as dist-base
+# Install cross-compiler packages if needed
+@INCLUDE Dockerfile.cross-compiler-binaries
 
 ARG BUILDER_CACHE_BUSTER=
 ARG APT_URL

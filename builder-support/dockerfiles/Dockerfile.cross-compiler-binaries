@@ -1,0 +1,7 @@
+@IF [ -n "${TARGETARCH}" -a -n "${BUILDERARCH}" -a "${TARGETARCH}" != "${BUILDERARCH}" ]
+
+# Overwrite the local filesystem with native binaries if we are cross compiling.
+COPY --from=native-tools /native.tar /native.tar
+RUN tar -C / -xvf /native.tar
+
+@ENDIF

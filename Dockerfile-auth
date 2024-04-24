@@ -47,6 +47,7 @@ RUN apt-get update && apt-get -y dist-upgrade && apt-get install -y  --no-instal
 
 # We use the dependencies from this control file
 # TODO: control file is not in tarballs at all right now
+# TODO: Check this if needed or just the whole folder
 COPY builder-support/debian /source/builder-support/debian
 RUN mk-build-deps -i -t 'apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends' /source/builder-support/debian/authoritative/debian-buster/control && \
     apt-get clean
