@@ -36,6 +36,6 @@ jobs:
         with:
           platforms: ${{ matrix.platform }}
       - name: Build image for amd64 and arm64, and run unit tests (make check)
-        run: docker build --rm --build-arg MAKEFLAGS=-j8 --platform=${{ matrix.platform }} -t powerdns-${{ matrix.product }} -f Dockerfile-${{ matrix.product }} .
+        run: docker build --rm --driver=docker-container --build-arg MAKEFLAGS=-j8 --platform=${{ matrix.platform }} -t powerdns-${{ matrix.product }} -f Dockerfile-${{ matrix.product }} .
       - name: check for which platforms the image has been built for
         run: docker buildx imagetools inspect powerdns-${{ matrix.product }}:latest

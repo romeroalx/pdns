@@ -39,10 +39,22 @@ jobs:
           - amazon-2023
         platform: ['linux/amd64']
         include:
-          - product: ['authoritative', 'recursor', 'dnsdist']
+          - product: authoritative
             os: debian-bookworm
             platform: linux/arm64/v8
-          - product: ['authoritative', 'recursor', 'dnsdist']
+          - product: authoritative
+            os: debian-bullseye
+            platform: linux/arm64/v8
+          - product: recursor
+            os: debian-bookworm
+            platform: linux/arm64/v8
+          - product: recursor
+            os: debian-bullseye
+            platform: linux/arm64/v8
+          - product: dnsdist
+            os: debian-bookworm
+            platform: linux/arm64/v8
+          - product: dnsdist
             os: debian-bullseye
             platform: linux/arm64/v8
       fail-fast: false
