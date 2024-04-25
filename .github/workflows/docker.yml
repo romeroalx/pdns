@@ -44,9 +44,6 @@ jobs:
           file: Dockerfile-${{ matrix.product }}
           platforms: ${{ env.PLATFORMS }}
           push: false
-          load: true
           tags: |
             powerdns-${{ matrix.product }}
       - run: docker image ls
-      - name: check for which platforms the image has been built for
-        run: docker buildx imagetools inspect powerdns-${{ matrix.product }}:latest
