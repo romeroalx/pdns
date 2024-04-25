@@ -37,14 +37,16 @@ jobs:
       # - run: docker buildx create --name container --driver=docker-container container
       # - name: Build image for amd64 and arm64, and run unit tests (make check)
       #   run: docker build --rm --build-arg MAKEFLAGS=-j8 --platform=${{ env.PLATFORMS }} -t powerdns-${{ matrix.product }} -f Dockerfile-${{ matrix.product }} .
-      - name: Build and push to the cc-build project always
+      - name: Build and load powerdns product images
         uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile-${{ matrix.product }}
           platforms: ${{ env.PLATFORMS }}
           push: false
+          load: true
           tags: |
             powerdns-${{ matrix.product }}
+      - run: docker image ls
       - name: check for which platforms the image has been built for
         run: docker buildx imagetools inspect powerdns-${{ matrix.product }}:latest
