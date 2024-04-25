@@ -2,7 +2,7 @@
 name: 'Test package building for specific distributions'
 
 on:
-  # push:
+  push:
   workflow_call:
     inputs:
       branch-name:

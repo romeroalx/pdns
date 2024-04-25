@@ -2,7 +2,7 @@
 name: 'Build Docker images'
 
 on:
-  push:
+  # push:
   schedule:
     - cron: '0 4 * * *'
 
@@ -46,4 +46,3 @@ jobs:
           push: false
           tags: |
             powerdns-${{ matrix.product }}
-      - run: docker image ls

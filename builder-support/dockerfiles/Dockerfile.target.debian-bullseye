@@ -10,6 +10,9 @@ ARG DEBIAN_IMAGE=amd64/debian
 ARG DEBIAN_IMAGE=arm64v8/debian
 @ENDIF
 
+# Install cross-compiler packages if needed
+@INCLUDE Dockerfile.cross-compile-debian
+
 # Do the source builds next
 @INCLUDE Dockerfile.target.sdist
 
