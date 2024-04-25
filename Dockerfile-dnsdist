@@ -97,7 +97,7 @@ FROM --platform=$TARGETPLATFORM builderbase as builder
 
 RUN mkdir /build && \
     LUAVER=$([ -z "${NO_LUA_JIT##*$(dpkg --print-architecture)*}" ] && echo 'lua5.3' || echo 'luajit') && \
-    apt-get install -y lib${LUAVER}*-dev && \
+    apt-get install -y lib${LUAVER}-*dev && \
     . /buildenv.sh && \
     ./configure \
       --with-lua=${LUAVER} \
