@@ -82,7 +82,7 @@ RUN if [ "${DOCKER_FAKE_RELEASE}" = "YES" ]; then \
     BUILDER_MODULES=authoritative autoreconf -vfi
 
 # -------------------------------------------------------------------------
-FROM builderbase as builder
+FROM --platform=$TARGETPLATFORM builderbase as builder
 
 # simplify repeated -C calls with SUBDIRS?
 RUN mkdir /build && \

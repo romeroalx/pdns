@@ -26,37 +26,38 @@ jobs:
       matrix:
         product: ['authoritative', 'recursor', 'dnsdist']
         os:
-          - centos-7
-          - el-8
-          - centos-8-stream
+          #- centos-7
+          #- el-8
+          #- centos-8-stream
           - centos-9-stream
-          - ubuntu-lunar
-          - ubuntu-mantic
-          - ubuntu-noble
+          # - ubuntu-lunar
+          # - ubuntu-mantic
+          # - ubuntu-noble
+          - ubuntu-jammy
           - debian-bullseye
-          - debian-bookworm
-          - debian-trixie
+          # - debian-bookworm
+          # - debian-trixie
           - amazon-2023
-        platform: ['linux/amd64']
-        include:
-          - product: authoritative
-            os: debian-bookworm
-            platform: linux/arm64/v8
-          - product: authoritative
-            os: debian-bullseye
-            platform: linux/arm64/v8
-          - product: recursor
-            os: debian-bookworm
-            platform: linux/arm64/v8
-          - product: recursor
-            os: debian-bullseye
-            platform: linux/arm64/v8
-          - product: dnsdist
-            os: debian-bookworm
-            platform: linux/arm64/v8
-          - product: dnsdist
-            os: debian-bullseye
-            platform: linux/arm64/v8
+        platform: ['linux/amd64', 'linux/arm64/v8']
+        # exclude:
+        #   - product: authoritative
+        #     os: debian-bookworm
+        #     platform: linux/arm64/v8
+        #   - product: authoritative
+        #     os: debian-bullseye
+        #     platform: linux/arm64/v8
+        #   - product: recursor
+        #     os: debian-bookworm
+        #     platform: linux/arm64/v8
+        #   - product: recursor
+        #     os: debian-bullseye
+        #     platform: linux/arm64/v8
+        #   - product: dnsdist
+        #     os: debian-bookworm
+        #     platform: linux/arm64/v8
+        #   - product: dnsdist
+        #     os: debian-bullseye
+        #     platform: linux/arm64/v8
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -80,9 +81,13 @@ jobs:
         run: |
           echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
         id: getversion
+      - name: Get target architecture
+        run: |
+          echo "target-arch=$(uname -m)" >> $GITHUB_OUTPUT
+        id: getarch
       - name: Upload packages
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.product }}-${{ matrix.os }}-${{ steps.getversion.outputs.version }}
+          name: ${{ matrix.product }}-${{ matrix.os }}-${{ steps.getarch.outputs.target-arch }}-${{ steps.getversion.outputs.version }}
           path: built_pkgs/
           retention-days: 7
