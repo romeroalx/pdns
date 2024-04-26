@@ -1,13 +1,13 @@
-ARG UBUNTU_VERSION=jammy
+ARG IMAGE_VERSION=jammy
 
 @IF [ ${BUILDER_TARGET} = ubuntu-jammy ]
-ARG UBUNTU_IMAGE=ubuntu
+ARG IMAGE_NAME=ubuntu
 @ENDIF
 @IF [ ${BUILDER_TARGET} = ubuntu-jammy-amd64 ]
-ARG UBUNTU_IMAGE=amd64/ubuntu
+ARG IMAGE_NAME=amd64/ubuntu
 @ENDIF
 @IF [ ${BUILDER_TARGET} = ubuntu-jammy-arm64 ]
-ARG UBUNTU_IMAGE=arm64v8/ubuntu
+ARG IMAGE_NAME=arm64v8/ubuntu
 @ENDIF
 
 # Install cross-compiler packages if needed
@@ -16,7 +16,7 @@ ARG UBUNTU_IMAGE=arm64v8/ubuntu
 # Do the source builds next
 @INCLUDE Dockerfile.target.sdist
 
-FROM --platform=$TARGETPLATFORM ${UBUNTU_IMAGE}:${UBUNTU_VERSION} as dist-base
+FROM --platform=$TARGETPLATFORM ${IMAGE_NAME}:${IMAGE_VERSION} as dist-base
 @INCLUDE Dockerfile.cross-compiler-binaries
 
 ARG BUILDER_CACHE_BUSTER=

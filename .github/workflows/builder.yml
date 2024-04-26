@@ -29,7 +29,7 @@ jobs:
           #- centos-7
           #- el-8
           #- centos-8-stream
-          - centos-9-stream
+          # - centos-9-stream
           # - ubuntu-lunar
           # - ubuntu-mantic
           # - ubuntu-noble
@@ -37,7 +37,7 @@ jobs:
           - debian-bullseye
           # - debian-bookworm
           # - debian-trixie
-          - amazon-2023
+          # - amazon-2023
         platform: ['linux/amd64', 'linux/arm64/v8']
         # exclude:
         #   - product: authoritative
@@ -83,7 +83,7 @@ jobs:
         id: getversion
       - name: Get target architecture
         run: |
-          echo "target-arch=$(uname -m)" >> $GITHUB_OUTPUT
+          echo "target-arch=$(echo '${{ matrix.platform }}' | cut -d '/' -f 2)" >> $GITHUB_OUTPUT
         id: getarch
       - name: Upload packages
         uses: actions/upload-artifact@v4

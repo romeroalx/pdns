@@ -1,13 +1,13 @@
-ARG DEBIAN_VERSION=bullseye
+ARG IMAGE_VERSION=bullseye
 
 @IF [ ${BUILDER_TARGET} = debian-bullseye ]
-ARG DEBIAN_IMAGE=debian
+ARG IMAGE_NAME=debian
 @ENDIF
 @IF [ ${BUILDER_TARGET} = debian-bullseye-amd64 ]
-ARG DEBIAN_IMAGE=amd64/debian
+ARG IMAGE_NAME=amd64/debian
 @ENDIF
 @IF [ ${BUILDER_TARGET} = debian-bullseye-arm64 ]
-ARG DEBIAN_IMAGE=arm64v8/debian
+ARG IMAGE_NAME=arm64v8/debian
 @ENDIF
 
 # Install cross-compiler packages if needed
@@ -16,7 +16,7 @@ ARG DEBIAN_IMAGE=arm64v8/debian
 # Do the source builds next
 @INCLUDE Dockerfile.target.sdist
 
-FROM --platform=$TARGETPLATFORM ${DEBIAN_IMAGE}:${DEBIAN_VERSION} as dist-base
+FROM --platform=$TARGETPLATFORM ${IMAGE_NAME}:${IMAGE_VERSION} as dist-base
 # Install cross-compiler packages if needed
 @INCLUDE Dockerfile.cross-compiler-binaries
 

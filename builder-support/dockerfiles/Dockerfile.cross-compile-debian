@@ -2,7 +2,7 @@
 
 # Bundles the right cross compiler and other tools as native binaries for this build host.
 # It bundles nothing when the build platform is the same as the target platform.
-FROM --platform=$BUILDPLATFORM ${DEBIAN_IMAGE}:${DEBIAN_VERSION}-slim AS native-tools
+FROM --platform=$BUILDPLATFORM ${IMAGE_NAME}:${IMAGE_VERSION} AS native-tools
 RUN apt-get update && apt-get -y dist-upgrade && apt-get clean
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
