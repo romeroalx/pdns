@@ -6,8 +6,6 @@ RUN if $(echo ${BUILDER_VERSION} | grep -q -E '^0\.0\.'); then \
   sed -i '/pdns-server (<< .*/d' pdns-${BUILDER_VERSION}/debian/control; \
 fi
 
-RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && pushd pdns-${BUILDER_VERSION} && mk-build-deps -i -t 'apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends' && popd
-
 RUN [ ! -f /buildenv.sh ] || . /buildenv.sh && PDNS_TEST_NO_IPV6=1 builder/helpers/build-debs.sh pdns-${BUILDER_VERSION}
 
 RUN mv pdns*.deb /dist; mv pdns*.ddeb /dist || true
