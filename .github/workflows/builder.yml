@@ -26,38 +26,28 @@ jobs:
       matrix:
         product: ['authoritative', 'recursor', 'dnsdist']
         os:
-          #- centos-7
-          #- el-8
-          #- centos-8-stream
-          # - centos-9-stream
-          # - ubuntu-lunar
-          # - ubuntu-mantic
-          # - ubuntu-noble
-          - ubuntu-jammy
-          - debian-bullseye
-          # - debian-bookworm
-          # - debian-trixie
-          # - amazon-2023
+          - centos-7
+          - el-8
+          - centos-8-stream
+          - centos-9-stream
+          - ubuntu-lunar
+          - ubuntu-mantic
+          - ubuntu-noble
+          - debian-bookworm
+          - debian-trixie
+          - amazon-2023
         platform: ['linux/amd64', 'linux/arm64/v8']
-        # exclude:
-        #   - product: authoritative
-        #     os: debian-bookworm
-        #     platform: linux/arm64/v8
-        #   - product: authoritative
-        #     os: debian-bullseye
-        #     platform: linux/arm64/v8
-        #   - product: recursor
-        #     os: debian-bookworm
-        #     platform: linux/arm64/v8
-        #   - product: recursor
-        #     os: debian-bullseye
-        #     platform: linux/arm64/v8
-        #   - product: dnsdist
-        #     os: debian-bookworm
-        #     platform: linux/arm64/v8
-        #   - product: dnsdist
-        #     os: debian-bullseye
-        #     platform: linux/arm64/v8
+        exclude:
+          - os: centos-7
+            platform: linux/arm64/v8
+          - os: el-8
+            platform: linux/arm64/v8
+          - os: centos-8-stream
+            platform: linux/arm64/v8
+          - os: centos-9-stream
+            platform: linux/arm64/v8
+          - os: amazon-2023
+            platform: linux/arm64/v8
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
