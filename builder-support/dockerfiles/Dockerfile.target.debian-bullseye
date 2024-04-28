@@ -17,7 +17,6 @@ ARG IMAGE_NAME=arm64v8/debian
 @INCLUDE Dockerfile.target.sdist
 
 FROM --platform=$TARGETPLATFORM ${IMAGE_NAME}:${IMAGE_VERSION} as dist-base
-# Install cross-compiler packages if needed
 @INCLUDE Dockerfile.cross-compiler-binaries
 
 ARG BUILDER_CACHE_BUSTER=

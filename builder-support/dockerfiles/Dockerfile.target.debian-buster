@@ -1,15 +1,23 @@
-# First do the source builds
-@INCLUDE Dockerfile.target.sdist
+ARG IMAGE_VERSION=buster
 
 @IF [ ${BUILDER_TARGET} = debian-buster ]
-FROM debian:buster as dist-base
+ARG IMAGE_NAME=debian
 @ENDIF
 @IF [ ${BUILDER_TARGET} = debian-buster-amd64 ]
-FROM amd64/debian:buster as dist-base
+ARG IMAGE_NAME=amd64/debian
 @ENDIF
 @IF [ ${BUILDER_TARGET} = debian-buster-arm64 ]
-FROM arm64v8/debian:buster as dist-base
+ARG IMAGE_NAME=arm64v8/debian
 @ENDIF
+
+# Install cross-compiler packages if needed
+@INCLUDE Dockerfile.cross-compile-debian
+
+# Do the source builds next
+@INCLUDE Dockerfile.target.sdist
+
+FROM --platform=$TARGETPLATFORM ${IMAGE_NAME}:${IMAGE_VERSION} as dist-base
+@INCLUDE Dockerfile.cross-compiler-binaries
 
 ARG BUILDER_CACHE_BUSTER=
 ARG APT_URL

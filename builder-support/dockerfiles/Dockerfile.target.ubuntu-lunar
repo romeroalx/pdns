@@ -1,15 +1,23 @@
-# First do the source builds
-@INCLUDE Dockerfile.target.sdist
+ARG IMAGE_VERSION=lunar
 
 @IF [ ${BUILDER_TARGET} = ubuntu-lunar ]
-FROM ubuntu:lunar as dist-base
+ARG IMAGE_NAME=ubuntu
 @ENDIF
 @IF [ ${BUILDER_TARGET} = ubuntu-lunar-amd64 ]
-FROM amd64/ubuntu:lunar as dist-base
+ARG IMAGE_NAME=amd64/ubuntu
 @ENDIF
 @IF [ ${BUILDER_TARGET} = ubuntu-lunar-arm64 ]
-FROM arm64v8/ubuntu:lunar as dist-base
+ARG IMAGE_NAME=arm64v8/ubuntu
 @ENDIF
+
+# Install cross-compiler packages if needed
+@INCLUDE Dockerfile.cross-compile-debian
+
+# Do the source builds next
+@INCLUDE Dockerfile.target.sdist
+
+FROM --platform=$TARGETPLATFORM ${IMAGE_NAME}:${IMAGE_VERSION} as dist-base
+@INCLUDE Dockerfile.cross-compiler-binaries
 
 ARG BUILDER_CACHE_BUSTER=
 ARG APT_URL
