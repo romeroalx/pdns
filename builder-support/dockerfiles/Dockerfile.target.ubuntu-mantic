@@ -1,12 +1,12 @@
 ARG IMAGE_VERSION=mantic
 
-@IF [ ${BUILDER_TARGET} = ubuntu-${IMAGE_VERSION} ]
+@IF [ ${BUILDER_TARGET} = ubuntu-mantic ]
 ARG IMAGE_NAME=ubuntu
 @ENDIF
-@IF [ ${BUILDER_TARGET} = ubuntu-${IMAGE_VERSION}-amd64 ]
+@IF [ ${BUILDER_TARGET} = ubuntu-mantic-amd64 ]
 ARG IMAGE_NAME=amd64/ubuntu
 @ENDIF
-@IF [ ${BUILDER_TARGET} = ubuntu-${IMAGE_VERSION}-arm64 ]
+@IF [ ${BUILDER_TARGET} = ubuntu-mantic-arm64 ]
 ARG IMAGE_NAME=arm64v8/ubuntu
 @ENDIF
 
