@@ -26,16 +26,16 @@ jobs:
       matrix:
         product: ['authoritative', 'recursor', 'dnsdist']
         os:
-          - centos-7
-          - el-8
-          - centos-8-stream
-          - centos-9-stream
-          - ubuntu-lunar
+          # - centos-7
+          # - el-8
+          # - centos-8-stream
+          # - centos-9-stream
+          # - ubuntu-lunar
           - ubuntu-mantic
           - ubuntu-noble
-          - debian-bookworm
+          # - debian-bookworm
           - debian-trixie
-          - amazon-2023
+          # - amazon-2023
         platform: ['linux/amd64', 'linux/arm64/v8']
         exclude:
           - os: centos-7
