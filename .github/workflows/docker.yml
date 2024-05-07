@@ -17,6 +17,6 @@ jobs:
       product: auth
       ref: ${{ github.ref_name }}
       image-name: powerdns-auth-master
-      image-tag: latest
+      image-tag: test
       platforms: linux/amd64
       push: false
