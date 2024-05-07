@@ -20,5 +20,5 @@ jobs:
       image-tag: |
         test
         latest
-      platforms: linux/amd64
+      platforms: linux/amd64,linux/arm64/v8
       push: false

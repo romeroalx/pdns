@@ -17,7 +17,7 @@ on:
         description: repository name for the requested image
         type: string
         required: true
-      image-tag:
+      image-tags:
         description: tag for the requested image
         type: string
         required: true
@@ -41,7 +41,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   build:
-    name: docker build
+    name: build docker image for a product
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -57,14 +57,12 @@ jobs:
         uses: docker/setup-buildx-action@v3
         with:
           platforms: ${{ inputs.platforms }}
-      - run: echo '${{ inputs.image-name }}:${{ inputs.image-tag }}'
       - name: Docker image metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ inputs.image-name }}
           tags: ${{ inputs.image-tag }}
-      - run: echo '${{ steps.meta.outputs.tags }}'
       - name: Build and load powerdns product images
         uses: docker/build-push-action@v5
         with:
@@ -72,7 +70,7 @@ jobs:
           file: Dockerfile-${{ inputs.product }}
           platforms: ${{ inputs.platforms }}
           push: false
-          # sbom: true
-          load: true
+          sbom: true
+          # load: true
           tags: ${{ steps.meta.outputs.tags }}
       - run: docker image ls
