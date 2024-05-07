@@ -12,7 +12,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-build-image-auth:
-    uses: romeroalx/pdns/.github/workflows/build-packages.yml@build-docker-images-dev
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
     with:
       product: auth
       ref: ${{ github.ref_name }}
