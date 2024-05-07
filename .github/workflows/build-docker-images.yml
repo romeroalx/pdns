@@ -66,6 +66,7 @@ jobs:
           platforms: ${{ inputs.platforms }}
           push: false
           # sbom: true
+          load: true
           tags: |
             powerdns-${{ inputs.product }}:${{ inputs.image-tag }}
-
+      - run: docker image ls
