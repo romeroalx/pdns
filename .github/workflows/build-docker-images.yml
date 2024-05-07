@@ -1,0 +1,78 @@
+---
+name: Build docker images
+
+on:
+  workflow_call:
+    inputs:
+      product:
+        required: true
+        description: Product to build
+        type: string
+      ref:
+        description: git ref to checkout
+        type: string
+        default: master
+        required: false
+      image-name:
+        description: repository name for the requested image
+        type: string
+        required: true
+      image-tag:
+        description: tag for the requested image
+        type: string
+        required: true
+      platforms:
+        description: target platform(s) for the image to be built
+        type: string
+        default: linux/arm64/v8,linux/amd64
+        required: false
+      push:
+        description: push image to DockerHub
+        type: boolean
+        required: true
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_TOKEN:
+        required: false
+
+permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+  contents: read
+
+jobs:
+  build:
+    name: docker build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ inputs.ref }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/arm64/v8
+      - name: Set up Docker Buildx for multi-platform builds
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: ${{ inputs.platforms }}
+      - run: echo '${{ inputs.image-name }}:${{ inputs.image-tag }}'
+      - name: Get docker image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: '${{ inputs.image-name }}:${{ inputs.image-tag }}'
+      - run: echo '${{ steps.meta.outputs.tags }}'
+
+      # - name: Build and load powerdns product images
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: Dockerfile-${{ matrix.product }}
+      #     platforms: ${{ inputs.platforms }}
+      #     push: false
+      #     sbom: true
+      #     tags: |
+      #       powerdns-${{ matrix.product }}:
+      #       powerdns-${{ matrix.product }}:latest

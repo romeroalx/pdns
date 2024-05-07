@@ -2,25 +2,21 @@
 name: 'Build Docker images'
 
 on:
-  schedule:
-    - cron: '0 4 * * *'
+  push:
+  # schedule:
+  #   - cron: '0 4 * * *'
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
+  actions: read
 
 jobs:
-  build:
-    name: docker build
-    if: ${{ vars.SCHEDULED_DOCKER }}
-    # on a ubuntu-20.04 VM
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        product: ['auth', 'recursor', 'dnsdist']
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 5
-          submodules: recursive
-      # this builds packages and runs our unit test (make check)
-      - run: docker build --rm -t powerdns-${{ matrix.product }} -f Dockerfile-${{ matrix.product }} .
+  call-build-image-auth:
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@build-docker-images-dev
+    with:
+      product: auth
+      ref: ${{ github.ref_name }}
+      image-name: powerdns-auth-master
+      image-tag: latest
+      platforms: linux/amd64
+      push: false
