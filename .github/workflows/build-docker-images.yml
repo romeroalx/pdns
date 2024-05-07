@@ -65,15 +65,14 @@ jobs:
           images: ${{ inputs.image-name }}
           tags: ${{ inputs.image-tag }}
       - run: echo '${{ steps.meta.outputs.tags }}'
-      # - name: Build and load powerdns product images
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: Dockerfile-${{ inputs.product }}
-      #     platforms: ${{ inputs.platforms }}
-      #     push: false
-      #     # sbom: true
-      #     load: true
-      #     tags: |
-      #       powerdns-${{ inputs.product }}:${{ inputs.image-tag }}
-      # - run: docker image ls
+      - name: Build and load powerdns product images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile-${{ inputs.product }}
+          platforms: ${{ inputs.platforms }}
+          push: false
+          # sbom: true
+          load: true
+          tags: ${{ steps.meta.outputs.tags }}
+      - run: docker image ls
