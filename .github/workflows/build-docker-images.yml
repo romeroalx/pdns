@@ -62,7 +62,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ inputs.image-name }}
-          tags: ${{ inputs.image-tag }}
+          tags: ${{ inputs.image-tags }}
       - name: Build and load powerdns product images
         uses: docker/build-push-action@v5
         with:
