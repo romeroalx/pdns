@@ -70,7 +70,7 @@ jobs:
         with:
           images: ${{ env.DOCKERHUB_ORG_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
-      - run: echo ${{ steps.meta.outputs.tags }}''
+      - run: echo '${{ steps.meta.outputs.tags }}'
       - name: Build and load powerdns product images
         uses: docker/build-push-action@v5
         with:
