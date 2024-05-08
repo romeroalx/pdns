@@ -35,6 +35,8 @@ on:
         type: boolean
         required: true
     secrets:
+      DOCKERHUB_ORGANIZATION_NAME:
+        required: true
       DOCKERHUB_USERNAME:
         required: true
       DOCKERHUB_TOKEN:
@@ -47,8 +49,6 @@ jobs:
   build:
     name: build docker image for a product
     runs-on: ubuntu-22.04
-    env:
-      DOCKERHUB_ORG_NAME: romeroalx
     steps:
       - uses: actions/checkout@v4
         with:
@@ -72,7 +72,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.DOCKERHUB_ORG_NAME }}/${{ inputs.image-name }}
+          images: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
       - name: Build and load powerdns product images
         uses: docker/build-push-action@v5
@@ -89,5 +89,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ env.DOCKERHUB_ORG_NAME }}/${{ inputs.image-name }}
+          repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           short-description: ${{ inputs.image-description }}
