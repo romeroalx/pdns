@@ -43,6 +43,8 @@ jobs:
   build:
     name: build docker image for a product
     runs-on: ubuntu-22.04
+    env:
+      DOCKERHUB_ORG_NAME: romeroalx
     steps:
       - uses: actions/checkout@v4
         with:
@@ -66,8 +68,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ inputs.image-name }}
+          images: ${{ env.DOCKERHUB_ORG_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
+      - run: echo ${{ steps.meta.outputs.tags }}''
       - name: Build and load powerdns product images
         uses: docker/build-push-action@v5
         with:
@@ -78,4 +81,3 @@ jobs:
           sbom: true
           # load: true
           tags: ${{ steps.meta.outputs.tags }}
-      - run: docker image ls
