@@ -69,7 +69,7 @@ jobs:
           context: .
           file: Dockerfile-${{ inputs.product }}
           platforms: ${{ inputs.platforms }}
-          push: false
+          push: ${{ inputs.push }}
           sbom: true
           # load: true
           tags: ${{ steps.meta.outputs.tags }}
