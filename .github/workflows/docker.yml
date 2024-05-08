@@ -20,29 +20,33 @@ jobs:
       image-tags: |
         test
         latest
-      platforms: linux/amd64,linux/arm64/v8
-      push: false
+      platforms: linux/amd64
+      # platforms: linux/amd64,linux/arm64/v8
+      push: true
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
-  call-build-image-recursor:
-    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
-    with:
-      product: recursor
-      ref: ${{ github.ref_name }}
-      image-name: powerdns-recursor-master
-      image-tags: |
-        test
-        latest
-      platforms: linux/amd64,linux/arm64/v8
-      push: false
-
-  call-build-image-dnsdist:
-    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
-    with:
-      product: dnsdist
-      ref: ${{ github.ref_name }}
-      image-name: powerdns-dnsdist-master
-      image-tags: |
-        test
-        latest
-      platforms: linux/amd64,linux/arm64/v8
-      push: false
+#   call-build-image-recursor:
+#     uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
+#     with:
+#       product: recursor
+#       ref: ${{ github.ref_name }}
+#       image-name: powerdns-recursor-master
+#       image-tags: |
+#         test
+#         latest
+#       platforms: linux/amd64,linux/arm64/v8
+#       push: false
+# 
+#   call-build-image-dnsdist:
+#     uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
+#     with:
+#       product: dnsdist
+#       ref: ${{ github.ref_name }}
+#       image-name: powerdns-dnsdist-master
+#       image-tags: |
+#         test
+#         latest
+#       platforms: linux/amd64,linux/arm64/v8
+#       push: false
