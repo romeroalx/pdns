@@ -81,3 +81,9 @@ jobs:
           sbom: true
           # load: true
           tags: ${{ steps.meta.outputs.tags }}
+      - name: Update repo description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ env.DOCKERHUB_ORG_NAME }}/${{ inputs.image-name }}
