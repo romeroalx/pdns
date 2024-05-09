@@ -53,6 +53,8 @@ jobs:
       images: ${{ join(steps.meta.outputs.tags, ' ') }}
       images-2: ${{ steps.meta.outputs.tags }}
       test: ${{ steps.test.outputs.test }}
+      test-2: ${{ steps.test.outputs.test-2 }}
+      test-3: ${{ steps.test.outputs.test-3 }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -117,7 +119,10 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.ref }}
       - run: echo '${{ needs.build.outputs.images }}'
+      - run: echo '${{ needs.build.outputs.images-2 }}'
       - run: echo '${{ needs.build.outputs.test }}'
+      - run: echo '${{ needs.build.outputs.test-2 }}'
+      - run: echo '${{ needs.build.outputs.test-3 }}'
       - run: |
           for i in '"${{ needs.build.outputs.images }}"'; do echo $i; done
 
