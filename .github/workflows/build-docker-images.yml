@@ -51,6 +51,7 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       images: ${{ join(steps.meta.outputs.tags, ' ') }}
+      images-2: ${{ steps.meta.outputs.tags }}
       test: ${{ steps.test.outputs.test }}
     steps:
       - uses: actions/checkout@v4
@@ -77,6 +78,8 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
+      - run: echo '${{ join(steps.meta.outputs.tags, ' ') }}'
+      - run: echo '${{ steps.meta.outputs.tags }}'
       - run: echo "test=ALEXIS" >> "$GITHUB_OUTPUT"
         id: test
       - run: cat "$GITHUB_OUTPUT"
