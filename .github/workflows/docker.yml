@@ -17,7 +17,9 @@ jobs:
       product: auth
       ref: ${{ github.ref_name }}
       image-name: powerdns-auth-master
-      image-tags: latest
+      image-tags: |
+        master
+        latest
       image-description: 'EXPERIMENTAL pdns auth image'
       platforms: linux/amd64
       # platforms: linux/amd64,linux/arm64/v8

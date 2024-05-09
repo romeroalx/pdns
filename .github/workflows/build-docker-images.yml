@@ -49,12 +49,6 @@ jobs:
   build:
     name: build docker image for a product
     runs-on: ubuntu-22.04
-    outputs:
-      images: ${{ join(steps.meta.outputs.tags, ' ') }}
-      images-2: ${{ steps.meta.outputs.tags }}
-      test: ${{ steps.test.outputs.test }}
-      test-2: ${{ steps.test.outputs.test-2 }}
-      test-3: ${{ steps.test.outputs.test-3 }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,15 +74,6 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
-      - run: echo '${{ join(steps.meta.outputs.tags, ' ') }}'
-      - run: echo '${{ steps.meta.outputs.tags }}'
-      - run: echo "test=ALEXIS" >> "$GITHUB_OUTPUT"
-        id: test
-      - run: echo "test-2=${{ join(steps.meta.outputs.tags, ' ') }}" >> "$GITHUB_OUTPUT"
-        id: test-2
-      - run: echo "test-3=${{ steps.meta.outputs.tags }}" >> "$GITHUB_OUTPUT"
-        id: test-3
-      - run: cat "$GITHUB_OUTPUT"
       # - name: Build and load powerdns product images
       #   uses: docker/build-push-action@v5
       #   with:
@@ -112,19 +97,11 @@ jobs:
     if: ${{ contains(inputs.platforms, 'amd64') && inputs.push }}
     needs: build
     runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          ref: ${{ inputs.ref }}
-      - run: echo '${{ needs.build.outputs.images }}'
-      - run: echo '${{ needs.build.outputs.images-2 }}'
-      - run: echo '${{ needs.build.outputs.test }}'
-      - run: echo '${{ needs.build.outputs.test-2 }}'
-      - run: echo '${{ needs.build.outputs.test-3 }}'
+    steps:   
+      - run: echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'
+      - run: echo '${{ inputs.image-tags }}'
       - run: |
-          for i in '"${{ needs.build.outputs.images }}"'; do echo $i; done
+          for i in '${{ inputs.image-tags }}'; do echo $i; echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i; done
 
   test-image-arm64:    
     name: test uploaded arm64 images
@@ -132,11 +109,6 @@ jobs:
     needs: build
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          ref: ${{ inputs.ref }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -146,4 +118,4 @@ jobs:
         with:
           platforms: ${{ inputs.platforms }}
       - run: |
-          for i in '"${{ needs.build.outputs.images }}"'; do echo 'image: '$i; done
+          for i in '1 2'; do echo 'image: '$i; done
