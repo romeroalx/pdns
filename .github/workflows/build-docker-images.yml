@@ -45,6 +45,9 @@ on:
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
 
+env:
+  DOCKERHUB_ORGANIZATION_NAME: romeroalx
+
 jobs:
   build:
     name: build docker image for a product
@@ -72,7 +75,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
+          images: ${{ env.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
       - run: echo '${{ steps.meta.outputs.tags }}'
       # - name: Build and load powerdns product images
@@ -90,7 +93,7 @@ jobs:
       #   with:
       #     username: ${{ secrets.DOCKERHUB_USERNAME }}
       #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      #     repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
+      #     repository: ${{ env.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
       #     short-description: ${{ inputs.image-description }}
 
   test-image-amd64:    
@@ -101,8 +104,8 @@ jobs:
     steps:   
       - run: |
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-            echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i;
-            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i --version;
+            echo '${{ env.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i;
+            docker run '${{ env.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i --version;
           done
       - run: docker run romeroalx/powerdns-auth-49:latest --version
 
