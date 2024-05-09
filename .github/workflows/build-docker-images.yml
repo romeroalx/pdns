@@ -76,23 +76,23 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
-      - name: Build and load powerdns product images
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile-${{ inputs.product }}
-          platforms: ${{ inputs.platforms }}
-          push: ${{ inputs.push }}
-          sbom: true
-          tags: ${{ steps.meta.outputs.tags }}
-      - name: Update repo description
-        if: ${{ inputs.push }}
-        uses: peter-evans/dockerhub-description@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
-          short-description: ${{ inputs.image-description }}
+      # - name: Build and load powerdns product images
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: Dockerfile-${{ inputs.product }}
+      #     platforms: ${{ inputs.platforms }}
+      #     push: ${{ inputs.push }}
+      #     sbom: true
+      #     tags: ${{ steps.meta.outputs.tags }}
+      # - name: Update repo description
+      #   if: ${{ inputs.push }}
+      #   uses: peter-evans/dockerhub-description@v4
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      #     repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
+      #     short-description: ${{ inputs.image-description }}
 
   test-image-amd64:    
     name: test uploaded amd64 images
@@ -105,6 +105,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ inputs.ref }}
+      - run: echo '${{ needs.build.outputs.images }}'
       - run: |
           for i in '"${{ needs.build.outputs.images }}"'; do echo $i; done
 
