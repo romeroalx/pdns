@@ -102,7 +102,7 @@ jobs:
       - run: echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'
       - run: echo '${{ inputs.image-tags }}'
       - run: |
-          for i in ${{ inputs.image-tags }}; do echo $i; echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i; done
+          for i in '${{ inputs.image-tags }}'; do echo $i; echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i; done
 
   test-image-arm64:    
     name: test uploaded arm64 images
