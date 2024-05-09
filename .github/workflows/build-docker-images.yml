@@ -49,6 +49,8 @@ jobs:
   build:
     name: build docker image for a product
     runs-on: ubuntu-22.04
+    outputs:
+      images: ${{ steps.meta.outputs.tags }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -91,3 +93,39 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           short-description: ${{ inputs.image-description }}
+
+  test-image-amd64:    
+    name: test uploaded amd64 images
+    if: ${{ contains(inputs.platforms, 'amd64') && inputs.push }}
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ inputs.ref }}
+      - run: |
+          for i in '"${{ needs.build.outputs.images }}"'; do echo $i; done
+
+  test-image-arm64:    
+    name: test uploaded arm64 images
+    if: ${{ contains(inputs.platforms, 'arm64') && inputs.push }}
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          ref: ${{ inputs.ref }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/arm64/v8
+      - name: Set up Docker Buildx for multi-platform builds
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: ${{ inputs.platforms }}
+      - run: |
+          for i in '"${{ needs.build.outputs.images }}"'; do echo 'image: '$i; done
