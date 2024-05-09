@@ -99,11 +99,12 @@ jobs:
     needs: build
     runs-on: ubuntu-22.04
     steps:   
-      - run: echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'
-      - run: echo '${{ inputs.image-tags }}'
-      - run: echo '${{ inputs.image-tags }}' | tr '\n' ' '
       - run: |
-          for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do echo $i; echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i; done
+          for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
+            echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i;
+            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}/'$i --version;
+          done
+      - run: docker run romeroalx/powerdns-auth-49:latest --version
 
   test-image-arm64:    
     name: test uploaded arm64 images
