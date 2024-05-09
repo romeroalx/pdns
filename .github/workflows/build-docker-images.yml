@@ -82,6 +82,10 @@ jobs:
       - run: echo '${{ steps.meta.outputs.tags }}'
       - run: echo "test=ALEXIS" >> "$GITHUB_OUTPUT"
         id: test
+      - run: echo "test-2=${{ join(steps.meta.outputs.tags, ' ') }}" >> "$GITHUB_OUTPUT"
+        id: test-2
+      - run: echo "test-3=${{ steps.meta.outputs.tags }}" >> "$GITHUB_OUTPUT"
+        id: test-3
       - run: cat "$GITHUB_OUTPUT"
       # - name: Build and load powerdns product images
       #   uses: docker/build-push-action@v5
