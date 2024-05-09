@@ -17,7 +17,7 @@ jobs:
       product: auth
       ref: ${{ github.ref_name }}
       image-name: powerdns-auth-master
-      image-tags: |
+      image-tags: >-
         master
         latest
       image-description: 'EXPERIMENTAL pdns auth image'
