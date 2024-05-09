@@ -50,7 +50,7 @@ jobs:
     name: build docker image for a product
     runs-on: ubuntu-22.04
     outputs:
-      images: ${{ steps.meta.outputs.tags }}
+      images: ${{ join(steps.meta.outputs.tags, ' ') }}
       test: ${{ steps.test.outputs.test }}
     steps:
       - uses: actions/checkout@v4
