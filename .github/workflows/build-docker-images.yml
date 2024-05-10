@@ -115,12 +115,12 @@ jobs:
       - name: Check image digest matches
         run: |
           output_digest='${{ needs.build.outputs.image-digest }}'
-          echo 'output_digest: ${output_digest}'
+          echo 'output_digest: '${output_digest}
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
             image='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'${i}
-            image_digest=$(docker inspect --format='{{index .RepoDigests 0}} ${image})
-            echo 'image: ${image}'
-            echo 'image_digest: ${image_digest}'
+            image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image})
+            echo 'image: '${image}
+            echo 'image_digest: '${image_digest}
             echo
           done
 
