@@ -82,7 +82,7 @@ jobs:
       - name: Build and load powerdns product images
         id: build-image
         run: |
-          echo "digest=sha256:c0e14dc7de6ec291a711266cd04580b00b64d9a2b0277fe5fd1868147fe89a8b" >> $GITHUB_OUTPUT
+          echo "digest=sha256:c0e14dc7de6ec291a711266cd04580b00b64d9a2b0277fe5fd1868147fe89a8c" >> $GITHUB_OUTPUT
       #   uses: docker/build-push-action@v5
       #   with:
       #     context: .
