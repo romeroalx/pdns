@@ -101,7 +101,7 @@ jobs:
     if: ${{ contains(inputs.platforms, 'amd64') && inputs.push }}
     needs: build
     runs-on: ubuntu-22.04
-    steps:   
+    steps:
       - run: |
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
             echo 'Testing: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i;
@@ -112,15 +112,10 @@ jobs:
     name: test uploaded arm64 images
     if: ${{ contains(inputs.platforms, 'arm64') && inputs.push }}
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubicloud-standard-2-arm
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: linux/arm64/v8
-      - name: Set up Docker Buildx for multi-platform builds
-        uses: docker/setup-buildx-action@v3
-        with:
-          platforms: ${{ inputs.platforms }}
       - run: |
-          for i in '1 2'; do echo 'image: '$i; done
+          for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
+            echo 'Testing: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i;
+            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i --version || [ "$?" == "134" ]
+          done
