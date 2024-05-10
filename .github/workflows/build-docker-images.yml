@@ -121,7 +121,7 @@ jobs:
           echo 'image_name: '${image_name}
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
             image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image_name}:${i})
-            [[ "${image_name}@{output_digest}" == "${image_digest}" ]] || echo "Image digest does not match" && exit 1
+            [[ "${image_name}@${output_digest}" == "${image_digest}" ]] || echo "Image digest does not match"; echo 'output_digest: '${image_name}'@'${output_digest}; echo 'image_digest: '${output_digest} && exit 1
             echo
           done
 
