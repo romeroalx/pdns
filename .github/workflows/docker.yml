@@ -16,12 +16,10 @@ jobs:
     with:
       product: auth
       ref: ${{ github.ref_name }}
-      image-name: powerdns-auth-master
+      image-name: pdns-auth-master
       image-tags: |-
         latest
-        test
       image-description: 'EXPERIMENTAL pdns auth image'
-      # platforms: linux/amd64
       platforms: linux/amd64,linux/arm64/v8
       push: true
     secrets:
@@ -34,7 +32,7 @@ jobs:
 #     with:
 #       product: recursor
 #       ref: ${{ github.ref_name }}
-#       image-name: powerdns-recursor-master
+#       image-name: pdns-recursor-master
 #       image-tags: |-
 #         latest
 #       image-description: 'EXPERIMENTAL pdns recursor image'
@@ -50,7 +48,7 @@ jobs:
 #     with:
 #       product: dnsdist
 #       ref: ${{ github.ref_name }}
-#       image-name: powerdns-dnsdist-master
+#       image-name: dnsdist-master
 #       image-tags: |-
 #         latest
 #       image-description: 'EXPERIMENTAL dnsdist image'
