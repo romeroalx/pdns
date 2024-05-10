@@ -100,8 +100,8 @@ jobs:
       #     repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
       #     short-description: ${{ inputs.image-description }}
 
-  test-image-amd64:    
-    name: test uploaded amd64 images
+  test-images:    
+    name: test uploaded images
     if: ${{ inputs.push }}
     needs: build
     runs-on: ${{ matrix.runner-os }}
@@ -115,29 +115,18 @@ jobs:
         if: ${{ ( matrix.runner-os == 'ubuntu-20.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
-          for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-            echo 'Testing: '${image_name}':'${i};
-            docker run ${image_name}:${i} --version || [ "$?" == "134" ]
+          for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
+            echo 'Testing: '${image_name}':'${tag};
+            # pdns-auth image returns a 134 exit code
+            docker run ${image_name}:${tag} --version || [ "$?" == "134" ]
           done
       - name: Check image digest matches
         if: ${{ ( matrix.runner-os == 'ubuntu-20.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
           output_digest='${{ needs.build.outputs.image-digest }}'
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
-          for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-            image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image_name}:${i} | cut -d '@' -f 2)
+          for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
+            image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image_name}:${tag} | cut -d '@' -f 2)
             [[ "${output_digest}" == "${image_digest}" ]] || \
-              ( echo "Image digest does not match=> output_digest: "${output_digest}" - image_digest: "${image_digest} && exit 1 )
+              ( echo "Image digest does not match => output_digest: "${output_digest}" - image_digest: "${image_digest} && exit 1 )
           done
-
-#   test-image-arm64:    
-#     name: test uploaded arm64 images
-#     if: ${{ contains(inputs.platforms, 'arm64') && inputs.push }}
-#     needs: build
-#     runs-on: ubicloud-standard-2-arm
-#     steps:
-#       - run: |
-#           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-#             echo 'Testing: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i;
-#             docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i --version || [ "$?" == "134" ]
-#           done
