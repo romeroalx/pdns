@@ -120,7 +120,7 @@ jobs:
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
             image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image_name}:${i} | cut -d '@' -f 2)
             [[ "${output_digest}" == "${image_digest}" ]] || \
-              ( echo "Image digest does not match=> output_digest: '${output_digest}' - image_digest: '${image_digest} && exit 1 )
+              ( echo "Image digest does not match=> output_digest: "${output_digest}" - image_digest: "${image_digest} && exit 1 )
           done
 
   test-image-arm64:    
