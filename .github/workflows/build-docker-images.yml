@@ -108,19 +108,20 @@ jobs:
     steps:
       - name: Check running image
         run: |
+          image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-            echo 'Testing: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'${i};
-            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'${i} --version || [ "$?" == "134" ]
+            echo 'Testing: '${image_name}':'${i};
+            docker run ${image_name}:${i} --version || [ "$?" == "134" ]
           done
       - name: Check image digest matches
         run: |
           output_digest='${{ needs.build.outputs.image-digest }}'
+          image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
           echo 'output_digest: '${output_digest}
+          echo 'image_name: '${image_name}
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-            image='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'${i}
-            image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image})
-            echo 'image: '${image}
-            echo 'image_digest: '${image_digest}
+            image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image_name}:${i})
+            [[ "${image_name}@{output_digest}" == "${image_digest}" ]] || echo "Image digest does not match" && exit 1
             echo
           done
 
