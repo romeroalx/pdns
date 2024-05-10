@@ -19,9 +19,10 @@ jobs:
       image-name: powerdns-auth-master
       image-tags: |-
         latest
+        test
       image-description: 'EXPERIMENTAL pdns auth image'
-      platforms: linux/amd64
-      # platforms: linux/amd64,linux/arm64/v8
+      # platforms: linux/amd64
+      platforms: linux/amd64,linux/arm64/v8
       push: true
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
