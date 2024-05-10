@@ -128,11 +128,10 @@ jobs:
       - name: Check SBOM and Provenance
         if: ${{ ( matrix.runner-os == 'ubuntu-20.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
-          sudo apt install jq
-          echo '$(dpkg --print-architecture)'
+          echo "$(dpkg --print-architecture)"
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
           for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
             docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .Provenance}}" | jq -e '."linux/'$(dpkg --print-architecture)'" | has("SLSA")'
-            docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .SBOM}}" | jq -e 'has("SPDX")'
+            docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .SBOM}}" | jq -e '."linux/'$(dpkg --print-architecture)'" | has("SPDX")'
           done
       - run: docker buildx imagetools inspect powerdns/pdns-auth-master:latest --format "{{json .SBOM}}" | jq -e 'has("SPDX")'
