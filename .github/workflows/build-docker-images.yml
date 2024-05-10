@@ -82,7 +82,7 @@ jobs:
       - name: Build and load powerdns product images
         id: build-image
         run: |
-          echo "digest=sha256:c0e14dc7de6ec291a711266cd04580b00b64d9a2b0277fe5fd1868147fe89a8c" >> $GITHUB_OUTPUT
+          echo "digest=sha256:c0e14dc7de6ec291a711266cd04580b00b64d9a2b0277fe5fd1868147fe89a8b" >> $GITHUB_OUTPUT
       #   uses: docker/build-push-action@v5
       #   with:
       #     context: .
@@ -102,11 +102,17 @@ jobs:
 
   test-image-amd64:    
     name: test uploaded amd64 images
-    if: ${{ contains(inputs.platforms, 'amd64') && inputs.push }}
+    if: ${{ inputs.push }}
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.runner-os }}
+    strategy:
+      matrix:
+        runner-os:
+          - ubuntu-20.04
+          - ubicloud-standard-2-arm
     steps:
       - name: Check running image
+        if: ${{ ( matrix.runner-os == 'ubuntu-20.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
@@ -114,6 +120,7 @@ jobs:
             docker run ${image_name}:${i} --version || [ "$?" == "134" ]
           done
       - name: Check image digest matches
+        if: ${{ ( matrix.runner-os == 'ubuntu-20.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
           output_digest='${{ needs.build.outputs.image-digest }}'
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
@@ -123,14 +130,14 @@ jobs:
               ( echo "Image digest does not match=> output_digest: "${output_digest}" - image_digest: "${image_digest} && exit 1 )
           done
 
-  test-image-arm64:    
-    name: test uploaded arm64 images
-    if: ${{ contains(inputs.platforms, 'arm64') && inputs.push }}
-    needs: build
-    runs-on: ubicloud-standard-2-arm
-    steps:
-      - run: |
-          for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-            echo 'Testing: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i;
-            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i --version || [ "$?" == "134" ]
-          done
+#   test-image-arm64:    
+#     name: test uploaded arm64 images
+#     if: ${{ contains(inputs.platforms, 'arm64') && inputs.push }}
+#     needs: build
+#     runs-on: ubicloud-standard-2-arm
+#     steps:
+#       - run: |
+#           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
+#             echo 'Testing: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i;
+#             docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i --version || [ "$?" == "134" ]
+#           done
