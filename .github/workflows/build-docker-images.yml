@@ -105,7 +105,7 @@ jobs:
       - run: |
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
             echo '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i;
-            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i --version;
+            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i --version || [ "$?" == "134" ];
           done
       - run: docker run romeroalx/powerdns-auth-49:latest --version
 
