@@ -81,24 +81,24 @@ jobs:
           tags: ${{ inputs.image-tags }}
       - name: Build and load powerdns product images
         id: build-image
-        run: |
-          echo "digest=sha256:c0e14dc7de6ec291a711266cd04580b00b64d9a2b0277fe5fd1868147fe89a8b" >> $GITHUB_OUTPUT
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: Dockerfile-${{ inputs.product }}
-      #     platforms: ${{ inputs.platforms }}
-      #     push: ${{ inputs.push }}
-      #     sbom: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      # - name: Update repo description
-      #   if: ${{ inputs.push }}
-      #   uses: peter-evans/dockerhub-description@v4
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      #     repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
-      #     short-description: ${{ inputs.image-description }}
+        # run: |
+        #   echo "digest=sha256:c0e14dc7de6ec291a711266cd04580b00b64d9a2b0277fe5fd1868147fe89a8b" >> $GITHUB_OUTPUT
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile-${{ inputs.product }}
+          platforms: ${{ inputs.platforms }}
+          push: ${{ inputs.push }}
+          sbom: true
+          tags: ${{ steps.meta.outputs.tags }}
+      - name: Update repo description
+        if: ${{ inputs.push }}
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
+          short-description: ${{ inputs.image-description }}
 
   test-images:    
     name: test uploaded images
