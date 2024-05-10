@@ -52,6 +52,8 @@ jobs:
   build:
     name: build docker image for a product
     runs-on: ubuntu-22.04
+    outputs:
+      image-digest: ${{ steps.build-image.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -77,8 +79,10 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
-      - run: echo '${{ steps.meta.outputs.tags }}'
-      # - name: Build and load powerdns product images
+      - name: Build and load powerdns product images
+        id: build-image
+        run: |
+          echo "digest=sha256:c0e14dc7de6ec291a711266cd04580b00b64d9a2b0277fe5fd1868147fe89a8b" >> $GITHUB_OUTPUT
       #   uses: docker/build-push-action@v5
       #   with:
       #     context: .
@@ -102,10 +106,22 @@ jobs:
     needs: build
     runs-on: ubuntu-22.04
     steps:
-      - run: |
+      - name: Check running image
+        run: |
           for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-            echo 'Testing: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i;
-            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'$i --version || [ "$?" == "134" ]
+            echo 'Testing: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'${i};
+            docker run '${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'${i} --version || [ "$?" == "134" ]
+          done
+      - name: Check image digest matches
+        run: |
+          output_digest='${{ needs.build.outputs.image-digest }}'
+          echo 'output_digest: ${output_digest}'
+          for i in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
+            image='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}:'${i}
+            image_digest=$(docker inspect --format='{{index .RepoDigests 0}} ${image})
+            echo 'image: ${image}'
+            echo 'image_digest: ${image_digest}'
+            echo
           done
 
   test-image-arm64:    
