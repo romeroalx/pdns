@@ -24,7 +24,7 @@ jobs:
       image-description: 'EXPERIMENTAL pdns auth image'
       platforms: linux/amd64
       # platforms: linux/amd64,linux/arm64/v8
-      push: true
+      push: false
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
