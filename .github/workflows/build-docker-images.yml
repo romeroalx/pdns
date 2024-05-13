@@ -109,12 +109,12 @@ jobs:
     strategy:
       matrix:
         runner-os:
-          - ubuntu-20.04
+          - ubuntu-22.04
           - ubicloud-standard-2-arm
       fail-fast: false
     steps:
       - name: Check running image
-        if: ${{ ( matrix.runner-os == 'ubuntu-20.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
+        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
           for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
@@ -123,7 +123,7 @@ jobs:
             docker run ${image_name}:${tag} --version || [ "$?" == "134" ]
           done
       - name: Check image digest matches
-        if: ${{ ( matrix.runner-os == 'ubuntu-20.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
+        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
           output_digest='${{ needs.build.outputs.image-digest }}'
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
@@ -133,10 +133,15 @@ jobs:
               ( echo "Image digest does not match => output_digest: "${output_digest}" - image_digest: "${image_digest} && exit 1 )
           done
       - name: Check SBOM and Provenance
-        if: ${{ ( matrix.runner-os == 'ubuntu-20.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
+        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
           for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-            docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .Provenance}}" | jq -e '."linux/'$(dpkg --print-architecture)'" | has("SLSA")'
-            docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .SBOM}}" | jq -e '."linux/'$(dpkg --print-architecture)'" | has("SPDX")'
+            if $(echo '${{ inputs.platforms }}' | grep -qq ','); then
+              docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .Provenance}}" | jq -e '."linux/'$(dpkg --print-architecture)'" | has("SLSA")'
+              docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .SBOM}}" | jq -e '."linux/'$(dpkg --print-architecture)'" | has("SPDX")'
+            else
+              docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .Provenance}}" | jq -e 'has("SLSA")'
+              docker buildx imagetools inspect ${image_name}:${tag} --format "{{json .SBOM}}" | jq -e 'has("SPDX")'
+            fi
           done

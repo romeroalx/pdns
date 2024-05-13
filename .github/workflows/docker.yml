@@ -20,8 +20,7 @@ jobs:
       image-tags: |-
         latest
       image-description: 'EXPERIMENTAL pdns auth image'
-      platforms: linux/amd64
-      # platforms: linux/amd64,linux/arm64/v8
+      platforms: linux/amd64,linux/arm64/v8
       push: true
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
@@ -38,15 +37,13 @@ jobs:
         latest
       image-description: 'EXPERIMENTAL pdns recursor image'
       platforms: linux/amd64
-      # platforms: linux/amd64,linux/arm64/v8
+      # platforms: linux/amd64,linux/arm64/v8
       push: true
-      build-args: |-
-        DOCKER_FAKE_RELEASE=YES
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-# 
+
 #   call-build-image-dnsdist:
 #     uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
 #     with:
