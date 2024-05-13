@@ -81,25 +81,25 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
           tags: ${{ inputs.image-tags }}
-      # - name: Build and load powerdns product images
-      #   id: build-image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: Dockerfile-${{ inputs.product }}
-      #     platforms: ${{ inputs.platforms }}
-      #     push: ${{ inputs.push }}
-      #     sbom: true
-      #     tags: ${{ steps.meta.outputs.tags }}
-      #     build-args: ${{ inputs.build-args }}
-      # - name: Update repo description
-      #   if: ${{ inputs.push }}
-      #   uses: peter-evans/dockerhub-description@v4
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
-      #     repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
-      #     short-description: ${{ inputs.image-description }}
+      - name: Build and load powerdns product images
+        id: build-image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile-${{ inputs.product }}
+          platforms: ${{ inputs.platforms }}
+          push: ${{ inputs.push }}
+          sbom: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: ${{ inputs.build-args }}
+      - name: Update repo description
+        if: ${{ inputs.push }}
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}
+          short-description: ${{ inputs.image-description }}
 
   test-uploaded-images:
     name: test uploaded images
@@ -122,16 +122,16 @@ jobs:
             # pdns-auth image returns a 134 exit code
             docker run ${image_name}:${tag} --version || [ "$?" == "134" ]
           done
-      # - name: Check image digest matches
-      #   if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
-      #   run: |
-      #     output_digest='${{ needs.build.outputs.image-digest }}'
-      #     image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
-      #     for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
-      #       image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image_name}:${tag} | cut -d '@' -f 2)
-      #       [[ "${output_digest}" == "${image_digest}" ]] || \
-      #         ( echo "Image digest does not match => output_digest: "${output_digest}" - image_digest: "${image_digest} && exit 1 )
-      #     done
+      - name: Check image digest matches
+        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
+        run: |
+          output_digest='${{ needs.build.outputs.image-digest }}'
+          image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
+          for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
+            image_digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image_name}:${tag} | cut -d '@' -f 2)
+            [[ "${output_digest}" == "${image_digest}" ]] || \
+              ( echo "Image digest does not match => output_digest: "${output_digest}" - image_digest: "${image_digest} && exit 1 )
+          done
       - name: Check SBOM and Provenance
         if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
         run: |
