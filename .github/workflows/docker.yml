@@ -2,7 +2,6 @@
 name: 'Build Docker images'
 
 on:
-  # push:
   schedule:
     - cron: '0 4 * * *'
 
@@ -12,7 +11,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-build-image-auth:
-    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
+    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
     with:
       product: auth
       ref: ${{ github.ref_name }}
@@ -28,7 +27,7 @@ jobs:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   call-build-image-recursor:
-    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
+    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
     with:
       product: recursor
       ref: ${{ github.ref_name }}
@@ -44,7 +43,7 @@ jobs:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   call-build-image-dnsdist:
-    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
+    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
     with:
       product: dnsdist
       ref: ${{ github.ref_name }}

@@ -1,0 +1,66 @@
+---
+name: Trigger specific image build
+
+on:
+  workflow_dispatch:
+    inputs:
+      product:
+        required: true
+        description: Product to build
+        type: choice
+        options:
+        - auth
+        - recursor
+        - dnsdist
+      ref:
+        description: git ref to checkout
+        type: string
+        default: master
+        required: false
+      image-name:
+        description: repository name for the requested image
+        type: string
+        required: true
+      image-tags:
+        description: tag for the requested image
+        type: string
+        required: true
+      image-description:
+        description: short description for the image repository
+        type: string
+        required: true
+      platforms:
+        description: target platform(s)
+        type: string
+        default: linux/arm64/v8,linux/amd64
+        required: false
+      build-args:
+        description: build-time variables
+        type: string
+        default: ''
+        required: false
+      push:
+        description: push image to DockerHub
+        type: boolean
+        required: true
+
+permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+  contents: read
+  actions: read
+
+jobs:
+  call-build-docker-image:
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@build-docker-images-dev
+    with:
+      product: ${{ inputs.product }}
+      ref: ${{ inputs.ref }}
+      image-name: ${{ inputs.image-name }}
+      image-tags: ${{ inputs.image-tags }}
+      image-description: ${{ inputs.image-description }}
+      platforms: ${{ inputs.platforms }}
+      build-args: ${{ inputs.build-args }}
+      push: ${{ inputs.push }}
+    secrets:
+      DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
