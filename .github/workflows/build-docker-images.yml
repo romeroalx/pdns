@@ -30,6 +30,11 @@ on:
         type: string
         default: linux/arm64/v8,linux/amd64
         required: false
+      build-args:
+        description: build-time variables
+        type: string
+        default: ''
+        required: false
       push:
         description: push image to DockerHub
         type: boolean
@@ -86,6 +91,7 @@ jobs:
           push: ${{ inputs.push }}
           sbom: true
           tags: ${{ steps.meta.outputs.tags }}
+          build-args: ${{ inputs.build-args }}
       - name: Update repo description
         if: ${{ inputs.push }}
         uses: peter-evans/dockerhub-description@v4
