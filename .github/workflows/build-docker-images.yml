@@ -67,18 +67,10 @@ jobs:
         if: ${{ inputs.push }}
         run: |
           [[ "${{ inputs.ref }}" == "master" ]] || git tag --contains ${{ inputs.ref }} || echo "exit 1"
-      - name: validate reference only if image will later be pushed
-        if: ${{ inputs.push }}
-        run: |
-          git tag --contains ${{ inputs.ref }}
-      - name: validate reference only if image will later be pushed
-        if: ${{ inputs.push }}
-        run: |
-          git describe --tags --exact-match
       - name: validate reference only if image will later be pushed 2
         if: ${{ inputs.push }}
         run: |
-          [[ "${{ inputs.ref }}" == "master" ]] && git describe --tags --exact-match 2> /dev/null
+          [[ "${{ inputs.ref }}" == "master" ]] || git describe --tags --exact-match
       - name: validate reference only if image will later be pushed
         if: ${{ inputs.push }}
         run: |
