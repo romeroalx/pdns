@@ -52,7 +52,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   validate-push-image:
-    name: Validate only images built from tags and master are pushed
+    name: Check only images built from tags and master are pushed
     runs-on: ubuntu-22.04
     if: ${{ inputs.push }}
     steps:
@@ -63,8 +63,18 @@ jobs:
           fetch-depth: 0
           submodules: recursive
           ref: ${{ inputs.ref }}
-      - run: |
-          [[ "${{ inputs.ref }}" == "master" ]] || git tag --contains '${{ inputs.ref }}'
+      - name: validate reference only if image will later be pushed
+        if: ${{ inputs.push }}
+        run: |
+          [[ "${{ inputs.ref }}" == "master" ]] && echo 1 || git tag --contains ${{ inputs.ref }}
+      - name: validate reference only if image will later be pushed 2
+        if: ${{ inputs.push }}
+        run: |
+          [[ "${{ inputs.ref }}" == "master" ]] && git describe --tags --exact-match
+      - name: validate reference only if image will later be pushed
+        if: ${{ inputs.push }}
+        run: |
+          git tag --contains ${{ inputs.ref }}
 
   build:
     name: build docker image for a product
