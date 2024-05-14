@@ -78,7 +78,7 @@ jobs:
       - name: validate reference only if image will later be pushed 2
         if: ${{ inputs.push }}
         run: |
-          [[ "${{ inputs.ref }}" == "master" ]] && git describe --tags --exact-match
+          [[ "${{ inputs.ref }}" == "master" ]] && git describe --tags --exact-match 2> /dev/null
       - name: validate reference only if image will later be pushed
         if: ${{ inputs.push }}
         run: |
