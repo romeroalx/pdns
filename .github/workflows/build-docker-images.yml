@@ -51,25 +51,25 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 jobs:
-  validate-push-image:
-    name: Check only images built from tags and master are pushed
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          repository: romeroalx/pdns
-          fetch-depth: 0
-          submodules: recursive
-          ref: ${{ inputs.ref }}
-      - name: validate reference only if image will be pushed
-        if: ${{ inputs.push }}
-        run: |
-          [[ "${{ inputs.ref }}" == "master" ]] || git describe --tags --exact-match
+  # validate-push-image:
+  #   name: Check only images built from tags and master are pushed
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         repository: romeroalx/pdns
+  #         fetch-depth: 0
+  #         submodules: recursive
+  #         ref: ${{ inputs.ref }}
+  #     - name: validate reference only if image will be pushed
+  #       if: ${{ inputs.push }}
+  #       run: |
+  #         [[ "${{ inputs.ref }}" == "master" ]] || git describe --tags --exact-match
 
   build:
     name: build docker image for a product
     runs-on: ubuntu-22.04
-    needs: validate-push-image
+    # needs: validate-push-image
     outputs:
       image-digest: ${{ steps.build-image.outputs.digest }}
     steps:

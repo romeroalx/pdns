@@ -16,7 +16,7 @@ jobs:
     # if: ${{ vars.SCHEDULED_DOCKER }}
     with:
       product: auth
-      ref: master
+      ref: ${{ github.ref_name }}
       image-name: pdns-auth-master
       image-tags: |-
         latest
@@ -33,7 +33,7 @@ jobs:
     # if: ${{ vars.SCHEDULED_DOCKER }}
     with:
       product: recursor
-      ref: master
+      ref: ${{ github.ref_name }}
       image-name: pdns-recursor-master
       image-tags: |-
         latest
@@ -50,7 +50,7 @@ jobs:
     # if: ${{ vars.SCHEDULED_DOCKER }}
     with:
       product: dnsdist
-      ref: master
+      ref: ${{ github.ref_name }}
       image-name: dnsdist-master
       image-tags: |-
         latest
