@@ -75,23 +75,23 @@ jobs:
     outputs:
       product-name: ${{ steps.normalize-name.outputs.normalized-package-name }}
       version: ${{ steps.getversion.outputs.version }}
-      pkghashes-el-7-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-7-x86_64 }}
+      # pkghashes-el-7-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-7-x86_64 }}
       pkghashes-el-8-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-8-x86_64 }}
       pkghashes-el-8-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-8-aarch64 }}
-      pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
-      pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
-      pkghashes-debian-buster-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-x86_64 }}
-      pkghashes-debian-buster-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-aarch64 }}
-      pkghashes-debian-bullseye-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-x86_64 }}
-      pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
+      # pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
+      # pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
+      # pkghashes-debian-buster-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-x86_64 }}
+      # pkghashes-debian-buster-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-aarch64 }}
+      # pkghashes-debian-bullseye-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-x86_64 }}
+      # pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
       pkghashes-debian-bookworm-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-x86_64 }}
       pkghashes-debian-bookworm-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-aarch64 }}
-      pkghashes-ubuntu-focal-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-x86_64 }}
-      pkghashes-ubuntu-focal-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-aarch64 }}
-      pkghashes-ubuntu-jammy-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-x86_64 }}
-      pkghashes-ubuntu-jammy-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-aarch64 }}
-      pkghashes-ubuntu-noble-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-x86_64 }}
-      pkghashes-ubuntu-noble-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-aarch64 }}
+      # pkghashes-ubuntu-focal-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-x86_64 }}
+      # pkghashes-ubuntu-focal-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-aarch64 }}
+      # pkghashes-ubuntu-jammy-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-x86_64 }}
+      # pkghashes-ubuntu-jammy-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-aarch64 }}
+      # pkghashes-ubuntu-noble-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-x86_64 }}
+      # pkghashes-ubuntu-noble-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-aarch64 }}
       srchashes: ${{ steps.srchashes.outputs.srchashes }}
     steps:
       - uses: actions/checkout@v4
