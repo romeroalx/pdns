@@ -46,7 +46,7 @@ jobs:
     steps:
       - id: get-runner-image
         run: |
-          echo "image-id=ghcr.io/powerdns/${{ inputs.runner-docker-image-name || env.DEFAULT_RUNNER_DOCKER_IMAGE }}" >> "$GITHUB_OUTPUT"
+          echo "image-id=ghcr.io/romeroalx/${{ inputs.runner-docker-image-name || env.DEFAULT_RUNNER_DOCKER_IMAGE }}" >> "$GITHUB_OUTPUT"
           echo "tag=${{ env.DEFAULT_IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
 
   build-auth:
@@ -79,9 +79,6 @@ jobs:
           fetch-depth: 5
           submodules: recursive
           ref: ${{ inputs.branch-name }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
       - name: get timestamp for cache
         id: get-stamp
         run: |
@@ -159,9 +156,6 @@ jobs:
           fetch-depth: 5
           submodules: recursive
           ref: ${{ inputs.branch-name }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
       - name: get timestamp for cache
         id: get-stamp
         run: |
@@ -236,9 +230,6 @@ jobs:
           fetch-depth: 5
           submodules: recursive
           ref: ${{ inputs.branch-name }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
       - name: get timestamp for cache
         id: get-stamp
         run: |
