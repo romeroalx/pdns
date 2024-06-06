@@ -79,6 +79,9 @@ jobs:
           fetch-depth: 5
           submodules: recursive
           ref: ${{ inputs.branch-name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: get timestamp for cache
         id: get-stamp
         run: |
@@ -156,6 +159,9 @@ jobs:
           fetch-depth: 5
           submodules: recursive
           ref: ${{ inputs.branch-name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: get timestamp for cache
         id: get-stamp
         run: |
@@ -230,6 +236,9 @@ jobs:
           fetch-depth: 5
           submodules: recursive
           ref: ${{ inputs.branch-name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       - name: get timestamp for cache
         id: get-stamp
         run: |
