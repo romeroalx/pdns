@@ -528,7 +528,7 @@ def ci_auth_configure_meson(c, build_dir):
         "-D module-godbc=static",
         "-D module-gpgsql=static",
         "-D module-gsqlite3=static",
-        "-D module-ldap=static",
+        "-D module-ldap=disabled",
         "-D module-lmdb=static",
         "-D module-lua2=static",
         "-D module-pipe=static",
