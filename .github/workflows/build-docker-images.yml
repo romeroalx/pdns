@@ -1,5 +1,5 @@
 ---
-name: Build push and test docker images
+name: Build push and test multi-platform docker images
 
 on:
   workflow_call:
@@ -66,7 +66,7 @@ jobs:
           [[ "${{ inputs.ref }}" == "master" ]] || git describe --tags --exact-match
 
   build:
-    name: build docker image for a product
+    name: build ${{ inputs.product }} ${{ inputs.platforms }} image
     runs-on: ubuntu-22.04
     needs: validate-push-image
     outputs:
@@ -117,7 +117,7 @@ jobs:
           short-description: ${{ inputs.image-description }}
 
   test-uploaded-images:
-    name: test uploaded images
+    name: test and verify uploaded images on ${{ matrix.runner-os }}
     if: ${{ inputs.push }}
     needs: build
     runs-on: ${{ matrix.runner-os }}
