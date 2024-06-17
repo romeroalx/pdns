@@ -12,7 +12,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-build-image-auth:
-    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@tet-bump-docker-action-6
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@tet-bump-docker-action-6
     # if: ${{ vars.SCHEDULED_DOCKER }}
     with:
       product: auth
