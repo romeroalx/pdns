@@ -50,7 +50,7 @@ jobs:
           echo "tag=${{ env.DEFAULT_IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
 
   build-auth:
-    name: build auth (${{ matrix.builder }})
+    name: "build auth (${{ matrix.builder }})"
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ubuntu-22.04
     needs: get-runner-container-image
@@ -65,18 +65,18 @@ jobs:
       matrix:
         container_image: ["${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"]
         builder: [autotools, meson]
-        sanitizers: ["asan+ubsan", "address,undefined"]
-        build_option: ["--meson"]
-        exclude:
-          - container_image: "ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:${{ needs.get-runner-container-image.outputs.tag }}"
-          # - container_image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
-            builder: meson
-          - sanitizers: "asan+ubsan"
-            builder: meson
-          - sanitizers: "address,undefined"
-            builder: autotools
-          - build_option: "--meson"
-            builder: autotools
+        # sanitizers: ["asan+ubsan", "address,undefined"]
+        # build_option: ["--meson"]
+        # exclude:
+        #   # - container_image: "ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:${{ needs.get-runner-container-image.outputs.tag }}"
+        #   - container_image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
+        #     builder: meson
+        #   - sanitizers: "asan+ubsan"
+        #     builder: meson
+        #   - sanitizers: "address,undefined"
+        #     builder: autotools
+        #   - build_option: "--meson"
+        #     builder: autotools
       fail-fast: false
     defaults:
       run:
@@ -93,5 +93,5 @@ jobs:
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
         working-directory: .
-      - run: mkdir -p ~/.ccache
+      - run: echo "${{ matrix.builder }}"
         working-directory: .
