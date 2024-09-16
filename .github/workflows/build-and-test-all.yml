@@ -64,18 +64,10 @@ jobs:
     strategy:
       matrix:
         container_image: ["${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"]
-        builder:
-          - name: autotools
-            sanitizers: asan+ubsan
-          - name: meson
-            sanitizers: address,undefined
-            build_option: '--meson'
+        builder: [autotools, meson]
         exclude:
           - container_image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
-            builder:
-            - name: meson
-              sanitizers: address,undefined
-              build_option: '--meson'
+            builder: meson
       fail-fast: false
     defaults:
       run:
