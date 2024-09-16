@@ -71,7 +71,7 @@ jobs:
             sanitizers: address,undefined
             build_option: '--meson'
         exclude:
-          - container_image: "ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:${{ needs.get-runner-container-image.outputs.tag }}"
+          - container_image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
             builder:
             - name: meson
               sanitizers: address,undefined
