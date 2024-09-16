@@ -90,5 +90,5 @@ jobs:
           echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
         shell: bash
         working-directory: .
-      - run: echo "${{ matrix.builder }} - ${{ matrix.builder == 'meson' && '--meson' }} - ${{ matrix.sanitizers }}"
+      - run: echo "${{ matrix.builder }} - ${{ matrix.builder == 'meson' && '--meson' || '' }} - ${{ matrix.sanitizers }}"
         working-directory: .
