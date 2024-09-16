@@ -98,7 +98,7 @@ jobs:
           key: auth-ccache-${{ matrix.builder }}-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-${{ matrix.builder }}
       - name: set sanitizers
-        run: echo "SANITIZERS=${{ matrix.sanitizers }}" >> "$GITHUB_ENV"
+        run: echo "SANITIZERS=${{ matrix.builder == 'meson' && 'address,undefined' || 'asan+ubsan' }}" >> "$GITHUB_ENV"
         working-directory: .
       - run: inv install-auth-build-deps
         working-directory: .
@@ -117,10 +117,10 @@ jobs:
         if: ${{ env.COVERAGE == 'yes' && matrix.builder != 'meson' }}
         working-directory: ./pdns-${{ env.BUILDER_VERSION }}/pdns
       - name: Coveralls Parallel auth unit
-        if: ${{ env.COVERAGE == 'yes' && matrix.builder != 'meson' }}
+        # if: ${{ env.COVERAGE == 'yes' && matrix.builder != 'meson' }}
         uses: coverallsapp/github-action@v2
         with:
-          flag-name: auth-unit-${{ matrix.sanitizers }}
+          flag-name: auth-unit-${{ env.SANITIZERS }}
           path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
           parallel: true
           allow-empty: true
