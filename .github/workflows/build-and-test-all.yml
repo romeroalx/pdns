@@ -50,7 +50,7 @@ jobs:
           echo "tag=${{ env.DEFAULT_IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
 
   build-auth:
-    name: build auth
+    name: build auth (${{ matrix.builder }})
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ubuntu-22.04
     needs: get-runner-container-image
@@ -68,8 +68,8 @@ jobs:
         sanitizers: ["asan+ubsan", "address,undefined"]
         build_option: ["--meson"]
         exclude:
-          # - container_image: "ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:${{ needs.get-runner-container-image.outputs.tag }}"
-          - container_image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
+          - container_image: "ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:${{ needs.get-runner-container-image.outputs.tag }}"
+          # - container_image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
             builder: meson
           - sanitizers: "asan+ubsan"
             builder: meson
