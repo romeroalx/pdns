@@ -41,7 +41,7 @@ jobs:
       id: ${{ steps.get-runner-image.outputs.image-id }}
       tag: ${{ steps.get-runner-image.outputs.tag }}
     env:
-      DEFAULT_RUNNER_DOCKER_IMAGE: base-pdns-ci-image/debian-11-pdns-base
+      DEFAULT_RUNNER_DOCKER_IMAGE: base-pdns-ci-image/debian-12-pdns-base
       DEFAULT_IMAGE_TAG: master # update when backporting, e.g. auth-4.9.x
     steps:
       - id: get-runner-image
@@ -50,7 +50,7 @@ jobs:
           echo "tag=${{ env.DEFAULT_IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
 
   build-auth:
-    name: build auth
+    name: build auth (${{ matrix.builder }})
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ubuntu-22.04
     needs: get-runner-container-image
