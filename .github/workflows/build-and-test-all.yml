@@ -65,9 +65,18 @@ jobs:
       matrix:
         container_image: ["${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"]
         builder: [autotools, meson]
+        sanitizers: ["asan+ubsan", "address,undefined"]
+        build_option: ["--meson"]
         exclude:
+          # - container_image: "ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:${{ needs.get-runner-container-image.outputs.tag }}"
           - container_image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
             builder: meson
+          - sanitizers: "asan+ubsan"
+            builder: meson
+          - sanitizers: "address,undefined"
+            builder: autotools
+          - build_option: "--meson"
+            builder: autotools
       fail-fast: false
     defaults:
       run:
