@@ -42,6 +42,9 @@ jobs:
   coverity-auth:
     name: coverity scan of the auth
     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    permissions:
+      contents: read
+      actions: read # to get workflow details
     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
     with:
       product: 'authoritative'
@@ -52,6 +55,9 @@ jobs:
   coverity-dnsdist:
     name: coverity scan of dnsdist
     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    permissions:
+      contents: read
+      actions: read # to get workflow details
     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
     with:
       product: 'dnsdist'
@@ -62,6 +68,9 @@ jobs:
   coverity-rec:
     name: coverity scan of the rec
     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    permissions:
+      contents: read
+      actions: read # to get workflow details
     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
     with:
       product: 'recursor'
