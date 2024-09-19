@@ -2,6 +2,7 @@
 name: Trigger specific coverity scan
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       product:
@@ -16,10 +17,26 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 jobs:
-  call-coverity:
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+  call-coverity-auth:
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity
     with:
-      product: ${{ github.event.inputs.product }}
+      product: authoritative
     secrets:
       COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
       COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
+
+#   call-coverity-rec:
+#     uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity
+#     with:
+#       product: recursor
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
+#       COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
+# 
+#   call-coverity-dnsdist:
+#     uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity
+#     with:
+#       product: dnsdist
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
+#       COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
