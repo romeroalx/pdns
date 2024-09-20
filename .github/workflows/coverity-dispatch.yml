@@ -2,7 +2,7 @@
 name: Trigger specific coverity scan
 
 on:
-  push:
+  # push:
   workflow_dispatch:
     inputs:
       product:
@@ -18,7 +18,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-coverity-auth:
-    uses: rgacogne/pdns/.github/workflows/coverity.yml@fix-coverity
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity
     with:
       product: authoritative
     secrets:

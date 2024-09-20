@@ -1,6 +1,7 @@
 name: "Various daily checks"
 
 on:
+  push:
   schedule:
     - cron: '34 4 * * *'
 
@@ -12,7 +13,7 @@ env:
 
 jobs:
   el7-devtoolset:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
 
     steps:
@@ -28,7 +29,7 @@ jobs:
         fi
 
   check-debian-autoremovals:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
@@ -41,39 +42,39 @@ jobs:
 
   coverity-auth:
     name: coverity scan of the auth
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     permissions:
       contents: read
-      actions: read # to get workflow details
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+      # actions: read # to get workflow details
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity
     with:
       product: 'authoritative'
     secrets:
       COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
       COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
 
-  coverity-dnsdist:
-    name: coverity scan of dnsdist
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    permissions:
-      contents: read
-      actions: read # to get workflow details
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'dnsdist'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
-      COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
-
-  coverity-rec:
-    name: coverity scan of the rec
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    permissions:
-      contents: read
-      actions: read # to get workflow details
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'recursor'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
-      COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
+#   coverity-dnsdist:
+#     name: coverity scan of dnsdist
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     permissions:
+#       contents: read
+#       actions: read # to get workflow details
+#     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+#     with:
+#       product: 'dnsdist'
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
+#       COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
+# 
+#   coverity-rec:
+#     name: coverity scan of the rec
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     permissions:
+#       contents: read
+#       actions: read # to get workflow details
+#     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+#     with:
+#       product: 'recursor'
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.COVERITY_TOKEN }}
+#       COVERITY_EMAIL: ${{ secrets.COVERITY_EMAIL }}
