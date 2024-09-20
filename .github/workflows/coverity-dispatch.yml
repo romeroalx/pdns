@@ -18,7 +18,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-coverity-auth:
-    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity
+    uses: rgacogne/pdns/.github/workflows/coverity.yml@fix-coverity
     with:
       product: authoritative
     secrets:
