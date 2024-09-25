@@ -19,7 +19,7 @@ jobs:
   coverity-auth:
     name: coverity scan of the auth
     if: ${{ github.event.inputs.product == 'authoritative' }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity-secrets
     with:
       product: ${{ github.event.inputs.product }}
     secrets:
@@ -29,7 +29,7 @@ jobs:
   coverity-dnsdist:
     name: coverity scan of dnsdist
     if: ${{ github.event.inputs.product == 'dnsdist' }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity-secrets
     with:
       product: ${{ github.event.inputs.product }}
     secrets:
@@ -39,7 +39,7 @@ jobs:
   coverity-rec:
     name: coverity scan of the rec
     if: ${{ github.event.inputs.product == 'recursor' }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-coverity-secrets
     with:
       product: ${{ github.event.inputs.product }}
     secrets:
