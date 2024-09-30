@@ -40,16 +40,6 @@ jobs:
     - name: Check if Debian is about to toss us off a balcony
       run: ./build-scripts/check-debian-autoremovals.py
 
-  coverity-auth:
-    name: coverity scan of the auth
-    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'authoritative'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.coverity_auth_token }}
-      COVERITY_EMAIL: ${{ secrets.coverity_email }}
-
 #   coverity-dnsdist:
 #     name: coverity scan of dnsdist
 #     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
@@ -132,3 +122,13 @@ jobs:
       - run: cat /tmp/proxpi.log; echo; cat ${{ matrix.requirements-file }}
       - name: check only listed packages were installed
         run: for i in `cat /tmp/proxpi.log`; do grep -qq -i $i ${{ matrix.requirements-file }} || ( echo "$i not found" && exit 1 ); done
+
+  coverity-auth:
+    name: coverity scan of the auth
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@pip-pinning-r4
+    with:
+      product: 'authoritative'
+    secrets:
+      COVERITY_TOKEN: ${{ secrets.coverity_auth_token }}
+      COVERITY_EMAIL: ${{ secrets.coverity_email }}
