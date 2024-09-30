@@ -1,6 +1,7 @@
 name: "Various daily checks"
 
 on:
+  push:
   schedule:
     - cron: '34 4 * * *'
 
@@ -12,7 +13,7 @@ env:
 
 jobs:
   el7-devtoolset:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
 
     steps:
@@ -28,7 +29,7 @@ jobs:
         fi
 
   check-debian-autoremovals:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
@@ -39,35 +40,35 @@ jobs:
     - name: Check if Debian is about to toss us off a balcony
       run: ./build-scripts/check-debian-autoremovals.py
 
-  coverity-auth:
-    name: coverity scan of the auth
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'authoritative'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.coverity_auth_token }}
-      COVERITY_EMAIL: ${{ secrets.coverity_email }}
-
-  coverity-dnsdist:
-    name: coverity scan of dnsdist
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'dnsdist'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.coverity_dnsdist_token }}
-      COVERITY_EMAIL: ${{ secrets.coverity_email }}
-
-  coverity-rec:
-    name: coverity scan of the rec
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'recursor'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.coverity_rec_token }}
-      COVERITY_EMAIL: ${{ secrets.coverity_email }}
+#   coverity-auth:
+#     name: coverity scan of the auth
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+#     with:
+#       product: 'authoritative'
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.coverity_auth_token }}
+#       COVERITY_EMAIL: ${{ secrets.coverity_email }}
+# 
+#   coverity-dnsdist:
+#     name: coverity scan of dnsdist
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+#     with:
+#       product: 'dnsdist'
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.coverity_dnsdist_token }}
+#       COVERITY_EMAIL: ${{ secrets.coverity_email }}
+# 
+#   coverity-rec:
+#     name: coverity scan of the rec
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+#     with:
+#       product: 'recursor'
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.coverity_rec_token }}
+#       COVERITY_EMAIL: ${{ secrets.coverity_email }}
 
   # The jobs below check that only the pinned version of Python3 packages are installed with pip. Running in a container, a
   # pip proxy registers all requests for installing packages with pip.  Then, the downloaded packages and their versions are compared
@@ -84,7 +85,7 @@ jobs:
   # to force the upgrade: "pip-compile --generate-hashes -U requirements.in" (this could include upgrading other packages).
 
   list-pip-requirement-files:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
     outputs:
       req-files: ${{ steps.get-list-requirements.outputs.files }}
@@ -96,7 +97,7 @@ jobs:
         echo "files=$(find . -name 'requirements.txt' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   validate-pip-hashes:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     name: ${{ matrix.requirements-file }} - Validate list of packages and hashes
     runs-on: ubuntu-22.04
     needs: list-pip-requirement-files
@@ -126,8 +127,9 @@ jobs:
       - id: proxpi-docker
         run: echo "id=$(docker ps | grep "epicwink/proxpi" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
       - run: pip install -r ${{ matrix.requirements-file }}
-      - run: |
+      - name: Get the list of packages requested to the pip proxy
+        run: |
           docker logs ${{ steps.proxpi-docker.outputs.id }} 2>&1 | grep whl | awk '{print $8}' | cut -d "/" -f 4 | awk -F'-' '{print $1"=="$2}' | sort -u --ignore-case | sed 's/_/-/' | egrep -v "pip==|setuptools==|wheel==|setuptools-git==" > /tmp/proxpi.log
-      - run: cat /tmp/proxpi.log; echo; cat ${{ matrix.requirements-file }}
+          cat /tmp/proxpi.log
       - name: check only listed packages were installed
         run: for i in `cat /tmp/proxpi.log`; do grep -qq -i $i ${{ matrix.requirements-file }} || ( echo "$i not found" && exit 1 ); done
