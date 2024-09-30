@@ -1,5 +1,5 @@
 # To generate requirements.txt, install pip-tools and run:
-#  pip-compile --generate-hashes requirements.in
+#  pip-compile --generate-hashes -U requirements.in
 
 Sphinx>=1.5.0,!=1.8.0,<2.0
 https://github.com/PowerDNS/sphinx-lua/archive/refs/heads/pdns.zip
