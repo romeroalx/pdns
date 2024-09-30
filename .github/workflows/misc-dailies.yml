@@ -103,7 +103,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        requirements-file: ${{ needs.list-pip-requirement-files.outputs.req-files }}
+        requirements-file: ${{ fromJson(needs.list-pip-requirement-files.outputs.req-files) }}
     steps:
       - run: echo "${{ matrix.requirements-file }}"
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
