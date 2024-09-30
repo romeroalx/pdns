@@ -43,7 +43,7 @@ jobs:
   coverity-auth:
     name: coverity scan of the auth
     # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-pip-pinning-r2
     with:
       product: 'authoritative'
     secrets:
