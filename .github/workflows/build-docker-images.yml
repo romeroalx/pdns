@@ -129,7 +129,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Check running image
-        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
+        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') && vars.ARM64_USE_UBICLOUD == '1' ) }}
         run: |
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
           for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
@@ -138,7 +138,7 @@ jobs:
             docker run ${image_name}:${tag} --version || [ "$?" == "134" ]
           done
       - name: Check image digest matches
-        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
+        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') && vars.ARM64_USE_UBICLOUD == '1' ) }}
         run: |
           output_digest='${{ needs.build.outputs.image-digest }}'
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
@@ -148,7 +148,7 @@ jobs:
               ( echo "Image digest does not match => output_digest: "${output_digest}" - image_digest: "${image_digest} && exit 1 )
           done
       - name: Check SBOM and Provenance
-        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') ) }}
+        if: ${{ ( matrix.runner-os == 'ubuntu-22.04' && contains(inputs.platforms, 'amd64') ) || ( matrix.runner-os == 'ubicloud-standard-2-arm' && contains(inputs.platforms, 'arm64') && vars.ARM64_USE_UBICLOUD == '1' ) }}
         run: |
           image_name='${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}/${{ inputs.image-name }}'
           for tag in `echo '${{ inputs.image-tags }}' | tr '\n' ' '`; do
