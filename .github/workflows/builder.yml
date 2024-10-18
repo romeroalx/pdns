@@ -2,6 +2,7 @@
 name: 'Test package building for specific distributions'
 
 on:
+  push:
   workflow_call:
     inputs:
       branch-name:
@@ -28,22 +29,15 @@ jobs:
 
   build:
     name: build.sh
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
+    # if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
     needs: prepare
     runs-on: ${{ matrix.runner-os }}
     strategy:
       matrix:
-        product: ['authoritative', 'recursor', 'dnsdist']
+        product: ['authoritative', 'recursor']
         os:
           - el-7
           - el-8
-          - centos-9-stream
-          - ubuntu-lunar
-          - ubuntu-mantic
-          - ubuntu-noble
-          - debian-bookworm
-          - debian-trixie
-          - amazon-2023
         runner-os: ${{ fromJson(needs.prepare.outputs.runnerlist )}}
         exclude:
           - os: el-7
