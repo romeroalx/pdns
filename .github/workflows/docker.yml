@@ -2,7 +2,7 @@
 name: 'Build Docker images'
 
 on:
-  push:
+  # push:
   schedule:
     - cron: '0 4 * * *'
 
