@@ -39,13 +39,13 @@ on:
         description: push image to DockerHub
         type: boolean
         required: true
-    # secrets:
-    #   DOCKERHUB_ORGANIZATION_NAME:
-    #     required: true
-    #   DOCKERHUB_USERNAME:
-    #     required: true
-    #   DOCKERHUB_TOKEN:
-    #     required: true
+    secrets:
+      DOCKERHUB_ORGANIZATION_NAME:
+        required: true
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
@@ -119,7 +119,7 @@ jobs:
 
   test-uploaded-images:
     name: test uploaded images
-    if: ${{ inputs.push }}
+    # if: ${{ inputs.push }}
     needs: build
     runs-on: ${{ matrix.runner-os }}
     strategy:
