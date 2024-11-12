@@ -42,13 +42,13 @@ jobs:
       - run: build-scripts/gh-actions-setup-inv-no-dist-upgrade
       - run: inv install-clang
       - run: inv install-auth-build-deps
-      - run: inv install-coverity-tools PowerDNS
+      - run: inv install-coverity-tools 'romeroalx/pdns'
       - run: inv coverity-clang-configure
       - run: inv ci-autoconf
       - run: inv ci-auth-configure
       - run: inv coverity-make
-      - run: inv coverity-tarball auth.tar.bz2
-      - run: inv coverity-upload ${{ secrets.COVERITY_EMAIL }} PowerDNS auth.tar.bz2
+      # - run: inv coverity-tarball auth.tar.bz2
+      # - run: inv coverity-upload ${{ secrets.COVERITY_EMAIL }} PowerDNS auth.tar.bz2
 
   coverity-dnsdist:
     name: coverity scan of dnsdist
@@ -71,7 +71,7 @@ jobs:
       - run: build-scripts/gh-actions-setup-inv-no-dist-upgrade
       - run: inv install-clang
       - run: inv install-dnsdist-build-deps --skipXDP
-      - run: inv install-coverity-tools dnsdist
+      - run: inv install-coverity-tools 'romeroalx/pdns'
       - run: inv coverity-clang-configure
       - run: inv ci-autoconf
         working-directory: ./pdns/dnsdistdist/
@@ -83,10 +83,10 @@ jobs:
         working-directory: ./pdns/dnsdistdist/
       - run: inv coverity-make
         working-directory: ./pdns/dnsdistdist/
-      - run: inv coverity-tarball dnsdist.tar.bz2
-        working-directory: ./pdns/dnsdistdist/
-      - run: inv coverity-upload ${{ secrets.COVERITY_EMAIL }} dnsdist dnsdist.tar.bz2
-        working-directory: ./pdns/dnsdistdist/
+      # - run: inv coverity-tarball dnsdist.tar.bz2
+      #   working-directory: ./pdns/dnsdistdist/
+      # - run: inv coverity-upload ${{ secrets.COVERITY_EMAIL }} dnsdist dnsdist.tar.bz2
+      #   working-directory: ./pdns/dnsdistdist/
 
   coverity-rec:
     name: coverity scan of the rec
@@ -108,7 +108,7 @@ jobs:
       - run: build-scripts/gh-actions-setup-inv-no-dist-upgrade
       - run: inv install-clang
       - run: inv install-rec-build-deps
-      - run: inv install-coverity-tools 'PowerDNS+Recursor'
+      - run: inv install-coverity-tools 'romeroalx/pdns'
       - run: inv coverity-clang-configure
       - run: inv ci-autoconf
         working-directory: ./pdns/recursordist/
@@ -116,7 +116,7 @@ jobs:
         working-directory: ./pdns/recursordist/
       - run: inv coverity-make
         working-directory: ./pdns/recursordist/
-      - run: inv coverity-tarball recursor.tar.bz2
-        working-directory: ./pdns/recursordist/
-      - run: inv coverity-upload ${{ secrets.COVERITY_EMAIL }} 'PowerDNS+Recursor' recursor.tar.bz2
-        working-directory: ./pdns/recursordist/
+      # - run: inv coverity-tarball recursor.tar.bz2
+      #   working-directory: ./pdns/recursordist/
+      # - run: inv coverity-upload ${{ secrets.COVERITY_EMAIL }} 'PowerDNS+Recursor' recursor.tar.bz2
+      #   working-directory: ./pdns/recursordist/

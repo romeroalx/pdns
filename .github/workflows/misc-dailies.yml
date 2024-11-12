@@ -1,6 +1,7 @@
 name: "Various daily checks"
 
 on:
+  push:
   schedule:
     - cron: '34 4 * * *'
 
@@ -28,7 +29,7 @@ jobs:
         fi
 
   check-debian-autoremovals:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
@@ -41,8 +42,8 @@ jobs:
 
   coverity-auth:
     name: coverity scan of the auth
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-pinning-packaging
     with:
       product: 'authoritative'
     secrets:
@@ -51,8 +52,8 @@ jobs:
 
   coverity-dnsdist:
     name: coverity scan of dnsdist
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-pinning-packaging
     with:
       product: 'dnsdist'
     secrets:
@@ -61,8 +62,8 @@ jobs:
 
   coverity-rec:
     name: coverity scan of the rec
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    uses: romeroalx/pdns/.github/workflows/coverity.yml@test-fix-pinning-packaging
     with:
       product: 'recursor'
     secrets:
@@ -79,12 +80,12 @@ jobs:
   # used in the CI. Any other Python version would end up with different versions for packages and could result in workflow failures.
   #
   # One recurring error thrown by this validation is when a new version of a pinned package is released for a "setup-requires" dependency
-  # of one of the packages in the list (see https://github.com/PowerDNS/pdns/pull/14596). The package version in “requirements.in” should
+  # of one of the packages in the list (see https://github.com/romeroalx/pdns/pull/14596). The package version in “requirements.in” should
   # be modified to solve this issue. In some cases, it is enough to generate again the list of packages, making sure to add the -U flag
   # to force the upgrade: "pip-compile --generate-hashes -U requirements.in" (this could include upgrading other packages).
 
   list-pip-requirement-files:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
     outputs:
       req-files: ${{ steps.get-list-requirements.outputs.files }}
@@ -96,7 +97,7 @@ jobs:
         echo "files=$(find . -name 'requirements.txt' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   validate-pip-hashes:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     name: ${{ matrix.requirements-file }} - Validate list of packages and hashes
     runs-on: ubuntu-22.04
     needs: list-pip-requirement-files
@@ -115,7 +116,7 @@ jobs:
         requirements-file: ${{ fromJson(needs.list-pip-requirement-files.outputs.req-files) }}
     steps:
       - run: echo "${{ matrix.requirements-file }}"
-      - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
+      - uses: romeroalx/pdns/set-ubuntu-mirror@meta
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
