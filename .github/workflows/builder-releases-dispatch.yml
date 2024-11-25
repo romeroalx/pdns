@@ -2,6 +2,7 @@
 name: Trigger workflow builder for different releases
 
 on:
+  push:
   workflow_dispatch:
   schedule:
     - cron: '0 2 * * *'
@@ -11,50 +12,22 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   contents: read
 
 jobs:
-  call-builder-auth-49:
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
-    uses: PowerDNS/pdns/.github/workflows/builder.yml@rel/auth-4.9.x
+  call-builder-backport-14862-to-dnsdist-1-9:
+    uses: romeroalx/pdns/.github/workflows/builder.yml@backport-14862-to-dnsdist-1.9.x
     with:
-      branch-name: rel/auth-4.9.x
+      branch-name: backport-14862-to-dnsdist-1.9.x
 
-  call-builder-auth-48:
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
-    uses: PowerDNS/pdns/.github/workflows/builder.yml@rel/auth-4.8.x
+  call-builder-backport-14862-to-rec-5-1:
+    uses: romeroalx/pdns/.github/workflows/builder.yml@backport-14862-to-rec-5.0.x
     with:
-      branch-name: rel/auth-4.8.x
+      branch-name: backport-14862-to-rec-5.0.x
 
-  call-builder-auth-47:
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
-    uses: PowerDNS/pdns/.github/workflows/builder.yml@rel/auth-4.7.x
+  call-builder-backport-14862-to-rec-5-0:
+    uses: romeroalx/pdns/.github/workflows/builder.yml@backport-14862-to-rec-5.1.x
     with:
-      branch-name: rel/auth-4.7.x
+      branch-name: backport-14862-to-rec-5.1.x
 
-  call-builder-rec-51:
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
-    uses: PowerDNS/pdns/.github/workflows/builder.yml@rel/rec-5.1.x
+  call-builder-backport-14862-to-auth-4-9:
+    uses: romeroalx/pdns/.github/workflows/builder.yml@backport-14862-to-auth-4.9.x
     with:
-      branch-name: rel/rec-5.1.x
-
-  call-builder-rec-50:
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
-    uses: PowerDNS/pdns/.github/workflows/builder.yml@rel/rec-5.0.x
-    with:
-      branch-name: rel/rec-5.0.x
-
-  call-builder-rec-49:
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
-    uses: PowerDNS/pdns/.github/workflows/builder.yml@rel/rec-4.9.x
-    with:
-      branch-name: rel/rec-4.9.x
-
-  call-builder-dnsdist-19:
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
-    uses: PowerDNS/pdns/.github/workflows/builder.yml@rel/dnsdist-1.9.x
-    with:
-      branch-name: rel/dnsdist-1.9.x
-
-  call-builder-dnsdist-18:
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
-    uses: PowerDNS/pdns/.github/workflows/builder.yml@rel/dnsdist-1.8.x
-    with:
-      branch-name: rel/dnsdist-1.8.x
+      branch-name: backport-14862-to-auth-4.9.x
