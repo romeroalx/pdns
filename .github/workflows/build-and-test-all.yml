@@ -45,7 +45,7 @@ jobs:
     steps:
       - id: get-runner-image
         run: |
-          echo "image-id=ghcr.io/powerdns/${{ inputs.runner-docker-image-name || env.DEFAULT_RUNNER_DOCKER_IMAGE }}" >> "$GITHUB_OUTPUT"
+          echo "image-id=ghcr.io/romeroalx/${{ inputs.runner-docker-image-name || env.DEFAULT_RUNNER_DOCKER_IMAGE }}" >> "$GITHUB_OUTPUT"
           echo "tag=${{ env.DEFAULT_IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
 
   build-auth:
@@ -65,7 +65,7 @@ jobs:
         container_image: ["${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"]
         builder: [autotools, meson]
         exclude:
-          - container_image: "ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:${{ needs.get-runner-container-image.outputs.tag }}"
+          - container_image: "ghcr.io/romeroalx/base-pdns-ci-image/debian-11-pdns-base:${{ needs.get-runner-container-image.outputs.tag }}"
             builder: meson
       fail-fast: false
     defaults:
@@ -706,7 +706,7 @@ jobs:
     runs-on: ubuntu-22.04
     # FIXME: https://github.com/PowerDNS/pdns/pull/12880
     # container:
-    #   image: ghcr.io/powerdns/base-pdns-ci-image/debian-11-pdns-base:master
+    #   image: ghcr.io/romeroalx/base-pdns-ci-image/debian-11-pdns-base:master
     #   options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     steps:
       - uses: PowerDNS/pdns/set-ubuntu-mirror@meta
