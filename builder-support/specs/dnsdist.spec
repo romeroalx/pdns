@@ -92,7 +92,6 @@ export RANLIB=gcc-ranlib
   --enable-dns-over-http3 \
   --with-quiche \
   PKG_CONFIG_PATH=/usr/lib/pkgconfig:/opt/lib64/pkgconfig
-%endif
 
 make %{?_smp_mflags}
 
