@@ -1122,6 +1122,27 @@ def ci_build_and_install_quiche(c, repo):
     c.run('mkdir -p /opt/dnsdist/lib')
     c.run('cp /usr/lib/libquiche.so /opt/dnsdist/lib/libquiche.so')
 
+@task
+def install_pulpcli(c):
+    c.run(f'python3 -m venv {repo_home}/.venv')
+    c.run(f'. {repo_home}/.venv/bin/activate && pip install pulp-cli==0.29.2')
+
+@task
+def pulp_upload_packages_by_folder(c, destination_path, source):
+    pulp_repo_name = os.getenv("PULP_REPO_NAME", '')
+    pulp_cmd = " ".join([
+        "pulp",
+        "--no-verify-ssl",
+        f"--base-url {os.getenv("PULP_URL", '')}",
+        f"--username {os.getenv('PULP_CI_USERNAME', '')}",
+        f"--password {os.getenv("PULP_CI_PASSWORD", '')}"
+    ])
+
+    for root, dirs, files in os.walk(source):
+        for path in files:
+            file = os.path.join(root, path).split('/',1)[1]
+            c.run(f'. {repo_home}/.venv/bin/activate && {pulp_cmd} file content upload --repository {pulp_repo_name} --file {file} --relative-path {destination_path}/{file}')
+
 # this is run always
 def setup():
     if '/usr/lib/ccache' not in os.environ['PATH']:
