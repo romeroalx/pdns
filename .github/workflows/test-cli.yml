@@ -1,0 +1,35 @@
+---
+name: Test Pulp CLI
+
+on:
+  push:
+
+env:
+  DESTINATION_PATH: built_pkgs_pdns
+
+permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+  contents: read
+
+jobs:
+  upload-provenance:
+    name: Upload the provenance artifacts to downloads.powerdns.com
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Install python invoke and needed libs
+        run: |
+          sudo apt-get update && sudo apt-get -y install python3-invoke
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: recursive
+      - run: inv install-pulpcli
+      - name: Upload provenance artifacts to Pulp
+        id: upload-provenance
+        env:
+          PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
+          PULP_URL: ${{ secrets.PULP_URL }}
+          PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+          PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+        shell: bash
+        run: |
+          inv pulp-get-repos 

@@ -2,7 +2,7 @@
 name: 'daily: build packages for master '
 
 on:
-  push:
+  # push:
   schedule:
     - cron: '0 5 * * *'
 
