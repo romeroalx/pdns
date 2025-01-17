@@ -145,9 +145,13 @@ jobs:
         id: srchashes
         run: |
           echo "srchashes=$(sha256sum ./built_pkgs/*/*/${{ steps.normalize-name.outputs.normalized-package-name }}-${{ steps.getversion.outputs.version }}.tar.bz2 | base64 -w0)" >> $GITHUB_OUTPUT
+      - name: Install python3 invoke
+        run: |
+          sudo apt-get update && sudo apt-get -y install python3-invoke
+          git checkout test-pulp-file-repository
       - run: inv install-pulpcli
       - name: Upload packages to Pulp
-        run: inv pulp-upload-packages-by-folder ${{ env.DESTINATION_PATH }} built_pkgs/*
+        run: inv pulp-upload-packages-by-folder ${{ env.DESTINATION_PATH }} built_pkgs
         env:
           PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
           PULP_URL: ${{ secrets.PULP_URL }}
@@ -220,6 +224,11 @@ jobs:
           - os: el-7
             architecture: aarch64
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: recursive
+          ref: test-pulp-file-repository
       - name: Download source tarball provenance for ${{ inputs.product }} (${{ inputs.ref }})
         id: download-src-provenance
         uses: actions/download-artifact@v4 # be careful, this needs to match what https://github.com/slsa-framework/slsa-github-generator is using
@@ -230,11 +239,9 @@ jobs:
         uses: actions/download-artifact@v4 # be careful, this needs to match what https://github.com/slsa-framework/slsa-github-generator is using
         with:
           name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-${{ matrix.os }}-${{ matrix.architecture }}.intoto.jsonl"
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          submodules: recursive
-          ref: ${{ inputs.ref }}
+      - name: Install python3 invoke
+        run: |
+          sudo apt-get update && sudo apt-get -y install python3-invoke
       - run: inv install-pulpcli
       - name: Upload provenance artifacts to Pulp
         id: upload-provenance
