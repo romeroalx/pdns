@@ -1142,6 +1142,7 @@ def pulp_upload_packages_by_folder(c, destination_path, source):
         for path in files:
             file = os.path.join(root, path).split('/',1)[1]
             c.run(f'. {repo_home}/.venv/bin/activate && {pulp_cmd} file content upload --repository {pulp_repo_name} --file {source}/{file} --relative-path {destination_path}/{file}')
+            time.sleep(5)
 
 @task
 def pulp_get_repos(c):
