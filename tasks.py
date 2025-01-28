@@ -23,6 +23,7 @@ all_build_deps = [
     'pkg-config',
     'python3-venv',
     'systemd',
+    'python3-yaml',
 ]
 git_build_deps = [
     'autoconf',
@@ -185,7 +186,7 @@ def install_clang(c):
 
 @task
 def install_clang_tidy_tools(c):
-    c.sudo(f'apt-get -y --no-install-recommends install clang-tidy-{clang_version} clang-tools-{clang_version} bear python3-yaml')
+    c.sudo(f'apt-get -y --no-install-recommends install clang-tidy-{clang_version} clang-tools-{clang_version} bear')
 
 @task
 def install_clang_runtime(c):
