@@ -212,7 +212,6 @@ def install_meson(c):
 @task
 def install_auth_build_deps(c):
     c.sudo('apt-get install -y --no-install-recommends ' + ' '.join(all_build_deps + git_build_deps + auth_build_deps))
-    install_meson(c)
 
 def is_coverage_enabled():
     sanitizers = os.getenv('SANITIZERS')
@@ -343,10 +342,8 @@ def install_dnsdist_test_deps(c, skipXDP=False): # FIXME: rename this, we do way
     c.sudo('chmod 755 /var/agentx')
 
 @task
-def install_rec_build_deps(c, meson=False):
+def install_rec_build_deps(c):
     c.sudo('apt-get install -y --no-install-recommends ' +  ' '.join(all_build_deps + git_build_deps + rec_build_deps))
-    if meson:
-        install_meson(c)
 
 @task(optional=['skipXDP'])
 def install_dnsdist_build_deps(c, skipXDP=False):
