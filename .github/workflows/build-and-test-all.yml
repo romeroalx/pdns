@@ -46,7 +46,7 @@ jobs:
     steps:
       - id: get-runner-image
         run: |
-          echo "image-id=ghcr.io/powerdns/${{ inputs.runner-docker-image-name || env.DEFAULT_RUNNER_DOCKER_IMAGE }}" >> "$GITHUB_OUTPUT"
+          echo "image-id=ghcr.io/romeroalx/${{ inputs.runner-docker-image-name || env.DEFAULT_RUNNER_DOCKER_IMAGE }}" >> "$GITHUB_OUTPUT"
           echo "tag=${{ env.DEFAULT_IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
 
   build-auth:
@@ -173,7 +173,7 @@ jobs:
           path: ~/.ccache
           key: recursor-ccache-${{ matrix.builder }}-${{ matrix.features }}-${{ matrix.sanitizers }}-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: recursor-ccache-${{ matrix.builder }}-${{ matrix.features }}-${{ matrix.sanitizers }}
-      - run: ${{ env.INV_CMD }} install-rec-build-deps ${{ matrix.builder == 'meson' && '--meson' || '' }}
+      - run: ${{ env.INV_CMD }} install-rec-build-deps
         working-directory: ./pdns/recursordist/
       - run: ${{ env.INV_CMD }} ci-install-rust ${{ env.REPO_HOME }}
         working-directory: ./pdns/recursordist/

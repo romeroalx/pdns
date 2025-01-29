@@ -206,12 +206,12 @@ def install_doc_deps_pdf(c):
     c.sudo('apt-get install -y ' + ' '.join(doc_deps_pdf))
 
 def install_meson(c):
-    c.run(f'python3 -m venv {repo_home}/.venv')
-    c.run(f'. {repo_home}/.venv/bin/activate && pip install -r {repo_home}/meson/requirements.txt')
+    c.run(f'pip install -r {repo_home}/meson/requirements.txt')
 
 @task
 def install_auth_build_deps(c):
     c.sudo('apt-get install -y --no-install-recommends ' + ' '.join(all_build_deps + git_build_deps + auth_build_deps))
+    install_meson(c)
 
 def is_coverage_enabled():
     sanitizers = os.getenv('SANITIZERS')
@@ -344,10 +344,12 @@ def install_dnsdist_test_deps(c, skipXDP=False): # FIXME: rename this, we do way
 @task
 def install_rec_build_deps(c):
     c.sudo('apt-get install -y --no-install-recommends ' +  ' '.join(all_build_deps + git_build_deps + rec_build_deps))
+    install_meson(c)
 
 @task(optional=['skipXDP'])
 def install_dnsdist_build_deps(c, skipXDP=False):
     c.sudo('apt-get install -y --no-install-recommends ' +  ' '.join(all_build_deps + git_build_deps + dnsdist_build_deps + (dnsdist_xdp_build_deps if not skipXDP else [])))
+    install_meson(c)
 
 @task
 def ci_autoconf(c, meson=False):
