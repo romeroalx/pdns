@@ -212,7 +212,6 @@ def install_meson(c):
 @task
 def install_auth_build_deps(c):
     c.sudo('apt-get install -y --no-install-recommends ' + ' '.join(all_build_deps + git_build_deps + auth_build_deps))
-    install_meson(c)
 
 def is_coverage_enabled():
     sanitizers = os.getenv('SANITIZERS')
@@ -343,10 +342,8 @@ def install_dnsdist_test_deps(c, skipXDP=False): # FIXME: rename this, we do way
     c.sudo('chmod 755 /var/agentx')
 
 @task
-def install_rec_build_deps(c, meson=False):
+def install_rec_build_deps(c):
     c.sudo('apt-get install -y --no-install-recommends ' +  ' '.join(all_build_deps + git_build_deps + rec_build_deps))
-    if meson:
-        install_meson(c)
 
 @task(optional=['skipXDP'])
 def install_dnsdist_build_deps(c, skipXDP=False):
@@ -488,7 +485,7 @@ def get_base_configure_cmd_meson(build_dir, additional_c_flags='', additional_cx
         f"CXX='{get_cxx_compiler()}'"
     ])
     return " ".join([
-        f'. {repo_home}/.venv/bin/activate && {env} meson setup {build_dir}',
+        f'{env} meson setup {build_dir}',
         "-D systemd={}".format("enabled" if enable_systemd else "disabled"),
         "-D signers-libsodium={}".format("enabled" if enable_sodium else "disabled"),
         "-D hardening-fortify-source=auto",
@@ -758,7 +755,7 @@ def ci_auth_make_bear(c):
     c.run(f'bear --append -- make -j{get_build_concurrency()} -k V=1')
 
 def run_ninja(c):
-    c.run(f'. {repo_home}/.venv/bin/activate && ninja -j{get_build_concurrency()} --verbose')
+    c.run(f'ninja -j{get_build_concurrency()} --verbose')
 
 @task
 def ci_auth_build(c, meson=False):
@@ -798,7 +795,7 @@ def ci_auth_run_unit_tests(c, meson=False):
         suite_timeout_sec = 120
         logfile = 'meson-logs/testlog.txt'
         c.run(f'touch {repo_home}/regression-tests/tests/verify-dnssec-zone/allow-missing {repo_home}/regression-tests.nobackend/rectify-axfr/allow-missing') # FIXME: can this go?
-        res = c.run(f'. {repo_home}/.venv/bin/activate && meson test --verbose -t {suite_timeout_sec}', warn=True)
+        res = c.run(f'meson test --verbose -t {suite_timeout_sec}', warn=True)
     else:
         logfile = 'pdns/test-suite.log'
         res = c.run('make check', warn=True)
@@ -812,7 +809,7 @@ def ci_rec_run_unit_tests(c, meson=False):
     if meson:
         suite_timeout_sec = 120
         logfile = 'meson-logs/testlog.txt'
-        res = c.run(f'. {repo_home}/.venv/bin/activate && meson test --verbose -t {suite_timeout_sec}', warn=True)
+        res = c.run(f'meson test --verbose -t {suite_timeout_sec}', warn=True)
     else:
         res = c.run('make check', warn=True)
         if res.exited != 0:
