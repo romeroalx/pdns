@@ -16,13 +16,7 @@ on:
         # update this list, as well as the one in builder-dispatch.yml
         default: >-
           el-8
-          el-9
-          debian-buster
-          debian-bullseye
           debian-bookworm
-          ubuntu-focal
-          ubuntu-jammy
-          ubuntu-noble
       ref:
         description: git ref to checkout
         type: string
@@ -64,8 +58,10 @@ jobs:
       - id: get-oslist
         run: echo "oslist=$(jo -a ${{ inputs.os }})" >> "$GITHUB_OUTPUT"
       - id: get-runnerlist
+        # run: echo "runnerlist=$(jo -a ubuntu-22.04)" >> "$GITHUB_OUTPUT"
         run: echo "runnerlist=$(jo -a ubuntu-22.04 ${{ vars.ARM64_USE_UBICLOUD == '1' && 'ubicloud-standard-2-arm' || '' }})" >> "$GITHUB_OUTPUT"
       - id: get-archlist
+        # run: echo "archlist=$(jo -a  x86_64)" >> "$GITHUB_OUTPUT"
         run: echo "archlist=$(jo -a  x86_64 ${{ vars.ARM64_USE_UBICLOUD == '1' && 'aarch64' || '' }})" >> "$GITHUB_OUTPUT"
 
   build:
@@ -86,20 +82,20 @@ jobs:
       # pkghashes-el-7-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-7-x86_64 }}
       pkghashes-el-8-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-8-x86_64 }}
       pkghashes-el-8-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-8-aarch64 }}
-      pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
-      pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
-      pkghashes-debian-buster-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-x86_64 }}
-      pkghashes-debian-buster-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-aarch64 }}
-      pkghashes-debian-bullseye-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-x86_64 }}
-      pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
+      # pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
+      # pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
+      # pkghashes-debian-buster-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-x86_64 }}
+      # pkghashes-debian-buster-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-aarch64 }}
+      # pkghashes-debian-bullseye-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-x86_64 }}
+      # pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
       pkghashes-debian-bookworm-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-x86_64 }}
       pkghashes-debian-bookworm-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-aarch64 }}
-      pkghashes-ubuntu-focal-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-x86_64 }}
-      pkghashes-ubuntu-focal-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-aarch64 }}
-      pkghashes-ubuntu-jammy-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-x86_64 }}
-      pkghashes-ubuntu-jammy-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-aarch64 }}
-      pkghashes-ubuntu-noble-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-x86_64 }}
-      pkghashes-ubuntu-noble-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-aarch64 }}
+      # pkghashes-ubuntu-focal-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-x86_64 }}
+      # pkghashes-ubuntu-focal-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-aarch64 }}
+      # pkghashes-ubuntu-jammy-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-x86_64 }}
+      # pkghashes-ubuntu-jammy-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-aarch64 }}
+      # pkghashes-ubuntu-noble-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-x86_64 }}
+      # pkghashes-ubuntu-noble-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-aarch64 }}
       srchashes: ${{ steps.srchashes.outputs.srchashes }}
     steps:
       - uses: actions/checkout@v4
@@ -152,18 +148,32 @@ jobs:
         id: srchashes
         run: |
           echo "srchashes=$(sha256sum ./built_pkgs/*/*/${{ steps.normalize-name.outputs.normalized-package-name }}-${{ steps.getversion.outputs.version }}.tar.bz2 | base64 -w0)" >> $GITHUB_OUTPUT
-      - name: Install python3 invoke
-        run: |
-          sudo apt-get update && sudo apt-get -y install python3-invoke
-          git checkout test-pulp-file-repository
-      - run: inv install-pulpcli
-      - name: Upload packages to Pulp
-        run: inv pulp-upload-packages-by-folder ${{ env.DESTINATION_PATH }} built_pkgs
-        env:
-          PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
-          PULP_URL: ${{ secrets.PULP_URL }}
-          PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
-          PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+      # - name: Install python3 invoke
+      #   run: |
+      #     sudo apt-get update && sudo apt-get -y install python3-invoke
+      #     git checkout test-pulp-file-repository
+      # - run: inv install-pulpcli
+      # - name: Upload DEB packages
+      #   run: inv pulp-upload-packages-by-folder ${{ env.DESTINATION_PATH }} built_pkgs
+      #   env:
+      #     PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
+      #     PULP_URL: ${{ secrets.PULP_URL }}
+      #     PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+      #     PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+      # - name: Upload RPM packages
+      #   run: inv pulp-upload-packages-by-folder ${{ env.DESTINATION_PATH }} built_pkgs
+      #   env:
+      #     PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
+      #     PULP_URL: ${{ secrets.PULP_URL }}
+      #     PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+      #     PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+      # - name: Upload packages to Pulp
+      #   run: inv pulp-upload-packages-by-folder ${{ env.DESTINATION_PATH }} built_pkgs
+      #   env:
+      #     PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
+      #     PULP_URL: ${{ secrets.PULP_URL }}
+      #     PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+      #     PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
 
   check-hashes:
     needs: build
@@ -218,49 +228,89 @@ jobs:
       upload-assets: false
       provenance-name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-src.intoto.jsonl"
       private-repository: true
+# 
+#   upload-provenance:
+#     needs: [prepare, build, provenance-src, provenance-pkgs]
+#     name: Upload the provenance artifacts to downloads.powerdns.com
+#     runs-on: ubuntu-22.04
+#     strategy:
+#       matrix:
+#         os: ${{fromJson(needs.prepare.outputs.oslist)}}
+#         architecture: ${{ fromJson(needs.prepare.outputs.archlist )}}
+#         exclude:
+#           - os: el-7
+#             architecture: aarch64
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 1
+#           submodules: recursive
+#           ref: test-pulp-file-repository
+#       - name: Download source tarball provenance for ${{ inputs.product }} (${{ inputs.ref }})
+#         id: download-src-provenance
+#         uses: actions/download-artifact@v4 # be careful, this needs to match what https://github.com/slsa-framework/slsa-github-generator is using
+#         with:
+#           name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-src.intoto.jsonl"
+#       - name: Download provenance for ${{ inputs.product }} (${{ inputs.ref }}) for ${{ matrix.os }}
+#         id: download-provenance
+#         uses: actions/download-artifact@v4 # be careful, this needs to match what https://github.com/slsa-framework/slsa-github-generator is using
+#         with:
+#           name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-${{ matrix.os }}-${{ matrix.architecture }}.intoto.jsonl"
+#       # - name: Install python3 invoke
+#       #   run: |
+#       #     sudo apt-get update && sudo apt-get -y install python3-invoke
+#       # - run: inv install-pulpcli
+#       # - name: Upload provenance artifacts to Pulp
+#       #   id: upload-provenance
+#       #   env:
+#       #     PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
+#       #     PULP_URL: ${{ secrets.PULP_URL }}
+#       #     PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+#       #     PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+#       #     PRODUCT: ${{ needs.build.outputs.product-name }}
+#       #     VERSION: ${{ needs.build.outputs.version }}
+#       #   shell: bash
+#       #   run: |
+#       #     mkdir -m 755 -p "slsa/${PRODUCT}/${VERSION}/"
+#       #     mv ${{steps.download-provenance.outputs.download-path}}/*.jsonl "slsa/${PRODUCT}/${VERSION}"
+#       #     inv pulp-upload-packages-by-folder ${{ env.DESTINATION_PATH }} slsa
 
-  upload-provenance:
-    needs: [prepare, build, provenance-src, provenance-pkgs]
-    name: Upload the provenance artifacts to downloads.powerdns.com
+  upload-packages:
+    needs:  [prepare, build, provenance-src, provenance-pkgs]
+    name: Upload packages
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        os: ${{fromJson(needs.prepare.outputs.oslist)}}
-        architecture: ${{ fromJson(needs.prepare.outputs.archlist )}}
-        exclude:
-          - os: el-7
-            architecture: aarch64
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0 # for correct version numbers
           submodules: recursive
-          ref: test-pulp-file-repository
-      - name: Download source tarball provenance for ${{ inputs.product }} (${{ inputs.ref }})
-        id: download-src-provenance
+          ref: ${{ inputs.ref }}
+      # this builds packages and runs our unit tests (make check)
+      - name: Get version number
+        run: |
+          echo "version=$(readlink builder/tmp/latest)" >> $GITHUB_OUTPUT
+        id: getversion
+      - name: Download packages
+        id: download-packages
         uses: actions/download-artifact@v4 # be careful, this needs to match what https://github.com/slsa-framework/slsa-github-generator is using
         with:
-          name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-src.intoto.jsonl"
-      - name: Download provenance for ${{ inputs.product }} (${{ inputs.ref }}) for ${{ matrix.os }}
-        id: download-provenance
-        uses: actions/download-artifact@v4 # be careful, this needs to match what https://github.com/slsa-framework/slsa-github-generator is using
-        with:
-          name: "${{ inputs.product }}-${{ needs.build.outputs.version }}-${{ matrix.os }}-${{ matrix.architecture }}.intoto.jsonl"
-      - name: Install python3 invoke
+          pattern: "${{ inputs.product }}-*"
+      - name: Normalize package name
+        id: normalize-name
         run: |
-          sudo apt-get update && sudo apt-get -y install python3-invoke
-      - run: inv install-pulpcli
-      - name: Upload provenance artifacts to Pulp
-        id: upload-provenance
-        env:
-          PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
-          PULP_URL: ${{ secrets.PULP_URL }}
-          PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
-          PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
-          PRODUCT: ${{ needs.build.outputs.product-name }}
-          VERSION: ${{ needs.build.outputs.version }}
-        shell: bash
-        run: |
-          mkdir -m 755 -p "slsa/${PRODUCT}/${VERSION}/"
-          mv ${{steps.download-provenance.outputs.download-path}}/*.jsonl "slsa/${PRODUCT}/${VERSION}"
-          inv pulp-upload-packages-by-folder ${{ env.DESTINATION_PATH }} slsa
+          if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
+            echo "normalized-package-name=pdns" >> $GITHUB_OUTPUT
+          elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
+            echo "normalized-package-name=pdns-recursor" >> $GITHUB_OUTPUT
+          else
+            echo "normalized-package-name=${{ inputs.product }}" >> $GITHUB_OUTPUT
+          fi
+      - run: sudo apt update && sudo apt install -y tree
+      - run: tree
+      - run: ls -al
+      - run: pwd
+      - run: mkdir -p files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}
+      - run: for i in $(ls ./${{ inputs.product }}-*/*/*/*); do cp $i files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}/; done
+      - run: cp *.jsonl/*.jsonl files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}/
+      - run: for i in $(ls ./*/*/*/*-*-*-*.tar.bz2); do mkdir -p ./packages/$(echo $i | cut -d '/' -f 2)/; tar -xvf $i -C ./packages/$(echo $i | cut -d '/' -f 2)/ --transform='s/.*\///'; done
+      - run: tree

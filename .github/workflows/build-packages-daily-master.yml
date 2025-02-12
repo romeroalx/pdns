@@ -25,28 +25,28 @@ jobs:
       PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
       PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
 
-  call-build-packages-dnsdist:
-    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-pulp-file-repository
-    with:
-      is_release: 'YES'
-      product: 'dnsdist'
-      ref: 'dnsdist-1.9.8'
-    secrets:
-      PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
-      PULP_URL: ${{ secrets.PULP_URL }}
-      PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
-      PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
-
-  call-build-packages-rec:
-    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-pulp-file-repository
-    with:
-      is_release: 'YES'
-      product: 'recursor'
-      ref: 'rec-5.2.0'
-    secrets:
-      PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
-      PULP_URL: ${{ secrets.PULP_URL }}
-      PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
-      PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+  # call-build-packages-dnsdist:
+  #   # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+  #   uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-pulp-file-repository
+  #   with:
+  #     is_release: 'YES'
+  #     product: 'dnsdist'
+  #     ref: 'dnsdist-1.9.8'
+  #   secrets:
+  #     PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
+  #     PULP_URL: ${{ secrets.PULP_URL }}
+  #     PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+  #     PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+# 
+  # call-build-packages-rec:
+  #   # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+  #   uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-pulp-file-repository
+  #   with:
+  #     is_release: 'YES'
+  #     product: 'recursor'
+  #     ref: 'rec-5.2.0'
+  #   secrets:
+  #     PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
+  #     PULP_URL: ${{ secrets.PULP_URL }}
+  #     PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+  #     PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
