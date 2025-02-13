@@ -1,6 +1,7 @@
 name: "Various daily checks"
 
 on:
+  push:
   schedule:
     - cron: '34 4 * * *'
 
@@ -11,63 +12,63 @@ env:
   CLANG_VERSION: '12'
 
 jobs:
-  el7-devtoolset:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    runs-on: ubuntu-22.04
-
-    steps:
-    - name: Check whether a newer devtoolset exists
-      run: |
-        if docker run --rm centos:7 bash -c 'yum install -y centos-release-scl-rh && yum info devtoolset-12-gcc-c++'
-        then
-          echo "::warning file=builder-support/dockerfiles/Dockerfile.rpmbuild::A newer devtoolset exists. Please edit builder-support/dockerfiles/Dockerfile.rpmbuild, builder-support/dockerfiles/Dockerfile.rpmbuild, and .github/workflows/dailies.yml"
-          exit 1
-        else
-          echo "::notice ::No newer devtoolset exists (good)"
-          exit 0
-        fi
-
-  check-debian-autoremovals:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 5
-        submodules: recursive
-
-    - name: Check if Debian is about to toss us off a balcony
-      run: ./build-scripts/check-debian-autoremovals.py
-
-  coverity-auth:
-    name: coverity scan of the auth
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'authoritative'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.coverity_auth_token }}
-      COVERITY_EMAIL: ${{ secrets.coverity_email }}
-
-  coverity-dnsdist:
-    name: coverity scan of dnsdist
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'dnsdist'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.coverity_dnsdist_token }}
-      COVERITY_EMAIL: ${{ secrets.coverity_email }}
-
-  coverity-rec:
-    name: coverity scan of the rec
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
-    uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
-    with:
-      product: 'recursor'
-    secrets:
-      COVERITY_TOKEN: ${{ secrets.coverity_rec_token }}
-      COVERITY_EMAIL: ${{ secrets.coverity_email }}
+#   el7-devtoolset:
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     runs-on: ubuntu-22.04
+# 
+#     steps:
+#     - name: Check whether a newer devtoolset exists
+#       run: |
+#         if docker run --rm centos:7 bash -c 'yum install -y centos-release-scl-rh && yum info devtoolset-12-gcc-c++'
+#         then
+#           echo "::warning file=builder-support/dockerfiles/Dockerfile.rpmbuild::A newer devtoolset exists. Please edit builder-support/dockerfiles/Dockerfile.rpmbuild, builder-support/dockerfiles/Dockerfile.rpmbuild, and .github/workflows/dailies.yml"
+#           exit 1
+#         else
+#           echo "::notice ::No newer devtoolset exists (good)"
+#           exit 0
+#         fi
+# 
+#   check-debian-autoremovals:
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     runs-on: ubuntu-22.04
+#     steps:
+#     - uses: actions/checkout@v4
+#       with:
+#         fetch-depth: 5
+#         submodules: recursive
+# 
+#     - name: Check if Debian is about to toss us off a balcony
+#       run: ./build-scripts/check-debian-autoremovals.py
+# 
+#   coverity-auth:
+#     name: coverity scan of the auth
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+#     with:
+#       product: 'authoritative'
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.coverity_auth_token }}
+#       COVERITY_EMAIL: ${{ secrets.coverity_email }}
+# 
+#   coverity-dnsdist:
+#     name: coverity scan of dnsdist
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+#     with:
+#       product: 'dnsdist'
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.coverity_dnsdist_token }}
+#       COVERITY_EMAIL: ${{ secrets.coverity_email }}
+# 
+#   coverity-rec:
+#     name: coverity scan of the rec
+#     if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+#     uses: PowerDNS/pdns/.github/workflows/coverity.yml@master
+#     with:
+#       product: 'recursor'
+#     secrets:
+#       COVERITY_TOKEN: ${{ secrets.coverity_rec_token }}
+#       COVERITY_EMAIL: ${{ secrets.coverity_email }}
 
   # The jobs below check that only the pinned version of Python3 packages are installed with pip. Running in a container, a
   # pip proxy registers all requests for installing packages with pip.  Then, the downloaded packages and their versions are compared
@@ -84,7 +85,6 @@ jobs:
   # to force the upgrade: "pip-compile --generate-hashes -U requirements.in" (this could include upgrading other packages).
 
   list-pip-requirement-files:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
     outputs:
       req-files: ${{ steps.get-list-requirements.outputs.files }}
@@ -96,7 +96,6 @@ jobs:
         echo "files=$(find . -name 'requirements.txt' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   validate-pip-hashes:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     name: ${{ matrix.requirements-file }} - Validate list of packages and hashes
     runs-on: ubuntu-22.04
     needs: list-pip-requirement-files
@@ -133,39 +132,39 @@ jobs:
       - name: check only listed packages were installed
         run: for i in `cat /tmp/proxpi.log`; do grep -qq -i $i ${{ matrix.requirements-file }} || ( echo "$i not found" && exit 1 ); done
 
-  run-rec-bulk-test-on-ubicloud:
-    if: ${{ vars.UBICLOUD_DAILY_REC_BULKTEST == '1' }}
-    name: Run Recursor (master) Bulk Test On Ubicloud
-    runs-on: ubicloud-standard-8-ubuntu-2404
-    strategy:
-      matrix:
-        testsize: [500000]
-        IPv6: [0, 1]
-      max-parallel: 1
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 5
-          submodules: recursive
-          ref: ${{ inputs.branch-name }}
-      - name: Add PowerDNS Repo
-        run: echo 'deb [signed-by=/etc/apt/keyrings/rec-master-pub.asc] http://repo.powerdns.com/ubuntu noble-rec-master main' | sudo tee /etc/apt/sources.list.d/pdns.list
-      - name: Add key
-        run: sudo install -d /etc/apt/keyrings; curl https://repo.powerdns.com/CBC8B383-pub.asc | sudo tee /etc/apt/keyrings/rec-master-pub.asc
-      - name: Apt Update
-        run: sudo apt-get update
-      - name: Install Recursor Package and PDNS Tools
-        run: sudo apt install pdns-recursor pdns-tools
-      - name: Get Top Million Names
-        run: curl --no-progress-meter -LO http://s3-us-west-1.amazonaws.com/umbrella-static/top-1m.csv.zip && unzip top-1m.csv.zip -d .
-        working-directory: regression-tests
-      - name: Run Bulk Test
-        run: ./recursor-test 5300 ${{ matrix.testsize }} 8 2048 1024
-        working-directory: regression-tests
-        env:
-          RECURSOR: /usr/sbin/pdns_recursor
-          RECCONTROL: /usr/bin/rec_control
-          DNSBULKTEST: /usr/bin/dnsbulktest
-          THRESHOLD: 95
-          TRACE: no
-          IPv6: ${{ matrix.IPv6 }}
+  # run-rec-bulk-test-on-ubicloud:
+  #   if: ${{ vars.UBICLOUD_DAILY_REC_BULKTEST == '1' }}
+  #   name: Run Recursor (master) Bulk Test On Ubicloud
+  #   runs-on: ubicloud-standard-8-ubuntu-2404
+  #   strategy:
+  #     matrix:
+  #       testsize: [500000]
+  #       IPv6: [0, 1]
+  #     max-parallel: 1
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 5
+  #         submodules: recursive
+  #         ref: ${{ inputs.branch-name }}
+  #     - name: Add PowerDNS Repo
+  #       run: echo 'deb [signed-by=/etc/apt/keyrings/rec-master-pub.asc] http://repo.powerdns.com/ubuntu noble-rec-master main' | sudo tee /etc/apt/sources.list.d/pdns.list
+  #     - name: Add key
+  #       run: sudo install -d /etc/apt/keyrings; curl https://repo.powerdns.com/CBC8B383-pub.asc | sudo tee /etc/apt/keyrings/rec-master-pub.asc
+  #     - name: Apt Update
+  #       run: sudo apt-get update
+  #     - name: Install Recursor Package and PDNS Tools
+  #       run: sudo apt install pdns-recursor pdns-tools
+  #     - name: Get Top Million Names
+  #       run: curl --no-progress-meter -LO http://s3-us-west-1.amazonaws.com/umbrella-static/top-1m.csv.zip && unzip top-1m.csv.zip -d .
+  #       working-directory: regression-tests
+  #     - name: Run Bulk Test
+  #       run: ./recursor-test 5300 ${{ matrix.testsize }} 8 2048 1024
+  #       working-directory: regression-tests
+  #       env:
+  #         RECURSOR: /usr/sbin/pdns_recursor
+  #         RECCONTROL: /usr/bin/rec_control
+  #         DNSBULKTEST: /usr/bin/dnsbulktest
+  #         THRESHOLD: 95
+  #         TRACE: no
+  #         IPv6: ${{ matrix.IPv6 }}
