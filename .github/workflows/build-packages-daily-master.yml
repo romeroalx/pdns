@@ -20,10 +20,13 @@ jobs:
       product: 'authoritative'
       ref: 'auth-4.9.3'
     secrets:
-      PULP_REPO_NAME: ${{ secrets.PULP_REPO_NAME }}
+      PULP_FILE_REPO_NAME: ${{ secrets.PULP_FILE_REPO_NAME }}
       PULP_URL: ${{ secrets.PULP_URL }}
       PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
       PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+      DOWNLOADS_AUTOBUILT_SECRET: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
+      DOWNLOADS_AUTOBUILT_RSYNCTARGET: ${{ secrets.DOWNLOADS_AUTOBUILT_RSYNCTARGET }}
+      DOWNLOADS_AUTOBUILT_HOSTKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_HOSTKEY }}
 
   # call-build-packages-dnsdist:
   #   # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
