@@ -1232,11 +1232,10 @@ def install_pulpcli(c):
     c.run(f'. {repo_home}/.venv/bin/activate && pip install pulp-cli==0.29.2')
 
 @task
-def pulp_upload_packages_by_folder(c, destination_path, source):
+def pulp_upload_file_packages_by_folder(c, destination_path, source):
     pulp_repo_name = os.getenv("PULP_REPO_NAME", '')
     pulp_cmd = " ".join([
         "pulp",
-        "--no-verify-ssl",
         f"--base-url {os.getenv('PULP_URL', '')}",
         f"--username {os.getenv('PULP_CI_USERNAME', '')}",
         f"--password {os.getenv('PULP_CI_PASSWORD', '')}"
@@ -1246,14 +1245,70 @@ def pulp_upload_packages_by_folder(c, destination_path, source):
         for path in files:
             file = os.path.join(root, path).split('/',1)[1]
             c.run(f'. {repo_home}/.venv/bin/activate && {pulp_cmd} file content upload --repository {pulp_repo_name} --file {source}/{file} --relative-path {destination_path}/{file}')
-            time.sleep(5)
+            
+    c.run(f'. {repo_home}/.venv/bin/activate && {pulp_cmd} file publication create --repository {pulp_repo_name}')
+
+@task
+def pulp_upload_rpm_packages_by_folder(c, source, product):
+    pulp_cmd = " ".join([
+        "pulp",
+        f"--base-url {os.getenv('PULP_URL', '')}",
+        f"--username {os.getenv('PULP_CI_USERNAME', '')}",
+        f"--password {os.getenv('PULP_CI_PASSWORD', '')}"
+    ])
+
+    rpm_distros = ["centos", "el"]
+    builds = os.listdir(source)
+
+
+# pulp rpm content -t package upload --file ${PACKAGE} --repository ${REPOSITORY} --no-publish 
+# pulp rpm publication create --repository ${REPOSITORY} --checksum-type sha512
+    for build_folder in builds:
+        release = build_folder.split('.')[0].split('-')[1]
+        arch = build_folder.split('.')[1]
+        for distro in rpm_distros:
+            for root, dirs, files in os.walk(f"{source}/{build_folder}"):
+                for path in files:
+                    file = os.path.join(root, path).split('/',1)[1]
+                    repo_name = f"repo-{distro}-{release}-{arch}-{product}"
+                    # c.run(f'echo "root: {root} path: {path} file: {file} release: {release} arch: {arch} repo: {repo_name}"')
+                    c.run(f'. {repo_home}/.venv/bin/activate && {pulp_cmd} rpm content -t package upload --file {source}/{file} --repository {repo_name} --no-publish --chunk-size 500MB')
+                    # time.sleep(3)
+
+            c.run(f'. {repo_home}/.venv/bin/activate && {pulp_cmd} rpm publication create --repository {repo_name}')
+
+@task
+def pulp_upload_deb_packages_by_folder(c, destination_path, source):
+    pulp_repo_name = os.getenv("PULP_REPO_NAME", '')
+    pulp_cmd = " ".join([
+        "pulp",
+        f"--base-url {os.getenv('PULP_URL', '')}",
+        f"--username {os.getenv('PULP_CI_USERNAME', '')}",
+        f"--password {os.getenv('PULP_CI_PASSWORD', '')}"
+    ])
+    # focal-auth-43/  distribution
+    for root, dirs, files in os.walk(source):
+        for path in files:
+            file = os.path.join(root, path).split('/',1)[1]
+            c.run(f'. {repo_home}/.venv/bin/activate && {pulp_cmd} file content upload --repository {pulp_repo_name} --file {source}/{file} --relative-path {destination_path}/{file}')
+            
+    c.run(f'. {repo_home}/.venv/bin/activate && {pulp_cmd} deb publication create --repository {pulp_repo_name}')
+
+
+# pulp rpm content -t package upload --file ${PACKAGE} --repository ${REPOSITORY} --no-publish 
+# pulp rpm publication create --repository ${REPOSITORY} --checksum-type sha512
+
+# pulp artifact upload --file dnsdist_1.9.8-1pdns.bullseye_amd64.deb
+# curl --insecure --header "Authorization: Basic $AUTH" --header "Content-Type: application/json" --request POST --data '{"repository":"/pulp/api/v3/repositories/deb/apt/0194e069-9c90-7372-b5fa-60fb11f82a3e/", "distribution":"bullseye-pulp", "component":"main", "artifact":"/pulp/api/v3/artifacts/0194fb16-43bf-79af-8a48-872bded089d2/"}' https://pulp-dev.cluster.powerdns.equipment/pulp/api/v3/content/deb/packages/
+# pulp deb publication create --repository=${REPOSITORY}
+
+
 
 @task
 def pulp_get_repos(c):
     # pulp_repo_name = os.getenv("PULP_REPO_NAME", '')
     pulp_cmd = " ".join([
         "pulp",
-        "--no-verify-ssl",
         f"--base-url {os.getenv('PULP_URL', '')}",
         f"--username {os.getenv('PULP_CI_USERNAME', '')}",
         f"--password {os.getenv('PULP_CI_PASSWORD', '')}"
