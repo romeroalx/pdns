@@ -71,7 +71,7 @@ jobs:
         id: get-image-metadata
 
   call-build-docker-image:
-    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@fix-arm64-image-builds
     needs: prepare
     with:
       product: ${{ inputs.product }}
