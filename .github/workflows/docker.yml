@@ -22,7 +22,7 @@ jobs:
         latest
       image-description: 'EXPERIMENTAL pdns auth image'
       platforms: linux/amd64,linux/arm64/v8
-      push: true
+      push: false
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -39,7 +39,7 @@ jobs:
         latest
       image-description: 'EXPERIMENTAL pdns recursor image'
       platforms: linux/amd64,linux/arm64/v8
-      push: true
+      push: false
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -56,7 +56,7 @@ jobs:
         latest
       image-description: 'EXPERIMENTAL dnsdist image'
       platforms: linux/amd64,linux/arm64/v8
-      push: true
+      push: false
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}

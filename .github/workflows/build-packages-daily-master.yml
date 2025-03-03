@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   call-build-packages-auth:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: romeroalx/pdns/.github/workflows/build-packages.yml@build-images-ubuntu-24
     with:
       is_release: 'NO'
@@ -25,7 +25,7 @@ jobs:
       DOWNLOADS_AUTOBUILT_HOSTKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_HOSTKEY }}
 
   call-build-packages-dnsdist:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: romeroalx/pdns/.github/workflows/build-packages.yml@build-images-ubuntu-24
     with:
       is_release: 'NO'
@@ -37,7 +37,7 @@ jobs:
       DOWNLOADS_AUTOBUILT_HOSTKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_HOSTKEY }}
 
   call-build-packages-rec:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: romeroalx/pdns/.github/workflows/build-packages.yml@build-images-ubuntu-24
     with:
       is_release: 'NO'
