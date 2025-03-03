@@ -15,10 +15,8 @@ on:
         # please remember to update the pkghashes below when you
         # update this list, as well as the one in builder-dispatch.yml
         default: >-
-          el-7
           el-8
           el-9
-          debian-buster
           debian-bullseye
           debian-bookworm
           ubuntu-focal
@@ -80,13 +78,10 @@ jobs:
     outputs:
       product-name: ${{ steps.normalize-name.outputs.normalized-package-name }}
       version: ${{ steps.getversion.outputs.version }}
-      pkghashes-el-7-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-7-x86_64 }}
       pkghashes-el-8-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-8-x86_64 }}
       pkghashes-el-8-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-8-aarch64 }}
       pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
       pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
-      pkghashes-debian-buster-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-x86_64 }}
-      pkghashes-debian-buster-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-buster-aarch64 }}
       pkghashes-debian-bullseye-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-x86_64 }}
       pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
       pkghashes-debian-bookworm-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-x86_64 }}
