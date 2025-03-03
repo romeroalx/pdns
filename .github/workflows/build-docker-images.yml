@@ -67,7 +67,8 @@ jobs:
 
   build:
     name: build docker image for a product
-    runs-on: ubuntu-22.04
+    # runs-on: ubuntu-22.04
+    runs-on: ubicloud-standard-2-arm
     needs: validate-push-image
     outputs:
       image-digest: ${{ steps.build-image.outputs.digest }}
