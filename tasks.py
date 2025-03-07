@@ -1264,21 +1264,27 @@ pulp_cmd_prefix = " ".join([
     f"--password {os.getenv('PULP_CI_PASSWORD', '')}"
 ])
 
+# def run_pulp_cmd(c, cmd):
+#     max_push_attempts = 3
+#     attempts = 0
+#     while attempts < max_push_attempts:
+#         try:
+#             res = c.run(f'{pulp_cmd_prefix} {cmd}')
+#             if res.exited != 0:
+#                 raise UnexpectedExit(res)
+#             return res.stdout
+#         except UnexpectedExit as e:
+#             attempts += 1
+#             time.sleep(5)
+#             print(f'Next attempt: {attempts}')
+#             if attempts == max_push_attempts:
+#                 raise Failure(f'Error running pulp {cmd}: {e}')
+
 def run_pulp_cmd(c, cmd):
-    max_push_attempts = 3
-    attempts = 0
-    while attempts < max_push_attempts:
-        try:
-            res = c.run(f'{pulp_cmd_prefix} {cmd}')
-            if res.exited != 0:
-                raise UnexpectedExit(res)
-            return res.stdout
-        except UnexpectedExit as e:
-            attempts += 1
-            time.sleep(5)
-            print(f'Next attempt: {attempts}')
-            if attempts == max_push_attempts:
-                raise Failure(f'Error running pulp {cmd}: {e}')
+    res = c.run(f'{pulp_cmd_prefix} {cmd}')
+    if res.exited != 0:
+        raise UnexpectedExit(res)
+    return res.stdout
 
 @task
 def validate_pulp_credentials(c):
@@ -1357,7 +1363,6 @@ def is_pulp_task_completed(c, task_href):
 
 @task
 def pulp_upload_deb_packages_by_folder(c, source, product):
-    max_attempts = 3
     builds = os.listdir(source)
     upload_url = os.getenv('PULP_URL', '') + "/pulp/api/v3/content/deb/packages/"
     headers = {"Content-Type": "application/json"}
@@ -1382,18 +1387,11 @@ def pulp_upload_deb_packages_by_folder(c, source, product):
                     "artifact": artifact_href
                 }
 
-                attempts = 0
-                while attempts < max_attempts:
-                    try:
-                        res = requests.post(upload_url, auth=auth, headers=headers, json=package_data)
-                        res.raise_for_status()
-                        break
-                    except requests.exceptions.HTTPError as e:
-                        attempts += 1
-                        time.sleep(5)
-                        print(f'Next attempt: {attempts}')
-                        if attempts == max_attempts:
-                            raise Failure(f'Error creating DEB upload: {e}')
+                try:
+                    res = requests.post(upload_url, auth=auth, headers=headers, json=package_data)
+                    res.raise_for_status()
+                except requests.exceptions.HTTPError as e:
+                    raise Failure(f'Error creating DEB upload: {e}')
 
                 task_href = res.json().get('task')
                 if not is_pulp_task_completed(c, task_href):

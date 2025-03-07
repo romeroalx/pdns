@@ -2,6 +2,7 @@
 name: 'daily: build packages for master '
 
 on:
+  push:
   schedule:
     - cron: '0 5 * * *'
 
@@ -12,20 +13,19 @@ permissions:
 
 jobs:
   call-build-packages-auth:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@store-packages-additional-repo-3
     with:
-      is_release: 'NO'
+      is_release: 'YES'
       product: 'authoritative'
-      ref: master
+      ref: auth-4.9.8
       os: >-
-          el-8
-          el-9
-          debian-bullseye
-          debian-bookworm
-          debian-trixie
-          ubuntu-jammy
-          ubuntu-noble
+        el-8
+        el-9
+        debian-bullseye
+        debian-bookworm
+        ubuntu-jammy
+        ubuntu-noble
     secrets:
       DOWNLOADS_AUTOBUILT_SECRET: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
       DOWNLOADS_AUTOBUILT_RSYNCTARGET: ${{ secrets.DOWNLOADS_AUTOBUILT_RSYNCTARGET }}
@@ -39,20 +39,20 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-dnsdist:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@store-packages-additional-repo-3
     with:
-      is_release: 'NO'
+      is_release: 'YES'
       product: 'dnsdist'
-      ref: master
+      ref: dnsdist-1.9.10
       os: >-
-          el-8
-          el-9
-          debian-bullseye
-          debian-bookworm
-          debian-trixie
-          ubuntu-jammy
-          ubuntu-noble
+        el-8
+        el-9
+        debian-bullseye
+        debian-bookworm
+        debian-trixie
+        ubuntu-jammy
+        ubuntu-noble
     secrets:
       DOWNLOADS_AUTOBUILT_SECRET: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
       DOWNLOADS_AUTOBUILT_RSYNCTARGET: ${{ secrets.DOWNLOADS_AUTOBUILT_RSYNCTARGET }}
@@ -66,20 +66,20 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-rec:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@store-packages-additional-repo-3
     with:
-      is_release: 'NO'
+      is_release: 'YES'
       product: 'recursor'
-      ref: master
+      ref: rec-5.2.5
       os: >-
-          el-8
-          el-9
-          debian-bullseye
-          debian-bookworm
-          debian-trixie
-          ubuntu-jammy
-          ubuntu-noble
+        el-8
+        el-9
+        debian-bullseye
+        debian-bookworm
+        debian-trixie
+        ubuntu-jammy
+        ubuntu-noble
     secrets:
       DOWNLOADS_AUTOBUILT_SECRET: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
       DOWNLOADS_AUTOBUILT_RSYNCTARGET: ${{ secrets.DOWNLOADS_AUTOBUILT_RSYNCTARGET }}
