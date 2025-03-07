@@ -1357,7 +1357,7 @@ def is_pulp_task_completed(c, task_href):
 
 @task
 def pulp_upload_deb_packages_by_folder(c, source, product):
-    max_attempts = 3
+    max_attempts = 1
     builds = os.listdir(source)
     upload_url = os.getenv('PULP_URL', '') + "/pulp/api/v3/content/deb/packages/"
     headers = {"Content-Type": "application/json"}
