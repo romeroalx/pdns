@@ -1,0 +1,47 @@
+---
+name: Test GH features
+
+on:
+  push:
+
+permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+  contents: read
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo hi
+
+  upload-packages:
+    needs:  [build]
+    continue-on-error: true
+    name: Upload packages
+    runs-on: ubuntu-24.04
+    outputs:
+      check-finished: ${{ steps.check-finished.outputs.upload-completed }}
+    steps:
+      - run: echo "hi"
+      - id: check-finished
+        run: echo "upload-completed=yes" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: recursive
+      - run: pwd
+      - run: ls *
+      - name: install pyinvoke and pulp
+        run: |
+          python3 -m venv ${GITHUB_WORKSPACE}/.venv
+          . ${GITHUB_WORKSPACE}/.venv/bin/activate && pip install -r ${GITHUB_WORKSPACE}/builder-support/requirements.txt
+      - run: . ${GITHUB_WORKSPACE}/.venv/bin/activate && inv validate-pulp-credentials
+
+  upload-src-files:
+    needs:  [build, upload-packages]
+    name: Upload provenance files
+    continue-on-error: true
+    if: ${{ needs.upload-packages.outputs.check-finished == 'yes' }}
+    runs-on: ubuntu-24.04
+    steps:
+    - run: echo "OK" && exit 1

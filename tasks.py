@@ -1231,46 +1231,48 @@ def ci_build_and_install_quiche(c, repo):
         c.run('cp /usr/lib/libquiche.so /opt/dnsdist/lib/libquiche.so')
         break
 
-pulp_cmd = " ".join([
+pulp_cmd_prefix = " ".join([
     "pulp",
     f"--base-url {os.getenv('PULP_URL', '')}",
     f"--username {os.getenv('PULP_CI_USERNAME', '')}",
     f"--password {os.getenv('PULP_CI_PASSWORD', '')}"
 ])
 
+def run_pulp_cmd(c, cmd):
+    max_push_attempts = 3
+    attempts = 0
+    while attempts < max_push_attempts:
+        try:
+            res = c.run(f'{pulp_cmd_prefix} {cmd}')
+            if res.exited != 0:
+                raise UnexpectedExit(res)
+            return res.stdout
+        except UnexpectedExit as e:
+            attempts += 1
+            time.sleep(5)
+            print(f'Next attempt: {attempts}')
+            if attempts == max_push_attempts:
+                raise Failure(f'Error running pulp {cmd}: {e}')
+
 @task
 def validate_pulp_credentials(c):
     # Basic pulp command that require credentials to succeed
     repo_name = os.getenv("PULP_REPO_NAME", '')
-    try:
-        c.run(f'{pulp_cmd} file repository show --repository {repo_name}')
-    except UnexpectedExit:
-        raise Failure(f'Credentials validation failed')
+    cmd = f'file repository show --repository {repo_name}'
+    run_pulp_cmd(c, cmd)
 
 @task
 def pulp_upload_file_packages_by_folder(c, source):
-    max_push_attempts = 3
     repo_name = os.getenv("PULP_REPO_NAME", '')
-
     for root, dirs, files in os.walk(source):
         for path in files:
-            attempts = 0
-            while attempts < max_push_attempts:
-                try:
-                    file = os.path.join(root, path).split('/',1)[1]
-                    # file repositories have been configured with autopublish set to true
-                    c.run(f'{pulp_cmd} file content upload --repository {repo_name} --file {source}/{file} --relative-path {file}')
-                    break
-                except UnexpectedExit:
-                    attempts += 1
-                    time.sleep(5)
-                    print(f'Next attempt: {attempts}')
-                    if attempts == max_push_attempts:
-                        raise Failure(f'Error uploading file package')
+            file = os.path.join(root, path).split('/',1)[1]
+            # file repositories have been configured with autopublish set to true
+            cmd = f'file content upload --repository {repo_name} --file {source}/{file} --relative-path {file}'
+            run_pulp_cmd(c, cmd)
 
 @task
 def pulp_create_rpm_publication(c, product, list_os_rel, list_arch):
-    max_push_attempts = 3
     rpm_distros = ["centos", "el"]
     for os_rel in json.loads(list_os_rel):
         if not "el-" in os_rel:
@@ -1279,39 +1281,19 @@ def pulp_create_rpm_publication(c, product, list_os_rel, list_arch):
         for arch in json.loads(list_arch):
             for distro in rpm_distros:
                 repo_name = f"repo-{distro}-{release}-{arch}-{product}"
-                attempts = 0
-                while attempts < max_push_attempts:
-                    try:
-                        c.run(f'{pulp_cmd} rpm publication create --repository {repo_name} --checksum-type sha512')
-                        break
-                    except UnexpectedExit:
-                        attempts += 1
-                        time.sleep(5)
-                        print(f'Next attempt: {attempts}')
-                        if attempts == max_push_attempts:
-                            raise Failure(f'Error creating rpm publication')
+                cmd = f'rpm publication create --repository {repo_name} --checksum-type sha512'
+                run_pulp_cmd(c, cmd)
 
 @task
 def pulp_create_deb_publication(c):
-    max_push_attempts = 3
     deb_distros = ["debian", "ubuntu"]
     for distro in deb_distros:
         repo_name = f"repo-{distro}"
-        attempts = 0
-        while attempts < max_push_attempts:
-            try:
-                c.run(f'{pulp_cmd} deb publication create --repository {repo_name}')
-                break
-            except UnexpectedExit:
-                attempts += 1
-                time.sleep(5)
-                print(f'Next attempt: {attempts}')
-                if attempts == max_push_attempts:
-                    raise Failure(f'Error creating deb publication')
+        cmd = f'deb publication create --repository {repo_name}'
+        run_pulp_cmd(c, cmd)
 
 @task
 def pulp_upload_rpm_packages_by_folder(c, source, product):
-    max_push_attempts = 3
     rpm_distros = ["centos", "el"]
     builds = os.listdir(source)
 
@@ -1322,25 +1304,15 @@ def pulp_upload_rpm_packages_by_folder(c, source, product):
             repo_name = f"repo-{distro}-{release}-{arch}-{product}"
             for root, dirs, files in os.walk(f"{source}/{build_folder}"):
                 for path in files:
-                    attempts = 0
-                    while attempts < max_push_attempts:
-                        try:
-                            file = os.path.join(root, path).split('/',1)[1]
-                            # Set chunk size to 500MB to avoid creating an "upload" instead of a file. Required for signing RPMs.
-                            c.run(f'{pulp_cmd} rpm content -t package upload --file {source}/{file} --repository {repo_name} --no-publish --chunk-size 500MB')
-                            break
-                        except UnexpectedExit:
-                            attempts += 1
-                            time.sleep(5)
-                            print(f'Next attempt: {attempts}')
-                            if attempts == max_push_attempts:
-                                raise Failure(f'Error uploading rpm package')
+                    file = os.path.join(root, path).split('/',1)[1]
+                    # Set chunk size to 500MB to avoid creating an "upload" instead of a file. Required for signing RPMs.
+                    cmd = f'rpm content -t package upload --file {source}/{file} --repository {repo_name} --no-publish --chunk-size 500MB'
+                    run_pulp_cmd(c, cmd)
 
 def get_pulp_repository_href(c, repo_name, repo_type):
-    res = c.run(f"{pulp_cmd} {repo_type} repository show --name {repo_name} | jq -r '.pulp_href' | tr -d '\n'")
-    if res.exited != 0:
-        raise UnexpectedExit(res)
-    return res.stdout
+    cmd = f"{repo_type} repository show --name {repo_name} | jq -r '.pulp_href' | tr -d '\n'"
+    href = run_pulp_cmd(c, cmd)
+    return href
 
 def is_pulp_task_completed(c, task_href):
     elapsed_time = 0
@@ -1348,10 +1320,9 @@ def is_pulp_task_completed(c, task_href):
     max_wait_time = 60
 
     while elapsed_time < max_wait_time:
-        res = c.run(f"{pulp_cmd} task show --href {task_href} | jq -r .state | tr -d '\n'")
-        if res.exited != 0:
-            raise UnexpectedExit(res)
-        elif res.stdout == "completed":
+        cmd = f"task show --href {task_href} | jq -r .state | tr -d '\n'"
+        task_state = run_pulp_cmd(c, cmd)
+        if task_state == "completed":
             return True
         time.sleep(check_interval)
         elapsed_time += check_interval
@@ -1360,7 +1331,7 @@ def is_pulp_task_completed(c, task_href):
 
 @task
 def pulp_upload_deb_packages_by_folder(c, source, product):
-    max_push_attempts = 3
+    max_attempts = 3
     builds = os.listdir(source)
     upload_url = os.getenv('PULP_URL', '') + "/pulp/api/v3/content/deb/packages/"
     headers = {"Content-Type": "application/json"}
@@ -1374,33 +1345,33 @@ def pulp_upload_deb_packages_by_folder(c, source, product):
 
         for root, dirs, files in os.walk(source):
             for path in files:
-                attempts = 0
-                while attempts < max_push_attempts:
-                    try:
-                        file = os.path.join(root, path).split('/',1)[1]
-                        res = c.run(f"{pulp_cmd} artifact upload --file {source}/{file} | jq -r '.pulp_href' | tr -d '\n'")
-                        if res.exited != 0:
-                            raise UnexpectedExit(res)
-                        artifact_href = res.stdout
+                file = os.path.join(root, path).split('/',1)[1]
+                cmd = f"artifact upload --file {source}/{file} | jq -r '.pulp_href' | tr -d '\n'"
+                artifact_href = run_pulp_cmd(c, cmd)
 
-                        package_data = {
-                            "repository": repository_href,
-                            "distribution": distribution,
-                            "component": "main",
-                            "artifact": artifact_href
-                        }
+                package_data = {
+                    "repository": repository_href,
+                    "distribution": distribution,
+                    "component": "main",
+                    "artifact": artifact_href
+                }
+
+                attempts = 0
+                while attempts < max_attempts:
+                    try:
                         res = requests.post(upload_url, auth=auth, headers=headers, json=package_data)
                         res.raise_for_status()
-                        task_href = res.json().get('task')
-                        if not is_pulp_task_completed(c, task_href):
-                            raise Failure('Error uploading DEB packages into Pulp')
                         break
-                    except UnexpectedExit:
+                    except requests.exceptions.HTTPError as e:
                         attempts += 1
                         time.sleep(5)
                         print(f'Next attempt: {attempts}')
-                        if attempts == max_push_attempts:
-                            raise Failure(f'Error uploading rpm package')
+                        if attempts == max_attempts:
+                            raise Failure(f'Error creating DEB upload: {e}')
+
+                task_href = res.json().get('task')
+                if not is_pulp_task_completed(c, task_href):
+                    raise Failure('Error uploading DEB packages into Pulp')
 
 @task
 def test_install_package(c, product_name, distro_release, content_url, gpgkey_url, package_name, package_version):
