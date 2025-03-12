@@ -2,6 +2,7 @@
 name: 'daily: build packages for master '
 
 on:
+  push:
   schedule:
     - cron: '0 5 * * *'
 
@@ -12,8 +13,8 @@ permissions:
 
 jobs:
   call-build-packages-auth:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-add-back-ubuntu-focal-target-8
     with:
       is_release: 'NO'
       product: 'authoritative'
@@ -23,6 +24,7 @@ jobs:
           el-9
           debian-bullseye
           debian-bookworm
+          ubuntu-focal
           ubuntu-jammy
           ubuntu-noble
     secrets:
@@ -31,8 +33,8 @@ jobs:
       DOWNLOADS_AUTOBUILT_HOSTKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_HOSTKEY }}
 
   call-build-packages-dnsdist:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-add-back-ubuntu-focal-target-8
     with:
       is_release: 'NO'
       product: 'dnsdist'
@@ -50,17 +52,18 @@ jobs:
       DOWNLOADS_AUTOBUILT_HOSTKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_HOSTKEY }}
 
   call-build-packages-rec:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-add-back-ubuntu-focal-target-8
     with:
       is_release: 'NO'
       product: 'recursor'
-      ref: master
+      ref: dnsdist-2.0.0-alpha0
       os: >-
           el-8
           el-9
           debian-bullseye
           debian-bookworm
+          ubuntu-xenial
           ubuntu-jammy
           ubuntu-noble
     secrets:
