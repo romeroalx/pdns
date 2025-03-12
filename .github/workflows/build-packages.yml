@@ -170,6 +170,7 @@ jobs:
           done
           sort -o /tmp/os-inputs.txt /tmp/os-inputs.txt
           echo "\"srchashes\"" | tee -a /tmp/os-inputs.txt
+          cat /tmp/os-inputs.txt && echo && cat /tmp/build-outputs.txt
       - name: Fail if there is a hash missing
         run: if ! diff -q /tmp/build-outputs.txt /tmp/os-inputs.txt; then exit 1; fi
 
