@@ -56,8 +56,16 @@ jobs:
       # but, as this whole workflow needs at least 30 minutes to run, I prefer spending a few seconds here
       # so that the command remains readable, because jo is simpler to use.
       - run: sudo apt-get update && sudo apt-get -y install jo
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: recursive
+          ref: ${{ inputs.ref }}
       - id: get-oslist
-        run: echo "oslist=$(jo -a ${{ inputs.os }})" >> "$GITHUB_OUTPUT"
+        run: |
+          available_targets=$(ls builder-support/dockerfiles/Dockerfile.target.* )
+          for i in $(echo "${{ inputs.os }}"); do echo $available_targets | grep -qq $i && targets+=($i) || echo "[WARN]: OS ${i} not available as target in ${{ inputs.ref }}";  done
+          echo "oslist=$(jo -a ${targets[*]})" >> "$GITHUB_OUTPUT"
       - id: get-runnerlist
         run: echo "runnerlist=$(jo -a ubuntu-24.04 ${{ vars.ARM64_USE_UBICLOUD == '1' && 'ubicloud-standard-2-arm' || '' }})" >> "$GITHUB_OUTPUT"
       - id: get-archlist
