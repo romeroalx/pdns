@@ -14,18 +14,18 @@ permissions:
 jobs:
   call-build-packages-auth:
     # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: romeroalx/pdns/.github/workflows/build-packages.yml@add-back-ubuntu-focal-target
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-add-back-ubuntu-focal-target
     with:
       is_release: 'NO'
       product: 'authoritative'
       ref: master
-      os: >-
-          el-8
-          el-9
-          debian-bullseye
-          debian-bookworm
-          ubuntu-jammy
-          ubuntu-noble
+      # os: >-
+      #     el-8
+      #     el-9
+      #     debian-bullseye
+      #     debian-bookworm
+      #     ubuntu-jammy
+      #     ubuntu-noble
     secrets:
       DOWNLOADS_AUTOBUILT_SECRET: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
       DOWNLOADS_AUTOBUILT_RSYNCTARGET: ${{ secrets.DOWNLOADS_AUTOBUILT_RSYNCTARGET }}
@@ -33,7 +33,7 @@ jobs:
 
   call-build-packages-dnsdist:
     # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: romeroalx/pdns/.github/workflows/build-packages.yml@add-back-ubuntu-focal-target
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-add-back-ubuntu-focal-target
     with:
       is_release: 'NO'
       product: 'dnsdist'
@@ -52,7 +52,7 @@ jobs:
 
   call-build-packages-rec:
     # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: romeroalx/pdns/.github/workflows/build-packages.yml@add-back-ubuntu-focal-target
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-add-back-ubuntu-focal-target
     with:
       is_release: 'NO'
       product: 'recursor'
