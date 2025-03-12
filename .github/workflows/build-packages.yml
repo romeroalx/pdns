@@ -66,6 +66,7 @@ jobs:
           available_targets=$(ls builder-support/dockerfiles/Dockerfile.target.* )
           for i in $(echo "${{ inputs.os }}"); do echo $available_targets | grep -qq $i && targets+=($i) || echo "[WARN]: OS ${i} not available as target in ${{ inputs.ref }}";  done
           echo "oslist=$(jo -a ${targets[*]})" >> "$GITHUB_OUTPUT"
+          echo "oslist=$(jo -a ${targets[*]})"
       - id: get-runnerlist
         run: echo "runnerlist=$(jo -a ubuntu-24.04 ${{ vars.ARM64_USE_UBICLOUD == '1' && 'ubicloud-standard-2-arm' || '' }})" >> "$GITHUB_OUTPUT"
       - id: get-archlist
@@ -178,6 +179,7 @@ jobs:
           done
           sort -o /tmp/os-inputs.txt /tmp/os-inputs.txt
           echo "\"srchashes\"" | tee -a /tmp/os-inputs.txt
+          cat /tmp/os-inputs.txt && echo && cat /tmp/build-outputs.txt
       - name: Fail if there is a hash missing
         run: if ! diff -q /tmp/build-outputs.txt /tmp/os-inputs.txt; then exit 1; fi
 
