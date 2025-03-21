@@ -783,6 +783,7 @@ def ci_dnsdist_configure_meson(features, additional_flags, additional_ld_flags, 
                       -D re2=enabled \
                       -D systemd-service=enabled \
                       -D tls-gnutls=enabled \
+                      -D yaml=enabled \
                       -D dns-over-https=true \
                       -D dns-over-http3=true \
                       -D dns-over-quic=true \
@@ -803,6 +804,7 @@ def ci_dnsdist_configure_meson(features, additional_flags, additional_ld_flags, 
                       -D re2=disabled \
                       -D systemd-service=disabled \
                       -D tls-gnutls=disabled \
+                      -D yaml=disabled \
                       -D dns-over-https=false \
                       -D dns-over-http3=false \
                       -D dns-over-quic=false \
