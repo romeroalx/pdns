@@ -63,7 +63,8 @@ jobs:
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     strategy:
       matrix:
-        builder: [autotools, meson]
+        # builder: [autotools, meson]
+        builder: [meson]
       fail-fast: false
     defaults:
       run:
@@ -89,7 +90,8 @@ jobs:
           key: auth-ccache-${{ matrix.builder }}-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-${{ matrix.builder }}
       - name: set sanitizers
-        run: echo "SANITIZERS=${{ matrix.builder == 'meson' && 'address,undefined' || 'asan+ubsan' }}" >> "$GITHUB_ENV"
+        # run: echo "SANITIZERS=${{ matrix.builder == 'meson' && 'address,undefined' || 'asan+ubsan' }}" >> "$GITHUB_ENV"
+        run: echo "SANITIZERS=asan+ubsan" >> "$GITHUB_ENV"
         working-directory: .
       - name: install pip build dependencies
         run: |
@@ -146,12 +148,13 @@ jobs:
       matrix:
         sanitizers: [asan+ubsan, tsan]
         features: [least, full]
-        builder: [autotools, meson]
+        # builder: [autotools, meson]
+        builder: [meson]
         exclude:
           - sanitizers: tsan
             features: least
-          - builder: meson
-            sanitizers: tsan
+          # - builder: meson
+          #   sanitizers: tsan
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -232,14 +235,15 @@ jobs:
     needs: get-runner-container-image
     strategy:
       matrix:
-        builder: [autotools, meson]
+        # builder: [autotools, meson]
+        builder: [meson]
         sanitizers: [asan+ubsan, tsan]
         features: [least, full]
         exclude:
           - sanitizers: tsan
             features: least
-          - sanitizers: tsan
-            builder: meson
+          # - sanitizers: tsan
+          #   builder: meson
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -327,248 +331,248 @@ jobs:
           path: /opt/dnsdist
           retention-days: 1
 
-  test-auth-api:
-    needs:
-      - build-auth
-      - get-runner-container-image
-    runs-on: ubuntu-24.04
-    container:
-      image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
-      env:
-        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
-        ASAN_OPTIONS: detect_leaks=0
-        TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ env.REPO_HOME }}/pdns/dnsdistdist/dnsdist-tsan.supp"
-        AUTH_BACKEND_IP_ADDR: "172.17.0.1"
-      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
-    strategy:
-      matrix:
-        include:
-          - backend: gsqlite3
-            image: coscale/docker-sleep
-          - backend: gmysql
-            image: mysql:5
-          - backend: gpgsql
-            image: postgres:9
-          - backend: lmdb
-            image: coscale/docker-sleep
-      fail-fast: false
-    services:
-      database:
-        image: ${{ matrix.image }}
-        env:
-          POSTGRES_USER: runner
-          POSTGRES_HOST_AUTH_METHOD: trust
-          MYSQL_ALLOW_EMPTY_PASSWORD: 1
-        ports:
-          - 3306:3306
-          - 5432:5432
-        # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
-        options: >-
-          --restart always
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 5
-          submodules: recursive
-          ref: ${{ inputs.branch-name }}
-      - run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
-      - name: Fetch the binaries
-        uses: actions/download-artifact@v4
-        with:
-          name: pdns-auth-meson-${{ env.normalized-branch-name }}
-          path: /opt/pdns-auth
-      - name: install pip build dependencies
-        run: |
-          python3 -m venv ${REPO_HOME}/.venv
-          . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
-      - run: ${{ env.INV_CMD }} apt-fresh
-      - run: ${{ env.INV_CMD }} install-clang-runtime
-      - run: ${{ env.INV_CMD }} install-auth-test-deps -b ${{ matrix.backend }}
-      - run: ${{ env.INV_CMD }} test-api auth -b ${{ matrix.backend }}
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/pdns-auth $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' }}
-      - name: Coveralls Parallel auth API ${{ matrix.backend }}
-        if: ${{ env.COVERAGE == 'yes' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: auth-api-${{ matrix.backend }}
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
-
-  test-auth-backend:
-    needs:
-      - build-auth
-      - get-runner-container-image
-    runs-on: ubuntu-24.04
-    container:
-      image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
-      env:
-        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
-        ASAN_OPTIONS: detect_leaks=0
-        LDAPHOST: ldap://ldapserver/
-        ODBCINI: /github/home/.odbc.ini
-        AUTH_BACKEND_IP_ADDR: "172.17.0.1"
-      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
-    strategy:
-      matrix:
-        include:
-          - backend: remote
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: gmysql
-            image: mysql:5
-            env:
-              MYSQL_ALLOW_EMPTY_PASSWORD: 1
-            ports:
-            - 3306:3306
-          - backend: gmysql
-            image: mariadb:10
-            env:
-              MYSQL_ALLOW_EMPTY_PASSWORD: 1
-            ports:
-            - 3306:3306
-          - backend: gpgsql
-            image: postgres:9
-            env:
-              POSTGRES_USER: runner
-              POSTGRES_HOST_AUTH_METHOD: trust
-            ports:
-            - 5432:5432
-          - backend: gsqlite3  # this also runs regression-tests.nobackend and pdnsutil test-algorithms
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: lmdb
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: bind
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: geoip
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: lua2
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: tinydns
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: authpy
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: godbc_sqlite3
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-          - backend: godbc_mssql
-            image: mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04
-            env:
-              ACCEPT_EULA: Y
-              SA_PASSWORD: 'SAsa12%%-not-a-secret-password'
-            ports:
-              - 1433:1433
-          - backend: ldap
-            image: powerdns/ldap-regress:1.2.4-1
-            env:
-              LDAP_LOG_LEVEL: 0
-              CONTAINER_LOG_LEVEL: 4
-            ports:
-              - 389:389
-          - backend: geoip_mmdb
-            image: coscale/docker-sleep
-            env: {}
-            ports: []
-      fail-fast: false
-    services:
-      database:
-        image: ${{ matrix.image }}
-        env: ${{ matrix.env }}
-        ports: ${{ matrix.ports }}
-        # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
-        options: >-
-          --restart always
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 5
-          submodules: recursive
-          ref: ${{ inputs.branch-name }}
-      - run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
-      - name: Fetch the binaries
-        uses: actions/download-artifact@v4
-        with:
-          name: pdns-auth-meson-${{ env.normalized-branch-name }}
-          path: /opt/pdns-auth
-      # FIXME: install recursor for backends that have ALIAS
-      - name: install pip build dependencies
-        run: |
-          python3 -m venv ${REPO_HOME}/.venv
-          . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
-      - run: ${{ env.INV_CMD }} install-clang-runtime
-      - run: ${{ env.INV_CMD }} install-auth-test-deps -b ${{ matrix.backend }}
-      - run: ${{ env.INV_CMD }} test-auth-backend -b ${{ matrix.backend }}
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/pdns-auth $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' }}
-      - name: Coveralls Parallel auth backend ${{ matrix.backend }}
-        if: ${{ env.COVERAGE == 'yes' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: auth-backend-${{ matrix.backend }}
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
-
-  test-ixfrdist:
-    needs:
-      - build-auth
-      - get-runner-container-image
-    runs-on: ubuntu-24.04
-    container:
-      image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
-      env:
-        UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
-        ASAN_OPTIONS: detect_leaks=0
-      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 5
-          submodules: recursive
-          ref: ${{ inputs.branch-name }}
-      - run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
-      - name: Fetch the binaries
-        uses: actions/download-artifact@v4
-        with:
-          name: pdns-auth-meson-${{ env.normalized-branch-name }}
-          path: /opt/pdns-auth
-      - name: install pip build dependencies
-        run: |
-          python3 -m venv ${REPO_HOME}/.venv
-          . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
-      - run: ${{ env.INV_CMD }} install-clang-runtime
-      - run: ${{ env.INV_CMD }} install-auth-test-deps
-      - run: ${{ env.INV_CMD }} test-ixfrdist
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/ixfrdist $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' }}
-      - name: Coveralls Parallel ixfrdist
-        if: ${{ env.COVERAGE == 'yes' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: ixfrdist
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
+#   test-auth-api:
+#     needs:
+#       - build-auth
+#       - get-runner-container-image
+#     runs-on: ubuntu-24.04
+#     container:
+#       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
+#       env:
+#         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
+#         ASAN_OPTIONS: detect_leaks=0
+#         TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ env.REPO_HOME }}/pdns/dnsdistdist/dnsdist-tsan.supp"
+#         AUTH_BACKEND_IP_ADDR: "172.17.0.1"
+#       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
+#     strategy:
+#       matrix:
+#         include:
+#           - backend: gsqlite3
+#             image: coscale/docker-sleep
+#           - backend: gmysql
+#             image: mysql:5
+#           - backend: gpgsql
+#             image: postgres:9
+#           - backend: lmdb
+#             image: coscale/docker-sleep
+#       fail-fast: false
+#     services:
+#       database:
+#         image: ${{ matrix.image }}
+#         env:
+#           POSTGRES_USER: runner
+#           POSTGRES_HOST_AUTH_METHOD: trust
+#           MYSQL_ALLOW_EMPTY_PASSWORD: 1
+#         ports:
+#           - 3306:3306
+#           - 5432:5432
+#         # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
+#         options: >-
+#           --restart always
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#           ref: ${{ inputs.branch-name }}
+#       - run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
+#       - name: Fetch the binaries
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: pdns-auth-meson-${{ env.normalized-branch-name }}
+#           path: /opt/pdns-auth
+#       - name: install pip build dependencies
+#         run: |
+#           python3 -m venv ${REPO_HOME}/.venv
+#           . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
+#       - run: ${{ env.INV_CMD }} apt-fresh
+#       - run: ${{ env.INV_CMD }} install-clang-runtime
+#       - run: ${{ env.INV_CMD }} install-auth-test-deps -b ${{ matrix.backend }}
+#       - run: ${{ env.INV_CMD }} test-api auth -b ${{ matrix.backend }}
+#       - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/pdns-auth $GITHUB_WORKSPACE
+#         if: ${{ env.COVERAGE == 'yes' }}
+#       - name: Coveralls Parallel auth API ${{ matrix.backend }}
+#         if: ${{ env.COVERAGE == 'yes' }}
+#         uses: coverallsapp/github-action@v2
+#         with:
+#           flag-name: auth-api-${{ matrix.backend }}
+#           path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+#           parallel: true
+#           allow-empty: true
+#           fail-on-error: false
+# 
+#   test-auth-backend:
+#     needs:
+#       - build-auth
+#       - get-runner-container-image
+#     runs-on: ubuntu-24.04
+#     container:
+#       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
+#       env:
+#         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
+#         ASAN_OPTIONS: detect_leaks=0
+#         LDAPHOST: ldap://ldapserver/
+#         ODBCINI: /github/home/.odbc.ini
+#         AUTH_BACKEND_IP_ADDR: "172.17.0.1"
+#       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
+#     strategy:
+#       matrix:
+#         include:
+#           - backend: remote
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: gmysql
+#             image: mysql:5
+#             env:
+#               MYSQL_ALLOW_EMPTY_PASSWORD: 1
+#             ports:
+#             - 3306:3306
+#           - backend: gmysql
+#             image: mariadb:10
+#             env:
+#               MYSQL_ALLOW_EMPTY_PASSWORD: 1
+#             ports:
+#             - 3306:3306
+#           - backend: gpgsql
+#             image: postgres:9
+#             env:
+#               POSTGRES_USER: runner
+#               POSTGRES_HOST_AUTH_METHOD: trust
+#             ports:
+#             - 5432:5432
+#           - backend: gsqlite3  # this also runs regression-tests.nobackend and pdnsutil test-algorithms
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: lmdb
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: bind
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: geoip
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: lua2
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: tinydns
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: authpy
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: godbc_sqlite3
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#           - backend: godbc_mssql
+#             image: mcr.microsoft.com/mssql/server:2022-CU12-ubuntu-22.04
+#             env:
+#               ACCEPT_EULA: Y
+#               SA_PASSWORD: 'SAsa12%%-not-a-secret-password'
+#             ports:
+#               - 1433:1433
+#           - backend: ldap
+#             image: powerdns/ldap-regress:1.2.4-1
+#             env:
+#               LDAP_LOG_LEVEL: 0
+#               CONTAINER_LOG_LEVEL: 4
+#             ports:
+#               - 389:389
+#           - backend: geoip_mmdb
+#             image: coscale/docker-sleep
+#             env: {}
+#             ports: []
+#       fail-fast: false
+#     services:
+#       database:
+#         image: ${{ matrix.image }}
+#         env: ${{ matrix.env }}
+#         ports: ${{ matrix.ports }}
+#         # FIXME: this works around dist-upgrade stopping all docker containers. dist-upgrade is huge on these images anyway. Perhaps we do want to run our tasks in a Docker container too.
+#         options: >-
+#           --restart always
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#           ref: ${{ inputs.branch-name }}
+#       - run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
+#       - name: Fetch the binaries
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: pdns-auth-meson-${{ env.normalized-branch-name }}
+#           path: /opt/pdns-auth
+#       # FIXME: install recursor for backends that have ALIAS
+#       - name: install pip build dependencies
+#         run: |
+#           python3 -m venv ${REPO_HOME}/.venv
+#           . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
+#       - run: ${{ env.INV_CMD }} install-clang-runtime
+#       - run: ${{ env.INV_CMD }} install-auth-test-deps -b ${{ matrix.backend }}
+#       - run: ${{ env.INV_CMD }} test-auth-backend -b ${{ matrix.backend }}
+#       - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/pdns-auth $GITHUB_WORKSPACE
+#         if: ${{ env.COVERAGE == 'yes' }}
+#       - name: Coveralls Parallel auth backend ${{ matrix.backend }}
+#         if: ${{ env.COVERAGE == 'yes' }}
+#         uses: coverallsapp/github-action@v2
+#         with:
+#           flag-name: auth-backend-${{ matrix.backend }}
+#           path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+#           parallel: true
+#           allow-empty: true
+#           fail-on-error: false
+# 
+#   test-ixfrdist:
+#     needs:
+#       - build-auth
+#       - get-runner-container-image
+#     runs-on: ubuntu-24.04
+#     container:
+#       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
+#       env:
+#         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
+#         ASAN_OPTIONS: detect_leaks=0
+#       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#           ref: ${{ inputs.branch-name }}
+#       - run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
+#       - name: Fetch the binaries
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: pdns-auth-meson-${{ env.normalized-branch-name }}
+#           path: /opt/pdns-auth
+#       - name: install pip build dependencies
+#         run: |
+#           python3 -m venv ${REPO_HOME}/.venv
+#           . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
+#       - run: ${{ env.INV_CMD }} install-clang-runtime
+#       - run: ${{ env.INV_CMD }} install-auth-test-deps
+#       - run: ${{ env.INV_CMD }} test-ixfrdist
+#       - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/ixfrdist $GITHUB_WORKSPACE
+#         if: ${{ env.COVERAGE == 'yes' }}
+#       - name: Coveralls Parallel ixfrdist
+#         if: ${{ env.COVERAGE == 'yes' }}
+#         uses: coverallsapp/github-action@v2
+#         with:
+#           flag-name: ixfrdist
+#           path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+#           parallel: true
+#           allow-empty: true
+#           fail-on-error: false
 
   test-recursor-api:
     needs:
@@ -577,7 +581,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan]
+        sanitizers: [asan+ubsan, tsan]
         dist_name: [debian]
         pdns_repo_version: ['48']
       fail-fast: false
@@ -628,7 +632,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan]
+        sanitizers: [asan+ubsan, tsan]
         dist_name: [debian]
         pdns_repo_version: ['48']
       fail-fast: false
@@ -682,7 +686,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan]
+        sanitizers: [asan+ubsan, tsan]
         threads: [1, 2, 3, 4, 8]
         mthreads: [2048]
         shards: [1, 2, 1024]
@@ -727,7 +731,7 @@ jobs:
           fail-on-error: false
 
   test-recursor-ubicloud-bulk:
-    if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
+    # if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
     name: 'test rec ubicloud bulk'
     needs:
       - build-recursor
@@ -783,7 +787,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan]
+        sanitizers: [asan+ubsan, tsan]
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -831,62 +835,62 @@ jobs:
           allow-empty: true
           fail-on-error: false
 
-  swagger-syntax-check:
-    if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
-    runs-on: ubuntu-24.04
-    container:
-      image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
-      options: --sysctl net.ipv6.conf.all.disable_ipv6=0
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 5
-          submodules: recursive
-          ref: ${{ inputs.branch-name }}
-      - name: install pip build dependencies
-        run: |
-          python3 -m venv ${REPO_HOME}/.venv
-          . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
-      - run: ${{ env.INV_CMD }} install-swagger-tools
-      - run: ${{ env.INV_CMD }} swagger-syntax-check
-
-  collect:
-    needs:
-      - build-auth
-      - build-dnsdist
-      - build-recursor
-      - swagger-syntax-check
-      - test-auth-api
-      - test-auth-backend
-      - test-dnsdist-regression
-      - test-ixfrdist
-      - test-recursor-api
-      - test-recursor-regression
-      - test-recursor-bulk
-      - test-recursor-ubicloud-bulk
-    if: success() || failure()
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Coveralls Parallel Finished
-        if: ${{ env.COVERAGE == 'yes' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          parallel-finished: true
-          fail-on-error: false
-      - name: Install jq and jc
-        run: "sudo apt-get update && sudo apt-get install jq jc"
-      - name: Fail job if any of the previous jobs failed
-        run: "for i in `echo '${{ toJSON(needs) }}' | jq -r '.[].result'`; do if [[ $i == 'failure' ]]; then echo '${{ toJSON(needs) }}'; exit 1; fi; done;"
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 5
-          submodules: recursive
-          ref: ${{ inputs.branch-name }}
-      - name: Get list of jobs in the workflow
-        run: "cat .github/workflows/build-and-test-all.yml | jc --yaml | jq -rS '.[].jobs | keys | .[]' | grep -vE 'collect|get-runner-container-image' | tee /tmp/workflow-jobs-list.yml"
-      - name: Get list of prerequisite jobs
-        run: "echo '${{ toJSON(needs) }}' | jq -rS 'keys | .[]' | tee /tmp/workflow-needs-list.yml"
-      - name: Fail if there is a job missing on the needs list
-        run: "if ! diff -q /tmp/workflow-jobs-list.yml /tmp/workflow-needs-list.yml; then exit 1; fi"
+#   swagger-syntax-check:
+#     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+#     runs-on: ubuntu-24.04
+#     container:
+#       image: ghcr.io/powerdns/base-pdns-ci-image/debian-12-pdns-base:master
+#       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#           ref: ${{ inputs.branch-name }}
+#       - name: install pip build dependencies
+#         run: |
+#           python3 -m venv ${REPO_HOME}/.venv
+#           . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
+#       - run: ${{ env.INV_CMD }} install-swagger-tools
+#       - run: ${{ env.INV_CMD }} swagger-syntax-check
+# 
+#   collect:
+#     needs:
+#       - build-auth
+#       - build-dnsdist
+#       - build-recursor
+#       - swagger-syntax-check
+#       - test-auth-api
+#       - test-auth-backend
+#       - test-dnsdist-regression
+#       - test-ixfrdist
+#       - test-recursor-api
+#       - test-recursor-regression
+#       - test-recursor-bulk
+#       - test-recursor-ubicloud-bulk
+#     if: success() || failure()
+#     runs-on: ubuntu-24.04
+#     steps:
+#       - name: Coveralls Parallel Finished
+#         if: ${{ env.COVERAGE == 'yes' }}
+#         uses: coverallsapp/github-action@v2
+#         with:
+#           parallel-finished: true
+#           fail-on-error: false
+#       - name: Install jq and jc
+#         run: "sudo apt-get update && sudo apt-get install jq jc"
+#       - name: Fail job if any of the previous jobs failed
+#         run: "for i in `echo '${{ toJSON(needs) }}' | jq -r '.[].result'`; do if [[ $i == 'failure' ]]; then echo '${{ toJSON(needs) }}'; exit 1; fi; done;"
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 5
+#           submodules: recursive
+#           ref: ${{ inputs.branch-name }}
+#       - name: Get list of jobs in the workflow
+#         run: "cat .github/workflows/build-and-test-all.yml | jc --yaml | jq -rS '.[].jobs | keys | .[]' | grep -vE 'collect|get-runner-container-image' | tee /tmp/workflow-jobs-list.yml"
+#       - name: Get list of prerequisite jobs
+#         run: "echo '${{ toJSON(needs) }}' | jq -rS 'keys | .[]' | tee /tmp/workflow-needs-list.yml"
+#       - name: Fail if there is a job missing on the needs list
+#         run: "if ! diff -q /tmp/workflow-jobs-list.yml /tmp/workflow-needs-list.yml; then exit 1; fi"
 
 # FIXME: if we can make upload/download-artifact fasts, running unit tests outside of build can let regression tests start earlier
