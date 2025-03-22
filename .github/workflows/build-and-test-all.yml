@@ -63,7 +63,8 @@ jobs:
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     strategy:
       matrix:
-        builder: [autotools, meson]
+        # builder: [autotools, meson]
+        builder: [meson]
       fail-fast: false
     defaults:
       run:
@@ -89,7 +90,8 @@ jobs:
           key: auth-ccache-${{ matrix.builder }}-${{ steps.get-stamp.outputs.stamp }}
           restore-keys: auth-ccache-${{ matrix.builder }}
       - name: set sanitizers
-        run: echo "SANITIZERS=${{ matrix.builder == 'meson' && 'address,undefined' || 'asan+ubsan' }}" >> "$GITHUB_ENV"
+        # run: echo "SANITIZERS=${{ matrix.builder == 'meson' && 'address,undefined' || 'asan+ubsan' }}" >> "$GITHUB_ENV"
+        run: echo "SANITIZERS=asan+ubsan" >> "$GITHUB_ENV"
         working-directory: .
       - name: install pip build dependencies
         run: |
@@ -146,12 +148,13 @@ jobs:
       matrix:
         sanitizers: [asan+ubsan, tsan]
         features: [least, full]
-        builder: [autotools, meson]
+        # builder: [autotools, meson]
+        builder: [meson]
         exclude:
           - sanitizers: tsan
             features: least
-          - builder: meson
-            sanitizers: tsan
+          # - builder: meson
+          #   sanitizers: tsan
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -232,14 +235,15 @@ jobs:
     needs: get-runner-container-image
     strategy:
       matrix:
-        builder: [autotools, meson]
+        # builder: [autotools, meson]
+        builder: [meson]
         sanitizers: [asan+ubsan, tsan]
         features: [least, full]
         exclude:
           - sanitizers: tsan
             features: least
-          - sanitizers: tsan
-            builder: meson
+          # - sanitizers: tsan
+          #   builder: meson
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -577,7 +581,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan]
+        sanitizers: [asan+ubsan, tsan]
         dist_name: [debian]
         pdns_repo_version: ['48']
       fail-fast: false
@@ -628,7 +632,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan]
+        sanitizers: [asan+ubsan, tsan]
         dist_name: [debian]
         pdns_repo_version: ['48']
       fail-fast: false
@@ -682,7 +686,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan]
+        sanitizers: [asan+ubsan, tsan]
         threads: [1, 2, 3, 4, 8]
         mthreads: [2048]
         shards: [1, 2, 1024]
@@ -727,7 +731,7 @@ jobs:
           fail-on-error: false
 
   test-recursor-ubicloud-bulk:
-    if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
+    # if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
     name: 'test rec ubicloud bulk'
     needs:
       - build-recursor
@@ -783,7 +787,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan]
+        sanitizers: [asan+ubsan, tsan]
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
