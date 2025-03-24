@@ -381,17 +381,17 @@ jobs:
       - run: ${{ env.INV_CMD }} install-clang-runtime
       - run: ${{ env.INV_CMD }} install-auth-test-deps -b ${{ matrix.backend }}
       - run: ${{ env.INV_CMD }} test-api auth -b ${{ matrix.backend }}
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/pdns-auth $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' }}
-      - name: Coveralls Parallel auth API ${{ matrix.backend }}
-        if: ${{ env.COVERAGE == 'yes' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: auth-api-${{ matrix.backend }}
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
+      # - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/pdns-auth $GITHUB_WORKSPACE
+      #   if: ${{ env.COVERAGE == 'yes' }}
+      # - name: Coveralls Parallel auth API ${{ matrix.backend }}
+      #   if: ${{ env.COVERAGE == 'yes' }}
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     flag-name: auth-api-${{ matrix.backend }}
+      #     path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+      #     parallel: true
+      #     allow-empty: true
+      #     fail-on-error: false
 
   test-auth-backend:
     needs:
@@ -512,17 +512,17 @@ jobs:
       - run: ${{ env.INV_CMD }} install-clang-runtime
       - run: ${{ env.INV_CMD }} install-auth-test-deps -b ${{ matrix.backend }}
       - run: ${{ env.INV_CMD }} test-auth-backend -b ${{ matrix.backend }}
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/pdns-auth $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' }}
-      - name: Coveralls Parallel auth backend ${{ matrix.backend }}
-        if: ${{ env.COVERAGE == 'yes' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: auth-backend-${{ matrix.backend }}
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
+      # - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/pdns-auth $GITHUB_WORKSPACE
+      #   if: ${{ env.COVERAGE == 'yes' }}
+      # - name: Coveralls Parallel auth backend ${{ matrix.backend }}
+      #   if: ${{ env.COVERAGE == 'yes' }}
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     flag-name: auth-backend-${{ matrix.backend }}
+      #     path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+      #     parallel: true
+      #     allow-empty: true
+      #     fail-on-error: false
 
   test-ixfrdist:
     needs:
@@ -554,17 +554,17 @@ jobs:
       - run: ${{ env.INV_CMD }} install-clang-runtime
       - run: ${{ env.INV_CMD }} install-auth-test-deps
       - run: ${{ env.INV_CMD }} test-ixfrdist
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/ixfrdist $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' }}
-      - name: Coveralls Parallel ixfrdist
-        if: ${{ env.COVERAGE == 'yes' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: ixfrdist
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
+      # - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-auth/bin/ixfrdist $GITHUB_WORKSPACE
+      #   if: ${{ env.COVERAGE == 'yes' }}
+      # - name: Coveralls Parallel ixfrdist
+      #   if: ${{ env.COVERAGE == 'yes' }}
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     flag-name: ixfrdist
+      #     path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+      #     parallel: true
+      #     allow-empty: true
+      #     fail-on-error: false
 
   test-recursor-api:
     needs:
@@ -605,17 +605,17 @@ jobs:
       - run: ${{ env.INV_CMD }} install-clang-runtime
       - run: ${{ env.INV_CMD }} install-rec-test-deps
       - run: ${{ env.INV_CMD }} test-api recursor
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-recursor/bin/pdns_recursor $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
-      - name: Coveralls Parallel recursor API
-        if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: rec-api-full-${{ matrix.sanitizers }}
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
+      # - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-recursor/bin/pdns_recursor $GITHUB_WORKSPACE
+      #   if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
+      # - name: Coveralls Parallel recursor API
+      #   if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     flag-name: rec-api-full-${{ matrix.sanitizers }}
+      #     path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+      #     parallel: true
+      #     allow-empty: true
+      #     fail-on-error: false
 
   test-recursor-regression:
     needs:
@@ -658,17 +658,17 @@ jobs:
       - run: ${{ env.INV_CMD }} install-clang-runtime
       - run: ${{ env.INV_CMD }} install-rec-test-deps
       - run: ${{ env.INV_CMD }} test-regression-recursor
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-recursor/bin/pdns_recursor $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
-      - name: Coveralls Parallel recursor regression
-        if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: rec-regression-full-${{ matrix.sanitizers }}
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
+      # - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-recursor/bin/pdns_recursor $GITHUB_WORKSPACE
+      #   if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
+      # - name: Coveralls Parallel recursor regression
+      #   if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     flag-name: rec-regression-full-${{ matrix.sanitizers }}
+      #     path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+      #     parallel: true
+      #     allow-empty: true
+      #     fail-on-error: false
 
   test-recursor-bulk:
     name: 'test rec *mini* bulk'
@@ -710,17 +710,17 @@ jobs:
       - run: ${{ env.INV_CMD }} install-clang-runtime
       - run: ${{ env.INV_CMD }} install-rec-bulk-deps
       - run: ${{ env.INV_CMD }} test-bulk-recursor 100 ${{ matrix.threads }} ${{ matrix.mthreads }} ${{ matrix.shards }} ${{ matrix.IPv6 }}
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-recursor/bin/pdns_recursor $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
-      - name: Coveralls Parallel recursor bulk
-        if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: rec-regression-bulk-full-${{ matrix.sanitizers }}
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
+      # - run: ${{ env.INV_CMD }} generate-coverage-info /opt/pdns-recursor/bin/pdns_recursor $GITHUB_WORKSPACE
+      #   if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
+      # - name: Coveralls Parallel recursor bulk
+      #   if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     flag-name: rec-regression-bulk-full-${{ matrix.sanitizers }}
+      #     path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+      #     parallel: true
+      #     allow-empty: true
+      #     fail-on-error: false
 
   test-recursor-ubicloud-bulk:
     if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
@@ -815,17 +815,17 @@ jobs:
       - run: ${{ env.INV_CMD }} install-clang-runtime
       - run: ${{ env.INV_CMD }} install-dnsdist-test-deps $([ "$(. /etc/os-release && echo $VERSION_CODENAME)" = "bullseye" ] && echo "--skipXDP=True")
       - run: ${{ env.INV_CMD }} test-dnsdist $([ "$(. /etc/os-release && echo $VERSION_CODENAME)" = "bullseye" ] && echo "--skipXDP=True")
-      - run: ${{ env.INV_CMD }} generate-coverage-info /opt/dnsdist/bin/dnsdist $GITHUB_WORKSPACE
-        if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
-      - name: Coveralls Parallel dnsdist regression
-        if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
-        uses: coverallsapp/github-action@v2
-        with:
-          flag-name: dnsdist-regression-full-${{ matrix.sanitizers }}
-          path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
-          parallel: true
-          allow-empty: true
-          fail-on-error: false
+      # - run: ${{ env.INV_CMD }} generate-coverage-info /opt/dnsdist/bin/dnsdist $GITHUB_WORKSPACE
+      #   if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
+      # - name: Coveralls Parallel dnsdist regression
+      #   if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' }}
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     flag-name: dnsdist-regression-full-${{ matrix.sanitizers }}
+      #     path-to-lcov: $GITHUB_WORKSPACE/coverage.lcov
+      #     parallel: true
+      #     allow-empty: true
+      #     fail-on-error: false
 
   swagger-syntax-check:
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
