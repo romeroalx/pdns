@@ -789,7 +789,7 @@ def ci_dnsdist_configure_meson(features, additional_flags, additional_ld_flags, 
                       -D dns-over-tls=enabled \
                       -D reproducible=true \
                       -D snmp=enabled \
-                      -D yaml=enabled'
+                      -D yaml=disabled'
     else:
       features_set = '-D cdb=disabled \
                       -D dnscrypt=disabled \
