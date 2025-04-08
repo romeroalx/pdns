@@ -294,6 +294,8 @@ jobs:
       - run: ${{ env.INV_CMD }} ci-dnsdist-configure ${{ matrix.features }} ${{ matrix.builder }} dnsdist-${{ env.BUILDER_VERSION }}
         if: ${{ matrix.builder == 'autotools' }}
       - run: ${{ env.INV_CMD }} ci-dnsdist-make-bear ${{ matrix.builder }}
+        env:
+          CONCURRENCY: 4
       - run: ${{ env.INV_CMD }} ci-dnsdist-run-unit-tests ${{ matrix.builder }}
       - run: ${{ env.INV_CMD }} generate-coverage-info ./testrunner $GITHUB_WORKSPACE
         if: ${{ env.COVERAGE == 'yes' && matrix.sanitizers != 'tsan' && matrix.builder == 'autotools'}}
