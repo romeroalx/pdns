@@ -5,3 +5,4 @@ pyyaml==6.0.1
 meson
 ninja
 invoke
+wheel
