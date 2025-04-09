@@ -2,6 +2,7 @@
 name: 'daily: build packages for master '
 
 on:
+  push:
   schedule:
     - cron: '0 5 * * *'
 
@@ -12,12 +13,12 @@ permissions:
 
 jobs:
   call-build-packages-auth:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-pin-wheel
     with:
       is_release: 'NO'
       product: 'authoritative'
-      ref: master
+      ref: test-pin-wheel
       os: >-
           el-8
           el-9
@@ -31,12 +32,12 @@ jobs:
       DOWNLOADS_AUTOBUILT_HOSTKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_HOSTKEY }}
 
   call-build-packages-dnsdist:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-pin-wheel
     with:
       is_release: 'NO'
       product: 'dnsdist'
-      ref: master
+      ref: test-pin-wheel
       os: >-
           el-8
           el-9
@@ -50,12 +51,12 @@ jobs:
       DOWNLOADS_AUTOBUILT_HOSTKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_HOSTKEY }}
 
   call-build-packages-rec:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-pin-wheel
     with:
       is_release: 'NO'
       product: 'recursor'
-      ref: master
+      ref: test-pin-wheel
       os: >-
           el-8
           el-9
