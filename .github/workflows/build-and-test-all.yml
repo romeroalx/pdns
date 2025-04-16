@@ -212,6 +212,8 @@ jobs:
       - run: ${{ env.INV_CMD }} ci-rec-install ${{ matrix.builder == 'meson' && '--meson' || '' }}
       - run: ccache -s
       - if: ${{ matrix.builder == 'meson' }}
+        run: echo "normalized-branch-name=${{ inputs.branch-name || github.ref_name }}" | tr "/" "-" >> "$GITHUB_ENV"
+      - if: ${{ matrix.builder == 'meson' }}
         name: Store the binaries
         uses: actions/upload-artifact@v4 # this takes 30 seconds, maybe we want to tar
         with:
