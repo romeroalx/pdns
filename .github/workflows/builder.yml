@@ -28,7 +28,7 @@ jobs:
 
   build:
     name: build.sh
-    if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
+    # if: ${{ vars.SCHEDULED_JOBS_BUILDER }}
     needs: prepare
     runs-on: ${{ matrix.runner-os }}
     strategy:
