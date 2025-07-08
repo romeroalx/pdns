@@ -12,12 +12,12 @@ permissions:
   contents: write
 
 jobs:
-  call-build-packages-rec:
+  call-build-packages-dnsdist:
     uses: romeroalx/pdns/.github/workflows/build-packages.yml@alma10
     with:
-      is_release: 'YES'
-      product: 'recursor'
-      ref: rec-5.3.0-alpha1
+      is_release: 'NO'
+      product: 'dnsdist'
+      ref: ddist20-backport-15639
     secrets:
       DOWNLOADS_AUTOBUILT_SECRET: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
       DOWNLOADS_AUTOBUILT_RSYNCTARGET: ${{ secrets.DOWNLOADS_AUTOBUILT_RSYNCTARGET }}
