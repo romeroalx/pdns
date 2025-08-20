@@ -187,7 +187,7 @@ jobs:
         working-directory: ${{ runner.temp }}/digests
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '$IMAGE_NAME@sha256:%s ' *)
+            $(printf $IMAGE_NAME'@sha256:%s ' *)
       - name: Get image digest
         id: get-image-digest
         env:
