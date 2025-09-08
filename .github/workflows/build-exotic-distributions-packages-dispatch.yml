@@ -2,6 +2,7 @@
 name: Trigger build of packages on exotic distributions for a specific ref
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       ref:
@@ -17,4 +18,5 @@ jobs:
     name: call the workflow to build packages
     uses: PowerDNS/pdns/.github/workflows/builder.yml@master
     with:
-      branch-name: ${{ github.event.inputs.ref }}
+      # branch-name: ${{ github.event.inputs.ref }}
+      branch-name: master
