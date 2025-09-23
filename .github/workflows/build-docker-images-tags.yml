@@ -3,10 +3,10 @@ name: Build images for tags
 
 on:
   push:
-    tags:
-    - 'auth-*'
-    - 'dnsdist-*'
-    - 'rec-*'
+  #   tags:
+  #   - 'auth-*'
+  #   - 'dnsdist-*'
+  #   - 'rec-*'
 
 permissions:
   actions: read
@@ -34,7 +34,7 @@ jobs:
 
   call-build-image-auth:
     uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
-    if: startsWith(github.ref_name, 'auth')
+    # if: startsWith(github.ref_name, 'auth')
     needs: prepare
     with:
       product: auth
@@ -47,7 +47,7 @@ jobs:
       platforms: linux/amd64,linux/arm64/v8
       build-args: |-
         DOCKER_FAKE_RELEASE=YES
-      push: true
+      push: false
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -68,7 +68,7 @@ jobs:
       platforms: linux/amd64,linux/arm64/v8
       build-args: |-
         DOCKER_FAKE_RELEASE=YES
-      push: true
+      push: false
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -89,7 +89,7 @@ jobs:
       platforms: linux/amd64,linux/arm64/v8
       build-args: |-
         DOCKER_FAKE_RELEASE=YES
-      push: true
+      push: false
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
