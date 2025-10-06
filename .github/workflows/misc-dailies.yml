@@ -1,6 +1,7 @@
 name: "Various daily checks"
 
 on:
+  push:
   schedule:
     - cron: '34 4 * * *'
 
@@ -85,7 +86,7 @@ jobs:
   # to force the upgrade: "pip-compile --generate-hashes -U requirements.in" (this could include upgrading other packages).
 
   list-pip-requirement-files:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     runs-on: ubuntu-22.04
     outputs:
       req-files: ${{ steps.get-list-requirements.outputs.files }}
@@ -99,7 +100,7 @@ jobs:
         echo "files=$(find . -name 'requirements.txt' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   validate-pip-hashes:
-    if: ${{ vars.SCHEDULED_MISC_DAILIES }}
+    # if: ${{ vars.SCHEDULED_MISC_DAILIES }}
     name: ${{ matrix.requirements-file }} - Validate list of packages and hashes
     runs-on: ubuntu-22.04
     needs: list-pip-requirement-files
@@ -136,7 +137,7 @@ jobs:
         env:
           ID: ${{ steps.proxpi-docker.outputs.id }}
         run: |
-          docker logs "${ID}" 2>&1 | grep whl | awk '{print $8}' | cut -d "/" -f 4 | awk -F'-' '{print $1"=="$2}' | sort -u --ignore-case | sed 's/_/-/' | egrep -v "pip==|setuptools==" > /tmp/proxpi.log
+          docker logs "${ID}" 2>&1 | grep whl | awk '{print $8}' | cut -d "/" -f 4 | awk -F'-' '{print $1"=="$2}' | sort -u --ignore-case | sed 's/_/-/g' | egrep -v "pip==|setuptools==" > /tmp/proxpi.log
           cat /tmp/proxpi.log
       - name: check only listed packages were installed
         run: for i in `cat /tmp/proxpi.log`; do grep -qq -i $i ${REQUIREMENTS_FILE} || ( echo "$i not found" && exit 1 ); done
