@@ -1315,9 +1315,11 @@ def pulp_upload_file_packages_by_folder(c, source):
     for root, dirs, files in os.walk(source):
         for path in files:
             file = os.path.join(root, path).split('/',1)[1]
-            # file repositories have been configured with autopublish set to true
-            cmd = f'file content upload --repository {repo_name} --file {source}/{file} --relative-path {file}'
-            run_pulp_cmd(c, cmd)
+            # First upload file as an artifact
+            cmd = f"artifact upload --file {source}/{file} --chunk-size 500MB | jq -r '.sha256' | tr -d '\n'"
+            artifact_sha256 = run_pulp_cmd(c, cmd)
+            # Thenn create the content of type file
+            cmd = f'file content create --repository {repo_name} --relative-path {file} --sha256 {artifact_sha256}'
 
 @task
 def pulp_create_rpm_publication(c, product, list_os_rel, list_arch):
@@ -1393,7 +1395,7 @@ def pulp_upload_deb_packages_by_folder(c, source, product):
         for root, dirs, files in os.walk(source):
             for path in files:
                 file = os.path.join(root, path).split('/',1)[1]
-                cmd = f"artifact upload --file {source}/{file} | jq -r '.pulp_href' | tr -d '\n'"
+                cmd = f"artifact upload --file {source}/{file} --chunk-size 500MB | jq -r '.pulp_href' | tr -d '\n'"
                 artifact_href = run_pulp_cmd(c, cmd)
 
                 package_data = {
