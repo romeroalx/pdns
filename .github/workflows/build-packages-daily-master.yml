@@ -2,6 +2,7 @@
 name: 'daily: build packages for master'
 
 on:
+  push:
   schedule:
     - cron: '0 5 * * *'
 
@@ -12,8 +13,8 @@ permissions:
 
 jobs:
   call-build-packages-auth:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@fix-upload-builds-pulp
     with:
       is_release: 'NO'
       product: 'authoritative'
@@ -40,8 +41,8 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-dnsdist:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@fix-upload-builds-pulp
     with:
       is_release: 'NO'
       product: 'dnsdist'
@@ -68,8 +69,8 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-rec:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@fix-upload-builds-pulp
     with:
       is_release: 'NO'
       product: 'recursor'
