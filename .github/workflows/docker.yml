@@ -2,6 +2,7 @@
 name: 'Build Docker images'
 
 on:
+  push:
   schedule:
     - cron: '0 4 * * *'
 
@@ -15,10 +16,10 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 jobs:
   call-build-image-auth:
     uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
-    if: ${{ vars.SCHEDULED_DOCKER }}
+    # if: ${{ vars.SCHEDULED_DOCKER }}
     with:
       product: auth
-      ref: ${{ github.ref_name }}
+      ref: master
       image-name: pdns-auth-master
       image-tags: |-
         latest
