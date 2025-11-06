@@ -8,7 +8,7 @@ on:
       - '**/requirements.txt'
       - '**/requirements.in'
   schedule:
-    - cron: '30 1 * * *'
+    - cron: '07 11 * * *'
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
@@ -29,7 +29,7 @@ jobs:
   # to force the upgrade: "pip-compile --generate-hashes -U requirements.in" (this could include upgrading other packages).
 
   list-pip-requirement-files:
-    if: ${{ github.event_name == 'schedule' && vars.SCHEDULED_VERIFY_PINNING }}
+    if: ${{ !github.event.schedule || vars.SCHEDULED_VERIFY_PINNING }}
     runs-on: ubuntu-22.04
     outputs:
       req-files: ${{ steps.get-list-requirements.outputs.files }}
@@ -43,7 +43,7 @@ jobs:
           echo "files=$(find . -name 'requirements.txt' | jq -R -s -c 'split("\n")[:-1]')" >> "$GITHUB_OUTPUT"
 
   validate-pip-hashes:
-    if: ${{ github.event_name == 'schedule' && vars.SCHEDULED_VERIFY_PINNING }}
+    if: ${{ !github.event.schedule || vars.SCHEDULED_VERIFY_PINNING }}
     name: ${{ matrix.requirements-file }} - Validate list of packages and hashes
     runs-on: ubuntu-22.04
     needs: list-pip-requirement-files
