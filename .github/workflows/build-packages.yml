@@ -102,9 +102,11 @@ jobs:
           done
           echo "oslist=$(jo -a ${targets[*]})" >> "$GITHUB_OUTPUT"
       - id: get-runnerlist
-        run: echo "runnerlist=$(jo -a ubuntu-24.04 ${{ vars.ARM64_USE_UBICLOUD == '1' && 'ubicloud-standard-2-arm' || '' }})" >> "$GITHUB_OUTPUT"
+        run: echo "runnerlist=$(jo -a ubuntu-24.04)" >> "$GITHUB_OUTPUT"
+        # run: echo "runnerlist=$(jo -a ubuntu-24.04 ${{ vars.ARM64_USE_UBICLOUD == '1' && 'ubicloud-standard-2-arm' || '' }})" >> "$GITHUB_OUTPUT"
       - id: get-archlist
-        run: echo "archlist=$(jo -a  x86_64 ${{ vars.ARM64_USE_UBICLOUD == '1' && 'aarch64' || '' }})" >> "$GITHUB_OUTPUT"
+        # run: echo "archlist=$(jo -a  x86_64 ${{ vars.ARM64_USE_UBICLOUD == '1' && 'aarch64' || '' }})" >> "$GITHUB_OUTPUT"
+        run: echo "archlist=$(jo -a  x86_64)" >> "$GITHUB_OUTPUT"
         # Only upload RPM and DEB packages for master and tags. Build outputs and provenance of all refs
       - id: set-publish-packages
         run: echo "publish-packages=$([[ "${REF}" == "master" || "${IS_RELEASE}" == "YES" ]] && echo 'yes' || echo 'no')" >> "$GITHUB_OUTPUT"
@@ -121,24 +123,24 @@ jobs:
     outputs:
       product-name: ${{ steps.normalize-name.outputs.normalized-package-name }}
       version: ${{ steps.getversion.outputs.version }}
-      pkghashes-el-8-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-8-x86_64 }}
-      pkghashes-el-8-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-8-aarch64 }}
-      pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
-      pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
+      # pkghashes-el-8-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-8-x86_64 }}
+      # pkghashes-el-8-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-8-aarch64 }}
+      # pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
+      # pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
       pkghashes-el-10-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-10-x86_64 }}
-      pkghashes-el-10-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-10-aarch64 }}
+      # pkghashes-el-10-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-10-aarch64 }}
       pkghashes-debian-bullseye-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-x86_64 }}
-      pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
-      pkghashes-debian-bookworm-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-x86_64 }}
-      pkghashes-debian-bookworm-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-aarch64 }}
-      pkghashes-debian-trixie-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-trixie-x86_64 }}
-      pkghashes-debian-trixie-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-trixie-aarch64 }}
-      pkghashes-ubuntu-focal-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-x86_64 }}
-      pkghashes-ubuntu-focal-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-aarch64 }}
-      pkghashes-ubuntu-jammy-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-x86_64 }}
-      pkghashes-ubuntu-jammy-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-aarch64 }}
-      pkghashes-ubuntu-noble-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-x86_64 }}
-      pkghashes-ubuntu-noble-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-aarch64 }}
+      # pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
+      # pkghashes-debian-bookworm-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-x86_64 }}
+      # pkghashes-debian-bookworm-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-aarch64 }}
+      # pkghashes-debian-trixie-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-trixie-x86_64 }}
+      # pkghashes-debian-trixie-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-trixie-aarch64 }}
+      # pkghashes-ubuntu-focal-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-x86_64 }}
+      # pkghashes-ubuntu-focal-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-aarch64 }}
+      # pkghashes-ubuntu-jammy-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-x86_64 }}
+      # pkghashes-ubuntu-jammy-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-aarch64 }}
+      # pkghashes-ubuntu-noble-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-x86_64 }}
+      # pkghashes-ubuntu-noble-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-aarch64 }}
       srchashes: ${{ steps.srchashes.outputs.srchashes }}
     env:
       IS_RELEASE: ${{ inputs.is_release}}
@@ -344,6 +346,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           pattern: "${{ inputs.product }}-${{ matrix.os }}-${{ needs.build.outputs.version }}-${{ matrix.architecture }}"
+          path: files/
       - name: Normalize package name
         id: normalize-name
         run: |
@@ -360,16 +363,12 @@ jobs:
           fi
       - name: Extract and prepare files and packages
         run: |
-          # Prepare files folder
-          mkdir -p files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}
-          # Copy compressed and provenance files
-          cp ${{ inputs.product }}-${{ matrix.os }}-*-${{ matrix.architecture }}/*/*/*-${{ matrix.architecture }}.tar.bz2 files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}/
           # Extract packages
-          for i in $(ls ./${{ inputs.product }}-${{ matrix.os }}-*-${{ matrix.architecture }}/*/*/*${{ matrix.architecture }}.tar.bz2); do mkdir -p ./packages/$(echo $i | cut -d '/' -f 2)/; tar -xvf $i -C ./packages/$(echo $i | cut -d '/' -f 2)/ --transform='s/.*\///'; done
+          for i in $(ls ./files/*/*/*${{ matrix.architecture }}.tar.bz2); do mkdir -p ./packages/$(echo $i | cut -d '/' -f 2)/; tar -xvf $i -C ./packages/$(echo $i | cut -d '/' -f 2)/ --transform='s/.*\///'; done
           # Move RPM files
-          for i in $(ls ./packages/*/*.rpm); do f=$(echo $i | awk -F/ '{print $3}' | awk -F'${{ inputs.product }}-' '{print $2}' | awk -F'-${{ needs.build.outputs.version }}-' '{print $1"."$2}'); mkdir -p rpm_packages/${f}; mv $i rpm_packages/${f}/; done
+          for i in $(ls ./packages/*/*.rpm); do mkdir -p rpm_packages/${{ matrix.os }}.${{ matrix.architecture }}; mv $i rpm_packages/${{ matrix.os }}.${{ matrix.architecture }}/; ls *; echo other; ls rpm_packages/*; echo other; ls rpm_packages/${{ matrix.os }}.${{ matrix.architecture }}/; done
           # Move deb files
-          for i in $(ls ./packages/*/*.deb); do mkdir -p deb_packages/$(echo $i | awk -F/ '{print $3}' | awk -F- '{print $2"-"$3}'); mv $i deb_packages/$(echo $i | awk -F/ '{print $3}' | awk -F- '{print $2"-"$3}'); done
+          for i in $(ls ./packages/*/*.deb); do mkdir -p deb_packages/${{ matrix.os }}; mv $i deb_packages/${{ matrix.os }}/; ls *; echo other; ls deb_packages/*; echo other; ls deb_packages/${{ matrix.os }}/; done
       - name: Upload DEB Packages
         if: ${{ contains(matrix.os, 'ubuntu-') || ( contains(matrix.os, 'debian-')) }}
         run: ${{ env.INV_CMD }} pulp-upload-deb-packages-by-folder deb_packages ${{ steps.normalize-name.outputs.normalized-product-name }}
@@ -415,6 +414,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           pattern: "${{ inputs.product }}-${{ matrix.os }}-${{ needs.build.outputs.version }}-${{ matrix.architecture }}"
+          path: files/
       - name: Normalize package name
         id: normalize-name
         run: |
@@ -427,12 +427,8 @@ jobs:
           fi
       - name: Extract and prepare files and packages
         run: |
-          # Prepare files folder
-          mkdir -p files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}
-          # Copy compressed files
-          cp ${{ inputs.product }}-${{ matrix.os }}-*-${{ matrix.architecture }}/*/*/*.tar.bz2 files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}/
           # Extract packages
-          for i in $(ls ./${{ inputs.product }}-${{ matrix.os }}-*-${{ matrix.architecture }}/*/*/*${{ matrix.architecture }}.tar.bz2); do mkdir -p ./packages/$(echo $i | cut -d '/' -f 2)/; tar -xvf $i -C ./packages/$(echo $i | cut -d '/' -f 2)/ --transform='s/.*\///'; done
+          for i in $(ls ./files/*/*/*${{ matrix.architecture }}.tar.bz2); do mkdir -p ./packages/$(echo $i | cut -d '/' -f 2)/; tar -xvf $i -C ./packages/$(echo $i | cut -d '/' -f 2)/ --transform='s/.*\///'; done
           # Add file with list of dependencies
           for i in $(ls ./packages/*/*.json); do mv $i files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}/; done
       - name: Upload build data
@@ -443,137 +439,137 @@ jobs:
           PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
           PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
 
-  upload-provenance-files:
-    needs: [build, provenance-src, provenance-pkgs]
-    name: Upload provenance files
-    continue-on-error: true
-    if: ${{ needs.prepare.outputs.publish-packages == 'yes' }}
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 1
-          submodules: recursive
-      - name: install pyinvoke and pulp
-        run: |
-          python3 -m venv ${GITHUB_WORKSPACE}/.venv
-          . ${GITHUB_WORKSPACE}/.venv/bin/activate && pip install -r ${GITHUB_WORKSPACE}/builder-support/requirements.txt
-      - run: ${{ env.INV_CMD }} validate-pulp-credentials
-        env:
-          PULP_REPO_NAME: ${{ secrets.PULP_FILE_REPO_NAME }}
-          PULP_URL: ${{ secrets.PULP_URL }}
-          PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
-          PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
-      - name: Download provenance files
-        uses: actions/download-artifact@v6
-        with:
-          pattern: "${{ inputs.product }}-${{ needs.build.outputs.version }}-*.intoto.jsonl"
-      - name: Normalize package name
-        id: normalize-name
-        run: |
-          if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
-            echo "normalized-package-name=pdns" >> $GITHUB_OUTPUT
-          elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
-            echo "normalized-package-name=pdns-recursor" >> $GITHUB_OUTPUT
-          else
-            echo "normalized-package-name=${{ inputs.product }}" >> $GITHUB_OUTPUT
-          fi
-      - name: Extract and prepare files and packages
-        run: |
-          # Prepare files folder
-          mkdir -p files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}
-          # Copy provenance files
-          cp *.jsonl/*.jsonl files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}/
-      - name: Upload provenance data
-        run: ${{ env.INV_CMD }} pulp-upload-file-packages-by-folder files
-        env:
-          PULP_REPO_NAME: ${{ secrets.PULP_FILE_REPO_NAME }}
-          PULP_URL: ${{ secrets.PULP_URL }}
-          PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
-          PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
-
-  publish-packages:
-    needs: [prepare, build, upload-packages]
-    continue-on-error: true
-    name: Publish RPM and DEB packages
-    runs-on: ubuntu-24.04
-    outputs:
-      check-finished: ${{ steps.check-finished.outputs.upload-completed }}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 1
-          submodules: recursive
-      - name: install pyinvoke and pulp
-        run: |
-          python3 -m venv ${GITHUB_WORKSPACE}/.venv
-          . ${GITHUB_WORKSPACE}/.venv/bin/activate && pip install -r ${GITHUB_WORKSPACE}/builder-support/requirements.txt
-      - name: Normalize product name
-        id: normalize-name
-        run: |
-          shortversion=$(echo ${{ needs.build.outputs.version }} | grep -qq master && echo master || echo ${{ needs.build.outputs.version }} | awk -F. '{print $1$2}')
-          if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
-            echo "normalized-product-name=auth-${shortversion}" >> $GITHUB_OUTPUT
-          elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
-            echo "normalized-product-name=rec-${shortversion}" >> $GITHUB_OUTPUT
-          else
-            echo "normalized-product-name=${{ inputs.product }}-${shortversion}" >> $GITHUB_OUTPUT
-          fi
-      - name: Publish DEB Packages
-        run: ${{ env.INV_CMD }} pulp-create-deb-publication
-        env:
-          PULP_URL: ${{ secrets.PULP_URL }}
-          PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
-          PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
-      - name: Publish RPM Packages
-        run: ${{ env.INV_CMD }} pulp-create-rpm-publication ${{ steps.normalize-name.outputs.normalized-product-name }} '${{ needs.prepare.outputs.oslist }}' '${{ needs.prepare.outputs.archlist }}'
-        env:
-          PULP_URL: ${{ secrets.PULP_URL }}
-          PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
-          PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
-      - id: check-finished
-        run: echo "upload-completed=yes" >> $GITHUB_OUTPUT
-
-  test-packages:
-    needs: [prepare, build, publish-packages]
-    continue-on-error: true
-    name: Test packages
-    runs-on: ${{ matrix.runner-os }}
-    if: ${{ needs.publish-packages.outputs.check-finished == 'yes' }}
-    strategy:
-      matrix:
-        os: ${{fromJson(needs.prepare.outputs.oslist)}}
-        runner-os: ${{ fromJson(needs.prepare.outputs.runnerlist )}}
-      fail-fast: false
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 1
-          submodules: recursive
-      - name: install pyinvoke and pulp
-        run: |
-          python3 -m venv ${GITHUB_WORKSPACE}/.venv
-          . ${GITHUB_WORKSPACE}/.venv/bin/activate && pip install -r ${GITHUB_WORKSPACE}/builder-support/requirements.txt
-      - name: Normalize product name
-        id: normalize-name
-        run: |
-          shortversion=$(echo ${{ needs.build.outputs.version }} | grep -qq master && echo master || echo ${{ needs.build.outputs.version }} | awk -F. '{print $1$2}')
-          if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
-            echo "normalized-package-name=pdns" >> $GITHUB_OUTPUT
-            echo "normalized-product-name=auth-${shortversion}" >> $GITHUB_OUTPUT
-            echo "process-name=pdns_server" >> $GITHUB_OUTPUT
-          elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
-            echo "normalized-package-name=pdns-recursor" >> $GITHUB_OUTPUT
-            echo "normalized-product-name=rec-${shortversion}" >> $GITHUB_OUTPUT
-            echo "process-name=pdns_recursor" >> $GITHUB_OUTPUT
-          else
-            echo "normalized-package-name=${{ inputs.product }}" >> $GITHUB_OUTPUT
-            echo "normalized-product-name=${{ inputs.product }}-${shortversion}" >> $GITHUB_OUTPUT
-            echo "process-name=dnsdist" >> $GITHUB_OUTPUT
-          fi
-      - id: get-gpg-pubkey-url
-        run: |
-          echo "gpg-pubkey-url=$(echo ${{ needs.build.outputs.version }} | grep -qq "master" && echo ${{ secrets.PULP_PDNS_GPG_PUBKEY_MASTER }} || echo ${{ secrets.PULP_PDNS_GPG_PUBKEY }} )" >> $GITHUB_OUTPUT
-      - run: ${{ env.INV_CMD }} test-install-package ${{ steps.normalize-name.outputs.normalized-product-name }} ${{ matrix.os }} ${{ secrets.PULP_CONTENT_URL }} ${{ steps.get-gpg-pubkey-url.outputs.gpg-pubkey-url }} ${{ steps.normalize-name.outputs.normalized-package-name }} ${{ needs.build.outputs.version }}
-      - name: check package version
-        run: docker run -t test-build-${{ steps.normalize-name.outputs.normalized-product-name }}-${{ matrix.os }}:latest ${{ steps.normalize-name.outputs.process-name }} --version | grep -qq ${{ needs.build.outputs.version }} && echo "[OK]" || exit 1
+#   upload-provenance-files:
+#     needs: [build, provenance-src, provenance-pkgs]
+#     name: Upload provenance files
+#     continue-on-error: true
+#     if: ${{ needs.prepare.outputs.publish-packages == 'yes' }}
+#     runs-on: ubuntu-24.04
+#     steps:
+#       - uses: actions/checkout@v5
+#         with:
+#           fetch-depth: 1
+#           submodules: recursive
+#       - name: install pyinvoke and pulp
+#         run: |
+#           python3 -m venv ${GITHUB_WORKSPACE}/.venv
+#           . ${GITHUB_WORKSPACE}/.venv/bin/activate && pip install -r ${GITHUB_WORKSPACE}/builder-support/requirements.txt
+#       - run: ${{ env.INV_CMD }} validate-pulp-credentials
+#         env:
+#           PULP_REPO_NAME: ${{ secrets.PULP_FILE_REPO_NAME }}
+#           PULP_URL: ${{ secrets.PULP_URL }}
+#           PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+#           PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+#       - name: Download provenance files
+#         uses: actions/download-artifact@v6
+#         with:
+#           pattern: "${{ inputs.product }}-${{ needs.build.outputs.version }}-*.intoto.jsonl"
+#       - name: Normalize package name
+#         id: normalize-name
+#         run: |
+#           if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
+#             echo "normalized-package-name=pdns" >> $GITHUB_OUTPUT
+#           elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
+#             echo "normalized-package-name=pdns-recursor" >> $GITHUB_OUTPUT
+#           else
+#             echo "normalized-package-name=${{ inputs.product }}" >> $GITHUB_OUTPUT
+#           fi
+#       - name: Extract and prepare files and packages
+#         run: |
+#           # Prepare files folder
+#           mkdir -p files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}
+#           # Copy provenance files
+#           cp *.jsonl/*.jsonl files/${{ steps.normalize-name.outputs.normalized-package-name }}/${{ needs.build.outputs.version }}/
+#       - name: Upload provenance data
+#         run: ${{ env.INV_CMD }} pulp-upload-file-packages-by-folder files
+#         env:
+#           PULP_REPO_NAME: ${{ secrets.PULP_FILE_REPO_NAME }}
+#           PULP_URL: ${{ secrets.PULP_URL }}
+#           PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+#           PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+# 
+#   publish-packages:
+#     needs: [prepare, build, upload-packages]
+#     continue-on-error: true
+#     name: Publish RPM and DEB packages
+#     runs-on: ubuntu-24.04
+#     outputs:
+#       check-finished: ${{ steps.check-finished.outputs.upload-completed }}
+#     steps:
+#       - uses: actions/checkout@v5
+#         with:
+#           fetch-depth: 1
+#           submodules: recursive
+#       - name: install pyinvoke and pulp
+#         run: |
+#           python3 -m venv ${GITHUB_WORKSPACE}/.venv
+#           . ${GITHUB_WORKSPACE}/.venv/bin/activate && pip install -r ${GITHUB_WORKSPACE}/builder-support/requirements.txt
+#       - name: Normalize product name
+#         id: normalize-name
+#         run: |
+#           shortversion=$(echo ${{ needs.build.outputs.version }} | grep -qq master && echo master || echo ${{ needs.build.outputs.version }} | awk -F. '{print $1$2}')
+#           if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
+#             echo "normalized-product-name=auth-${shortversion}" >> $GITHUB_OUTPUT
+#           elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
+#             echo "normalized-product-name=rec-${shortversion}" >> $GITHUB_OUTPUT
+#           else
+#             echo "normalized-product-name=${{ inputs.product }}-${shortversion}" >> $GITHUB_OUTPUT
+#           fi
+#       - name: Publish DEB Packages
+#         run: ${{ env.INV_CMD }} pulp-create-deb-publication
+#         env:
+#           PULP_URL: ${{ secrets.PULP_URL }}
+#           PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+#           PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+#       - name: Publish RPM Packages
+#         run: ${{ env.INV_CMD }} pulp-create-rpm-publication ${{ steps.normalize-name.outputs.normalized-product-name }} '${{ needs.prepare.outputs.oslist }}' '${{ needs.prepare.outputs.archlist }}'
+#         env:
+#           PULP_URL: ${{ secrets.PULP_URL }}
+#           PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+#           PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+#       - id: check-finished
+#         run: echo "upload-completed=yes" >> $GITHUB_OUTPUT
+# 
+#   test-packages:
+#     needs: [prepare, build, publish-packages]
+#     continue-on-error: true
+#     name: Test packages
+#     runs-on: ${{ matrix.runner-os }}
+#     if: ${{ needs.publish-packages.outputs.check-finished == 'yes' }}
+#     strategy:
+#       matrix:
+#         os: ${{fromJson(needs.prepare.outputs.oslist)}}
+#         runner-os: ${{ fromJson(needs.prepare.outputs.runnerlist )}}
+#       fail-fast: false
+#     steps:
+#       - uses: actions/checkout@v5
+#         with:
+#           fetch-depth: 1
+#           submodules: recursive
+#       - name: install pyinvoke and pulp
+#         run: |
+#           python3 -m venv ${GITHUB_WORKSPACE}/.venv
+#           . ${GITHUB_WORKSPACE}/.venv/bin/activate && pip install -r ${GITHUB_WORKSPACE}/builder-support/requirements.txt
+#       - name: Normalize product name
+#         id: normalize-name
+#         run: |
+#           shortversion=$(echo ${{ needs.build.outputs.version }} | grep -qq master && echo master || echo ${{ needs.build.outputs.version }} | awk -F. '{print $1$2}')
+#           if [ "x${{ inputs.product }}" = "xauthoritative" ]; then
+#             echo "normalized-package-name=pdns" >> $GITHUB_OUTPUT
+#             echo "normalized-product-name=auth-${shortversion}" >> $GITHUB_OUTPUT
+#             echo "process-name=pdns_server" >> $GITHUB_OUTPUT
+#           elif [ "x${{ inputs.product }}" = "xrecursor" ]; then
+#             echo "normalized-package-name=pdns-recursor" >> $GITHUB_OUTPUT
+#             echo "normalized-product-name=rec-${shortversion}" >> $GITHUB_OUTPUT
+#             echo "process-name=pdns_recursor" >> $GITHUB_OUTPUT
+#           else
+#             echo "normalized-package-name=${{ inputs.product }}" >> $GITHUB_OUTPUT
+#             echo "normalized-product-name=${{ inputs.product }}-${shortversion}" >> $GITHUB_OUTPUT
+#             echo "process-name=dnsdist" >> $GITHUB_OUTPUT
+#           fi
+#       - id: get-gpg-pubkey-url
+#         run: |
+#           echo "gpg-pubkey-url=$(echo ${{ needs.build.outputs.version }} | grep -qq "master" && echo ${{ secrets.PULP_PDNS_GPG_PUBKEY_MASTER }} || echo ${{ secrets.PULP_PDNS_GPG_PUBKEY }} )" >> $GITHUB_OUTPUT
+#       - run: ${{ env.INV_CMD }} test-install-package ${{ steps.normalize-name.outputs.normalized-product-name }} ${{ matrix.os }} ${{ secrets.PULP_CONTENT_URL }} ${{ steps.get-gpg-pubkey-url.outputs.gpg-pubkey-url }} ${{ steps.normalize-name.outputs.normalized-package-name }} ${{ needs.build.outputs.version }}
+#       - name: check package version
+#         run: docker run -t test-build-${{ steps.normalize-name.outputs.normalized-product-name }}-${{ matrix.os }}:latest ${{ steps.normalize-name.outputs.process-name }} --version | grep -qq ${{ needs.build.outputs.version }} && echo "[OK]" || exit 1

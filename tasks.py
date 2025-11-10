@@ -1366,7 +1366,7 @@ def pulp_create_deb_publication(c):
                 break
             except UnexpectedExit:
                 attempts += 1
-                time.sleep(5)
+                time.sleep(20)
                 print(f'Next attempt: {attempts}')
                 if attempts == max_push_attempts:
                     raise Failure(f'Error creating deb publication')
