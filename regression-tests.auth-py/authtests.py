@@ -10,8 +10,7 @@ import subprocess
 import sys
 import time
 import unittest
-import dns
-import dns.message
+from dns import *
 
 from pprint import pprint
 from eqdnsmessage import AssertEqualDNSMessageMixin
