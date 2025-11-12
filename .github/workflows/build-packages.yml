@@ -121,24 +121,24 @@ jobs:
     outputs:
       product-name: ${{ steps.normalize-name.outputs.normalized-package-name }}
       version: ${{ steps.getversion.outputs.version }}
-      pkghashes-el-8-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-8-x86_64 }}
-      pkghashes-el-8-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-8-aarch64 }}
-      pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
-      pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
-      pkghashes-el-10-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-10-x86_64 }}
-      pkghashes-el-10-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-10-aarch64 }}
-      pkghashes-debian-bullseye-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-x86_64 }}
-      pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
-      pkghashes-debian-bookworm-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-x86_64 }}
-      pkghashes-debian-bookworm-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-aarch64 }}
+      # pkghashes-el-8-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-8-x86_64 }}
+      # pkghashes-el-8-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-8-aarch64 }}
+      # pkghashes-el-9-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-9-x86_64 }}
+      # pkghashes-el-9-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-9-aarch64 }}
+      # pkghashes-el-10-x86_64: ${{ steps.pkghashes.outputs.pkghashes-el-10-x86_64 }}
+      # pkghashes-el-10-aarch64: ${{ steps.pkghashes.outputs.pkghashes-el-10-aarch64 }}
+      # pkghashes-debian-bullseye-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-x86_64 }}
+      # pkghashes-debian-bullseye-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bullseye-aarch64 }}
+      # pkghashes-debian-bookworm-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-x86_64 }}
+      # pkghashes-debian-bookworm-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-bookworm-aarch64 }}
       pkghashes-debian-trixie-x86_64: ${{ steps.pkghashes.outputs.pkghashes-debian-trixie-x86_64 }}
       pkghashes-debian-trixie-aarch64: ${{ steps.pkghashes.outputs.pkghashes-debian-trixie-aarch64 }}
-      pkghashes-ubuntu-focal-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-x86_64 }}
-      pkghashes-ubuntu-focal-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-aarch64 }}
-      pkghashes-ubuntu-jammy-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-x86_64 }}
-      pkghashes-ubuntu-jammy-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-aarch64 }}
-      pkghashes-ubuntu-noble-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-x86_64 }}
-      pkghashes-ubuntu-noble-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-aarch64 }}
+      # pkghashes-ubuntu-focal-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-x86_64 }}
+      # pkghashes-ubuntu-focal-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-focal-aarch64 }}
+      # pkghashes-ubuntu-jammy-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-x86_64 }}
+      # pkghashes-ubuntu-jammy-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-jammy-aarch64 }}
+      # pkghashes-ubuntu-noble-x86_64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-x86_64 }}
+      # pkghashes-ubuntu-noble-aarch64: ${{ steps.pkghashes.outputs.pkghashes-ubuntu-noble-aarch64 }}
       srchashes: ${{ steps.srchashes.outputs.srchashes }}
     env:
       IS_RELEASE: ${{ inputs.is_release}}
@@ -317,7 +317,7 @@ jobs:
   upload-packages:
     needs: [prepare, build, provenance-src, provenance-pkgs]
     continue-on-error: true
-    if: ${{ needs.prepare.outputs.publish-packages == 'yes' }}
+    # if: ${{ needs.prepare.outputs.publish-packages == 'yes' }}
     name: Upload packages
     runs-on: ubuntu-24.04
     strategy:
@@ -385,7 +385,7 @@ jobs:
   upload-src-files:
     needs: [prepare, build, provenance-src, provenance-pkgs]
     continue-on-error: true
-    if: ${{ needs.prepare.outputs.publish-packages == 'yes' }}
+    # if: ${{ needs.prepare.outputs.publish-packages == 'yes' }}
     name: Upload source and other files
     runs-on: ubuntu-24.04
     strategy:
@@ -441,7 +441,7 @@ jobs:
     needs: [build, provenance-src, provenance-pkgs]
     name: Upload provenance files
     continue-on-error: true
-    if: ${{ needs.prepare.outputs.publish-packages == 'yes' }}
+    # if: ${{ needs.prepare.outputs.publish-packages == 'yes' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
