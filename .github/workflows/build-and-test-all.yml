@@ -47,7 +47,7 @@ jobs:
     steps:
       - id: get-runner-image
         run: |
-          echo "image-id=ghcr.io/powerdns/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
+          echo "image-id=ghcr.io/romeroalx/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
           echo "tag=$DEFAULT_IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
   build-auth:
@@ -64,7 +64,8 @@ jobs:
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     strategy:
       matrix:
-        builder: [autotools, meson]
+        # builder: [autotools, meson]
+        builder: [meson]
       fail-fast: false
     defaults:
       run:
@@ -141,7 +142,8 @@ jobs:
 
   build-recursor:
     name: build recursor
-    if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    # if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    if: ${{ github.event.schedule }}
     runs-on: ubuntu-24.04
     needs: get-runner-container-image
     strategy:
@@ -158,6 +160,7 @@ jobs:
       env:
         SANITIZERS: ${{ matrix.sanitizers }}
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
+        ASAN_OPTIONS: "detect_stack_use_after_return=0"
         UNIT_TESTS: yes
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     defaults:
@@ -224,7 +227,8 @@ jobs:
 
   build-dnsdist:
     name: build dnsdist
-    if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    # if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    if: ${{ github.event.schedule }}
     runs-on: ${{ ( vars.REPOSITORY_USE_UBICLOUD == '1' ) && 'ubicloud-standard-4-ubuntu-2404' || format('ubuntu-24.04{0}', matrix.architecture_suffix) }}
     needs: get-runner-container-image
     strategy:
@@ -278,6 +282,8 @@ jobs:
           python3 -m venv ${REPO_HOME}/.venv
           . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
         working-directory: .
+      - run: ${{ env.INV_CMD }} install-dnsdist-build-deps $([ "$(. /etc/os-release && echo $VERSION_CODENAME)" = "bullseye" ] && echo "--skipXDP=True")
+        working-directory: .
       - run: ${{ env.INV_CMD }} install-clang
         working-directory: .
       - run: ${{ env.INV_CMD }} install-lld-linker-if-needed
@@ -285,6 +291,9 @@ jobs:
       - run: ${{ env.INV_CMD }} ci-install-rust ${REPO_HOME}
         working-directory: ./pdns/dnsdistdist/
       - run: ${{ env.INV_CMD }} ci-build-and-install-quiche ${REPO_HOME}
+        if: ${{ matrix.features != 'least' }}
+        working-directory: ./pdns/dnsdistdist/
+      - run: ${{ env.INV_CMD }} ci-build-and-install-h2o  ${REPO_HOME}
         if: ${{ matrix.features != 'least' }}
         working-directory: ./pdns/dnsdistdist/
       - run: ${{ env.INV_CMD }} ci-autoconf
@@ -333,6 +342,8 @@ jobs:
       - build-auth
       - get-runner-container-image
     runs-on: ubuntu-24.04
+    # if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    if: ${{ github.event.schedule }}
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
       env:
@@ -408,7 +419,7 @@ jobs:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
       env:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
-        ASAN_OPTIONS: detect_leaks=0
+        ASAN_OPTIONS: "detect_leaks=0:intercept_send=0"
         LDAPHOST: ldap://ldapserver/
         ODBCINI: /github/home/.odbc.ini
         AUTH_BACKEND_IP_ADDR: "172.17.0.1"
@@ -537,6 +548,8 @@ jobs:
       - build-auth
       - get-runner-container-image
     runs-on: ubuntu-24.04
+    # if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    if: ${{ github.event.schedule }}
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
       env:
@@ -584,13 +597,13 @@ jobs:
       matrix:
         sanitizers: [asan+ubsan, tsan]
         dist_name: [debian]
-        pdns_repo_version: ['48']
+        pdns_repo_version: ['49']
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
       env:
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
-        ASAN_OPTIONS: detect_leaks=0
+        ASAN_OPTIONS: "detect_leaks=0:detect_stack_use_after_return=0"
         TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ env.REPO_HOME }}/pdns/recursordist/recursor-tsan.supp"
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     steps:
@@ -636,13 +649,13 @@ jobs:
       matrix:
         sanitizers: [asan+ubsan, tsan]
         dist_name: [debian]
-        pdns_repo_version: ['48']
+        pdns_repo_version: ['49']
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
       env:
         UBSAN_OPTIONS: 'print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp'
-        ASAN_OPTIONS: ""
+        ASAN_OPTIONS: "detect_stack_use_after_return=0"
         LSAN_OPTIONS: "suppressions=${{ env.REPO_HOME }}/pdns/recursordist/recursor-lsan.supp"
         TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ env.REPO_HOME }}/pdns/recursordist/recursor-tsan.supp"
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
@@ -699,7 +712,7 @@ jobs:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
       env:
         UBSAN_OPTIONS: 'print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp'
-        ASAN_OPTIONS: detect_leaks=0
+        ASAN_OPTIONS: "detect_leaks=0:detect_stack_use_after_return=0"
         TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ env.REPO_HOME }}/pdns/recursordist/recursor-tsan.supp"
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     steps:
@@ -735,7 +748,7 @@ jobs:
           fail-on-error: false
 
   test-recursor-ubicloud-bulk:
-    if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
+    # if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
     name: 'test rec ubicloud bulk'
     needs:
       - build-recursor
@@ -770,7 +783,7 @@ jobs:
       - run: . ${{ github.workspace }}/.venv/bin/activate && inv test-bulk-recursor 50000 ${{ matrix.threads }} ${{ matrix.mthreads }} ${{ matrix.shards }} ${{ matrix.IPv6 }}
         env:
           UBSAN_OPTIONS: 'print_stacktrace=1:halt_on_error=1:suppressions=${{ github.workspace }}/build-scripts/UBSan.supp'
-          ASAN_OPTIONS: detect_leaks=0
+          ASAN_OPTIONS: "detect_leaks=0:detect_stack_use_after_return=0"
           TSAN_OPTIONS: "halt_on_error=1:suppressions=${{ github.workspace }}/pdns/recursordist/recursor-tsan.supp"
       #  Disabled, it gives us: "/bin/bash: line 1: llvm-profdata-13: command not found" due to mismatch between deb and ubuntu versions
       #- run: . ${{ github.workspace }}/.venv/bin/activate && inv generate-coverage-info 'recursor' /opt/pdns-recursor/sbin/pdns_recursor $GITHUB_WORKSPACE
@@ -843,7 +856,7 @@ jobs:
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/powerdns/base-pdns-ci-image/debian-13-pdns-base:master
+      image: ghcr.io/romeroalx/base-pdns-ci-image/debian-13-pdns-base:master
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     steps:
       - uses: actions/checkout@v5

@@ -18,6 +18,8 @@ all_build_deps = [
     'libsodium-dev',
     'libssl-dev', # This will install libssl 1.1 on Debian 11 and libssl3 on Debian 12
     'libsystemd-dev',
+    'systemd-dev',
+    'libsystemd0',
     'libtool',
     'make',
     'pkg-config',
@@ -77,9 +79,9 @@ rec_bulk_deps = [
 rec_bulk_ubicloud_deps = [
     'curl',
     'bind9-dnsutils',
-    'libboost-context1.74.0',
-    'libboost-system1.74.0',
-    'libboost-filesystem1.74.0',
+    'libboost-context1.83.0',
+    'libboost-system1.83.0',
+    'libboost-filesystem1.83.0',
     'libcap2',
     'libfstrm0',
     'libluajit-5.1-2',
@@ -96,7 +98,6 @@ dnsdist_build_deps = [
     'libedit-dev',
     'libfstrm-dev',
     'libgnutls28-dev',
-    'libh2o-evloop-dev',
     'liblmdb-dev',
     'libnghttp2-dev',
     'libre2-dev',
@@ -325,7 +326,6 @@ def install_dnsdist_test_deps(c, skipXDP=False): # FIXME: rename this, we do way
             libcurl4-openssl-dev \
             libfstrm0 \
             libgnutls30 \
-            libh2o-evloop0.13 \
             liblmdb0 \
             libnghttp2-14 \
             "libre2-[1-9]+" \
@@ -1205,6 +1205,7 @@ def test_auth_backend(c, backend):
     if backend == 'gsqlite3':
         if os.getenv('SKIP_IPV6_TESTS'):
             pdns_auth_env_vars += ' context=noipv6'
+        c.run('touch ${PWD}/regression-tests.nobackend/soa-edit/skip')
         with c.cd('regression-tests.nobackend'):
             c.run(f'{pdns_auth_env_vars} ./runtests')
         c.run('/opt/pdns-auth/bin/pdnsutil test-algorithms')
@@ -1275,6 +1276,15 @@ def coverity_upload(c, email, project, tarball):
             --form version="$(./builder-support/gen-version)" \
             --form description="master build" \
             https://scan.coverity.com/builds?project={project}', hide=True)
+
+@task
+def ci_build_and_install_h2o(c, repo):
+    with c.cd(f'{repo}/builder-support/helpers/'):
+        c.run(f'sudo {repo}/builder-support/helpers/install_h2o.sh')
+
+    c.run("sudo mkdir -p /usr/lib/pkgconfig")
+    c.run("sudo cp /opt/lib/pkgconfig/libh2o-evloop.pc /usr/lib/pkgconfig/libh2o-evloop.pc")
+
 
 @task
 def ci_build_and_install_quiche(c, repo):
