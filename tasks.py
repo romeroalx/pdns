@@ -18,6 +18,8 @@ all_build_deps = [
     'libsodium-dev',
     'libssl-dev', # This will install libssl 1.1 on Debian 11 and libssl3 on Debian 12
     'libsystemd-dev',
+    'systemd-dev',
+    'libsystemd0',
     'libtool',
     'make',
     'pkg-config',
@@ -96,7 +98,6 @@ dnsdist_build_deps = [
     'libedit-dev',
     'libfstrm-dev',
     'libgnutls28-dev',
-    'libh2o-evloop-dev',
     'liblmdb-dev',
     'libnghttp2-dev',
     'libre2-dev',
@@ -325,7 +326,6 @@ def install_dnsdist_test_deps(c, skipXDP=False): # FIXME: rename this, we do way
             libcurl4-openssl-dev \
             libfstrm0 \
             libgnutls30 \
-            libh2o-evloop0.13 \
             liblmdb0 \
             libnghttp2-14 \
             "libre2-[1-9]+" \
@@ -1275,6 +1275,15 @@ def coverity_upload(c, email, project, tarball):
             --form version="$(./builder-support/gen-version)" \
             --form description="master build" \
             https://scan.coverity.com/builds?project={project}', hide=True)
+
+@task
+def ci_build_and_install_h2o(c, repo):
+    with c.cd(f'{repo}/builder-support/helpers/'):
+        c.run(f'sudo {repo}/builder-support/helpers/install_h2o.sh')
+
+    c.run("sudo mkdir -p /usr/lib/pkgconfig")
+    c.run("sudo cp /opt/lib/pkgconfig/libh2o-evloop.pc /usr/lib/pkgconfig/libh2o-evloop.pc")
+
 
 @task
 def ci_build_and_install_quiche(c, repo):

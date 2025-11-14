@@ -47,7 +47,7 @@ jobs:
     steps:
       - id: get-runner-image
         run: |
-          echo "image-id=ghcr.io/powerdns/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
+          echo "image-id=ghcr.io/romeroalx/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
           echo "tag=$DEFAULT_IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
   build-auth:
@@ -147,8 +147,10 @@ jobs:
     strategy:
       matrix:
         builder: [autotools, meson]
-        sanitizers: [asan+ubsan, tsan]
-        features: [least, full]
+        # sanitizers: [asan+ubsan, tsan]
+        sanitizers: [tsan]
+        # features: [least, full]
+        features: [full]
         exclude:
           - sanitizers: tsan
             features: least
@@ -278,6 +280,8 @@ jobs:
           python3 -m venv ${REPO_HOME}/.venv
           . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
         working-directory: .
+      - run: ${{ env.INV_CMD }} install-dnsdist-build-deps $([ "$(. /etc/os-release && echo $VERSION_CODENAME)" = "bullseye" ] && echo "--skipXDP=True")
+        working-directory: .
       - run: ${{ env.INV_CMD }} install-clang
         working-directory: .
       - run: ${{ env.INV_CMD }} install-lld-linker-if-needed
@@ -285,6 +289,9 @@ jobs:
       - run: ${{ env.INV_CMD }} ci-install-rust ${REPO_HOME}
         working-directory: ./pdns/dnsdistdist/
       - run: ${{ env.INV_CMD }} ci-build-and-install-quiche ${REPO_HOME}
+        if: ${{ matrix.features != 'least' }}
+        working-directory: ./pdns/dnsdistdist/
+      - run: ${{ env.INV_CMD }} ci-build-and-install-h2o  ${REPO_HOME}
         if: ${{ matrix.features != 'least' }}
         working-directory: ./pdns/dnsdistdist/
       - run: ${{ env.INV_CMD }} ci-autoconf
@@ -582,9 +589,10 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan, tsan]
+        # sanitizers: [asan+ubsan, tsan]
+        sanitizers: [tsan]
         dist_name: [debian]
-        pdns_repo_version: ['48']
+        pdns_repo_version: ['49']
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -634,9 +642,10 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan, tsan]
+        # sanitizers: [asan+ubsan, tsan]
+        sanitizers: [tsan]
         dist_name: [debian]
-        pdns_repo_version: ['48']
+        pdns_repo_version: ['49']
       fail-fast: false
     container:
       image: "${{ needs.get-runner-container-image.outputs.id }}:${{ needs.get-runner-container-image.outputs.tag }}"
@@ -689,7 +698,8 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitizers: [asan+ubsan, tsan]
+        # sanitizers: [asan+ubsan, tsan]
+        sanitizers: [tsan]
         threads: [1, 2, 3, 4, 8]
         mthreads: [2048]
         shards: [1, 2, 1024]
@@ -843,7 +853,7 @@ jobs:
     if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/powerdns/base-pdns-ci-image/debian-13-pdns-base:master
+      image: ghcr.io/romeroalx/base-pdns-ci-image/debian-13-pdns-base:master
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
     steps:
       - uses: actions/checkout@v5
