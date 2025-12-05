@@ -114,7 +114,6 @@ auth_test_deps = [   # FIXME: we should be generating some of these from shlibde
     'curl',
     'default-jre-headless',
     'bind9-dnsutils',
-    'datefudge',
     'gawk',
     'krb5-user',
     'ldnsutils',
@@ -1205,7 +1204,6 @@ def test_auth_backend(c, backend):
     if backend == 'gsqlite3':
         if os.getenv('SKIP_IPV6_TESTS'):
             pdns_auth_env_vars += ' context=noipv6'
-        c.run('touch ${PWD}/regression-tests.nobackend/soa-edit/skip')
         with c.cd('regression-tests.nobackend'):
             c.run(f'{pdns_auth_env_vars} ./runtests')
         c.run('/opt/pdns-auth/bin/pdnsutil test-algorithms')
