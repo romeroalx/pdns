@@ -2,7 +2,7 @@
 name: 'Build and test everything'
 
 on:
-  # push:
+  push:
   pull_request:
   workflow_call:
     inputs:
@@ -24,8 +24,7 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 env:
   COMPILER: clang
-  # CLANG_VERSION: ${{ contains(inputs.runner-docker-image-name, 'debian-11') && '13' || '19' }}
-  CLANG_VERSION: '13'
+  CLANG_VERSION: ${{ contains(inputs.runner-docker-image-name, 'debian-11') && '13' || '19' }}
   # github.workspace variable points to the Runner home folder. Container home folder defined below.
   REPO_HOME: '/__w/${{ github.event.repository.name }}/${{ github.event.repository.name }}'
   BUILDER_VERSION: '0.0.0-git1'
@@ -44,7 +43,7 @@ jobs:
       tag: ${{ steps.get-runner-image.outputs.tag }}
     env:
       DEFAULT_IMAGE_TAG: master # update when backporting, e.g. auth-4.9.x
-      DOCKER_IMAGE: ${{ inputs.runner-docker-image-name || 'base-pdns-ci-image/debian-12-pdns-base' }}
+      DOCKER_IMAGE: ${{ inputs.runner-docker-image-name || 'base-pdns-ci-image/debian-13-pdns-base' }}
     steps:
       - id: get-runner-image
         run: |
@@ -53,7 +52,7 @@ jobs:
 
   build-auth:
     name: build auth (${{ matrix.builder }})
-    if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    if: ${{ !github.event.schedule && vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ubuntu-24.04
     needs: get-runner-container-image
     container:
@@ -227,7 +226,7 @@ jobs:
 
   build-dnsdist:
     name: build dnsdist
-    if: ${{ !github.event.schedule || vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    if: ${{ !github.event.schedule && vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
     runs-on: ${{ ( vars.REPOSITORY_USE_UBICLOUD == '1' ) && format('ubicloud-standard-4{0}-ubuntu-2404', matrix.architecture_suffix) || format('ubuntu-24.04{0}', matrix.architecture_suffix) }}
     needs: get-runner-container-image
     strategy:
@@ -743,7 +742,8 @@ jobs:
           fail-on-error: false
 
   test-recursor-ubicloud-bulk:
-    if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
+    # if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') && ( vars.REC_BULKTEST_USE_UBICLOUD == '1' || github.repository == 'PowerDNS/pdns' ) }}
+    if: ${{ ! contains(needs.get-runner-container-image.outputs.id, 'debian-11') }}
     name: 'test rec ubicloud bulk'
     needs:
       - build-recursor
