@@ -18,6 +18,7 @@ all_build_deps = [
     'libsodium-dev',
     'libssl-dev', # This will install libssl 1.1 on Debian 11 and libssl3 on Debian 12
     'libsystemd-dev',
+    'libsystemd0',
     'libtool',
     'make',
     'pkg-config',
@@ -77,9 +78,9 @@ rec_bulk_deps = [
 rec_bulk_ubicloud_deps = [
     'curl',
     'bind9-dnsutils',
-    'libboost-context1.74.0',
-    'libboost-system1.74.0',
-    'libboost-filesystem1.74.0',
+    'libboost-context1.83.0',
+    'libboost-system1.83.0',
+    'libboost-filesystem1.83.0',
     'libcap2',
     'libfstrm0',
     'libluajit-5.1-2',
