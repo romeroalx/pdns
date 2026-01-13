@@ -76,28 +76,18 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
-      - name: get timestamp for cache
-        id: get-stamp
-        run: |
-          echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
-        shell: bash
-        working-directory: .
-      - run: mkdir -p ~/.ccache
-        working-directory: .
-      - name: let GitHub cache our ccache data
-        uses: actions/cache@v4
+      - name: set up build
+        uses: ./.github/actions/basic
         with:
-          path: ~/.ccache
-          key: auth-ccache-${{ matrix.builder }}-${{ steps.get-stamp.outputs.stamp }}
-          restore-keys: auth-ccache-${{ matrix.builder }}
+          cache-key-base: auth-ccache-${{ matrix.builder }}
       - name: set sanitizers
         run: echo "SANITIZERS=${{ matrix.builder == 'meson' && 'address,undefined' || 'asan+ubsan' }}" >> "$GITHUB_ENV"
         working-directory: .
       - name: install pip build dependencies
-        run: |
-          python3 -m venv ${REPO_HOME}/.venv
-          . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
-        working-directory: .
+        uses: ./.github/actions/pip-build-dependencies
+        with:
+          venv-parent: ${{ env.REPO_HOME }}
+          working-directory: .
       - run: ${{ env.INV_CMD }} install-auth-build-deps
         working-directory: .
       - run: ${{ env.INV_CMD }} ci-autoconf ${{ matrix.builder == 'meson' && '--meson' || '' }}
@@ -158,7 +148,7 @@ jobs:
       env:
         SANITIZERS: ${{ matrix.sanitizers }}
         UBSAN_OPTIONS: "print_stacktrace=1:halt_on_error=1:suppressions=${{ env.REPO_HOME }}/build-scripts/UBSan.supp"
-        ASAN_OPTIONS: "detect_stack_use_after_return=0"
+        # ASAN_OPTIONS: "detect_stack_use_after_return=0"
         UNIT_TESTS: yes
         CARGO_USE_DEV: 1
       options: --sysctl net.ipv6.conf.all.disable_ipv6=0
@@ -172,25 +162,15 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
-      - name: get timestamp for cache
-        id: get-stamp
-        run: |
-          echo "stamp=$(/bin/date +%s)" >> "$GITHUB_OUTPUT"
-        shell: bash
-        working-directory: .
-      - run: mkdir -p ~/.ccache
-        working-directory: .
-      - name: let GitHub cache our ccache data
-        uses: actions/cache@v4
+      - name: set up build
+        uses: ./.github/actions/basic
         with:
-          path: ~/.ccache
-          key: recursor-ccache-${{ matrix.builder }}-${{ matrix.features }}-${{ matrix.sanitizers }}-${{ steps.get-stamp.outputs.stamp }}
-          restore-keys: recursor-ccache-${{ matrix.builder }}-${{ matrix.features }}-${{ matrix.sanitizers }}
+          cache-key-base: recursor-ccache-${{ matrix.builder }}-${{ matrix.features }}-${{ matrix.sanitizers }}
       - name: install pip build dependencies
-        run: |
-          python3 -m venv ${REPO_HOME}/.venv
-          . ${REPO_HOME}/.venv/bin/activate && pip install -r ${REPO_HOME}/meson/requirements.txt
-        working-directory: .
+        uses: ./.github/actions/pip-build-dependencies
+        with:
+          venv-parent: ${{ env.REPO_HOME }}
+          working-directory: .
       - run: ${{ env.INV_CMD }} install-rec-build-deps
         working-directory: ./pdns/recursordist/
       - run: ${{ env.INV_CMD }} ci-install-rust ${REPO_HOME}
@@ -663,6 +643,8 @@ jobs:
         with:
           name: pdns-recursor-full-${{ matrix.sanitizers }}-meson-${{ env.normalized-branch-name }}
           path: /opt/pdns-recursor
+      - name: add problem matchers
+        uses: ./.github/actions/problem-matchers
       - name: install pip build dependencies
         run: |
           python3 -m venv ${REPO_HOME}/.venv
@@ -718,6 +700,9 @@ jobs:
         with:
           name: pdns-recursor-full-${{ matrix.sanitizers }}-meson-${{ env.normalized-branch-name }}
           path: /opt/pdns-recursor
+      - run: echo $GITHUB_WORKSPACE
+      - name: add problem matchers
+        uses: ./.github/actions/problem-matchers
       - name: install pip build dependencies
         run: |
           python3 -m venv ${REPO_HOME}/.venv
