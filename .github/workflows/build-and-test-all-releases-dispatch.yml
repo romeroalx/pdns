@@ -2,6 +2,7 @@
 name: Trigger workflow build-and-test-all for different releases
 
 on:
+  push:
   workflow_dispatch:
   schedule:
     - cron: '0 22 * * 4'
@@ -12,10 +13,10 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-build-and-test-all-master-debian-11:
-    if: ${{ vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
-    uses: PowerDNS/pdns/.github/workflows/build-and-test-all.yml@master
+    # if: ${{ vars.SCHEDULED_JOBS_BUILD_AND_TEST_ALL }}
+    uses: romeroalx/pdns/.github/workflows/build-and-test-all.yml@use-debian13-ci-builds
     with:
-      branch-name: master
+      branch-name: use-debian13-ci-builds
       runner-docker-image-name: base-pdns-ci-image/debian-11-pdns-base
 
   call-build-and-test-all-auth-50:
