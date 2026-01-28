@@ -47,7 +47,8 @@ jobs:
     steps:
       - id: get-runner-image
         run: |
-          echo "image-id=ghcr.io/powerdns/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
+          # echo "image-id=ghcr.io/powerdns/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
+          echo "image-id=ghcr.io/romeroalx/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
           echo "tag=$DEFAULT_IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
   build-auth:
@@ -76,6 +77,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - name: set up build
@@ -165,6 +169,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - name: set up build
@@ -247,6 +254,10 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          architecture: ${{ contains(matrix.architecture_suffix, 'arm') && 'arm64' || 'x64' }}
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - name: set up build
@@ -356,6 +367,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - uses: ./.github/actions/normalize-branch-name
@@ -491,6 +505,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - uses: ./.github/actions/normalize-branch-name
@@ -539,6 +556,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - uses: ./.github/actions/normalize-branch-name
@@ -592,6 +612,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - uses: ./.github/actions/normalize-branch-name
@@ -649,6 +672,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - uses: ./.github/actions/normalize-branch-name
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
@@ -707,6 +733,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - uses: ./.github/actions/normalize-branch-name
@@ -756,6 +785,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - uses: ./.github/actions/normalize-branch-name
@@ -817,6 +849,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - uses: ./.github/actions/normalize-branch-name
@@ -859,6 +894,9 @@ jobs:
           submodules: recursive
           ref: ${{ inputs.branch-name }}
           persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
       - name: add problem matchers
         uses: ./.github/actions/problem-matchers
       - name: install pip build dependencies

@@ -15,7 +15,7 @@ runs:
       shell: bash
       run: |
         : install pip build dependencies
-        python3 -m venv ${VENV_PARENT}/.venv
+        python3.11 -m venv ${VENV_PARENT}/.venv
         . ${VENV_PARENT}/.venv/bin/activate && pip install -r ${VENV_PARENT}/meson/requirements.txt
       env:
         VENV_PARENT: ${{ inputs.venv-parent }}
