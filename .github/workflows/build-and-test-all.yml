@@ -2,7 +2,7 @@
 name: 'Build and test everything'
 
 on:
-  push:
+  # push:
   pull_request:
   workflow_call:
     inputs:
@@ -47,7 +47,7 @@ jobs:
     steps:
       - id: get-runner-image
         run: |
-          echo "image-id=ghcr.io/powerdns/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
+          echo "image-id=ghcr.io/romeroalx/$DOCKER_IMAGE" >> "$GITHUB_OUTPUT"
           echo "tag=$DEFAULT_IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
   build-auth:
