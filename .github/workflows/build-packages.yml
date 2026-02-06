@@ -74,7 +74,7 @@ jobs:
     env:
       OS: ${{ inputs.os }}
       REF: ${{ inputs.ref }}
-      IS_RELEASE: ${{ inputs.is_release }}
+      IS_RELEASE: ${{ inputs.is_release }}  
     steps:
       # instead of jo, we could use jq here, which avoids running apt, and thus would be faster.
       # but, as this whole workflow needs at least 30 minutes to run, I prefer spending a few seconds here
