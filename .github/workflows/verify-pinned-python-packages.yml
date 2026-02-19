@@ -1,6 +1,7 @@
 name: "Verify all versions of python packages are pinned"
 
 on:
+  push:
   pull_request:
     branches:
       - master
