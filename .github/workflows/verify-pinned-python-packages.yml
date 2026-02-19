@@ -1,6 +1,7 @@
 name: "Verify all versions of python packages are pinned"
 
 on:
+  push:
   pull_request:
     branches:
       - master
@@ -50,15 +51,18 @@ jobs:
     needs: list-pip-requirement-files
     services:
       database:
-        image: epicwink/proxpi@sha256:a219ea0ef4f5b272eaf18bc5a5d00220c5aa07debb434d36161550862768aa93
+        image: epicwink/proxpi@sha256:5b5f541625aee9ad2d2f54af792d35984fbc0f3f01d2f6ca1a50af8a280b007c
         ports:
           - 5000:5000
         options: >-
           --restart always
+          --name proxpi
     strategy:
       fail-fast: false
       matrix:
-        requirements-file: ${{ fromJson(needs.list-pip-requirement-files.outputs.req-files) }}
+        requirements-file:
+          - "./pdns/requirements.txt"
+        # requirements-file: ${{ fromJson(needs.list-pip-requirement-files.outputs.req-files) }}
     env:
       SERVICE_IP_ADDR: 127.0.0.1
       REQUIREMENTS_FILE: ${{ matrix.requirements-file }}
@@ -75,15 +79,19 @@ jobs:
       # Configure pip index-url set to proxpi
       - run: pip config set global.index-url http://${{ env.SERVICE_IP_ADDR }}:5000/index/
       - run: pip config set global.trusted-host ${{ env.SERVICE_IP_ADDR }}
+      - run: |
+          docker ps --all
       - id: proxpi-docker
-        run: echo "id=$(docker ps | grep "epicwink/proxpi" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
+        run: echo "id=$(docker ps | grep "proxpi" | awk '{print $1}')" >> "$GITHUB_OUTPUT"
       - run: pip install -r ${REQUIREMENTS_FILE}
       - name: Remove extras and hashes from the requirements file
         run: cat ${REQUIREMENTS_FILE} | grep "==" | cut -d' ' -f 1 | sed 's/\[[^]]*\]//g' > /tmp/requirements.txt
+      - run: cat /tmp/requirements.txt
       - name: Get the list of packages requested to the pip proxy
         env:
           ID: ${{ steps.proxpi-docker.outputs.id }}
         run: |
+          docker logs "${ID}"
           docker logs "${ID}" 2>&1 | grep whl | awk '{print $8}' | cut -d "/" -f 4 | awk -F'-' '{print $1"=="$2}' | sort -u --ignore-case | sed 's/_/-/g' | egrep -v "pip==" > /tmp/proxpi.log
           cat /tmp/proxpi.log
       - name: check only listed packages were installed
