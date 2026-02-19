@@ -2,6 +2,7 @@
 name: 'daily: build packages for master'
 
 on:
+  push:
   schedule:
     - cron: '0 5 * * *'
 
@@ -13,19 +14,13 @@ permissions:
 jobs:
   call-build-packages-auth:
     if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-move-upload-package-to-action
     with:
       is_release: 'NO'
       product: 'authoritative'
       ref: master
       os: >-
-          el-8
-          el-9
-          el-10
           debian-bullseye
-          debian-bookworm
-          debian-trixie
-          ubuntu-jammy
           ubuntu-noble
     secrets:
       DOWNLOADS_AUTOBUILT_SECRET: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
@@ -40,8 +35,8 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-dnsdist:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-move-upload-package-to-action-2
     with:
       is_release: 'NO'
       product: 'dnsdist'
@@ -68,8 +63,8 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-rec:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-move-upload-package-to-action-2
     with:
       is_release: 'NO'
       product: 'recursor'
