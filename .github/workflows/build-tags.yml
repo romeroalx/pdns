@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   call-build-packages-auth:
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@move-upload-package-to-action
     if: startsWith(github.ref_name, 'auth')
     with:
       is_release: 'YES'
@@ -42,7 +42,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-dnsdist:
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@move-upload-package-to-action
     if: startsWith(github.ref_name, 'dnsdist')
     with:
       is_release: 'YES'
@@ -61,7 +61,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-rec:
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@move-upload-package-to-action
     if: startsWith(github.ref_name, 'rec')
     with:
       is_release: 'YES'
