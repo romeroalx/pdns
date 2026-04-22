@@ -29,9 +29,9 @@ attrs==26.1.0 \
 cdbx==0.1.2 \
     --hash=sha256:38c6b303f6c66be58427d724204a5873881854ecab3653ce056e7b689fb57f8a
     # via -r requirements.in
-certifi==2026.2.25 \
-    --hash=sha256:027692e4402ad994f1c42e52a4997a9763c646b73e4096e4d5d6db8af1d6f0fa \
-    --hash=sha256:e887ab5cee78ea814d3472169153c2d12cd43b14bd03329a39a9c6e2e80bfba7
+certifi==2026.4.22 \
+    --hash=sha256:3cb2210c8f88ba2318d29b0388d1023c8492ff72ecdde4ebdaddbb13a31b1c4a \
+    --hash=sha256:8d455352a37b71bf76a79caa83a3d6c25afee4a385d632127b6afb3963f1c580
     # via
     #   aioquic
     #   requests
@@ -331,9 +331,9 @@ hyperframe==6.1.0 \
     --hash=sha256:b03380493a519fce58ea5af42e4a42317bf9bd425596f7a0835ffce80f1a42e5 \
     --hash=sha256:f630908a00854a7adeabd6382b43923a4c4cd4b821fcb527e6ab9e15382a3b08
     # via h2
-idna==3.12 \
-    --hash=sha256:60ffaa1858fac94c9c124728c24fcde8160f3fb4a7f79aa8cdd33a9d1af60a67 \
-    --hash=sha256:724e9952cc9e2bd7550ea784adb098d837ab5267ef67a1ab9cf7846bdbdd8254
+idna==3.13 \
+    --hash=sha256:585ea8fe5d69b9181ec1afba340451fba6ba764af97026f92a91d4eef164a242 \
+    --hash=sha256:892ea0cde124a99ce773decba204c5552b69c3c67ffd5f232eb7696135bc8bb3
     # via requests
 iniconfig==2.3.0 \
     --hash=sha256:c76315c77db068650d49c5b56314774a7804df16fee4402c1f19d6d15d8c4730 \
@@ -494,9 +494,9 @@ pyopenssl==26.0.0 \
     --hash=sha256:df94d28498848b98cc1c0ffb8ef1e71e40210d3b0a8064c9d29571ed2904bf81 \
     --hash=sha256:f293934e52936f2e3413b89c6ce36df66a0b34ae1ea3a053b8c5020ff2f513fc
     # via aioquic
-pysnmp==7.1.24 \
-    --hash=sha256:9af565a0867ed0ac0d83b720d34836629d14b7f29ff4d382aa03f7ee7319c1c3 \
-    --hash=sha256:a4da4c4a08a74facfa6c447ece07a6c8ca0dbbd878cc9230e41f60f4fa1d052f
+pysnmp==7.1.25 \
+    --hash=sha256:561f3870b0c186375d78554d8e25ea6676671b2d58c628c1fb845b9dc85ee7a9 \
+    --hash=sha256:e75528ffe9550fb6a920f14095eb446b03824c8737ecc06c9bac45a18adb81a9
     # via -r requirements.in
 pytest==9.0.3 \
     --hash=sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9 \
