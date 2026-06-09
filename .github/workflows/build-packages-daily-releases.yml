@@ -2,6 +2,7 @@
 name: Trigger workflow build-packages for different releases
 
 on:
+  push:
   schedule:
     - cron: '0 3 * * *'
 
@@ -12,7 +13,7 @@ permissions:
 
 jobs:
   call-build-packages-auth-51:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
@@ -31,7 +32,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-auth-50:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
@@ -50,7 +51,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-auth-49:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
@@ -69,7 +70,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-rec-54:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
@@ -88,7 +89,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-rec-53:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
@@ -107,7 +108,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-rec-52:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
@@ -126,7 +127,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-dnsdist-21:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
@@ -145,7 +146,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-dnsdist-20:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
@@ -164,7 +165,7 @@ jobs:
       PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-dnsdist-19:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
     uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
     with:
       is_release: 'NO'
