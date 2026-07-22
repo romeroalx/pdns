@@ -381,7 +381,7 @@ jobs:
           for i in `find . -type f -name "*.deb"`; do cp $i ${PACKAGES_DIR}/; done
         working-directory: "${{ runner.temp }}/files"
       - name: Upload packages
-        uses: PowerDNS/pdns/upload-to-pulp@meta
+        uses: romeroalx/pdns/upload-to-pulp@meta-deb-content-unit
         with:
           pulp-api-url: ${{ secrets.PULP_URL }}
           pulp-ci-username: ${{ secrets.PULP_CI_USERNAME }}
@@ -430,7 +430,7 @@ jobs:
           for i in `find . -type f -name "*.json"`; do cp $i ${PACKAGES_DIR}/; done
         working-directory: "${{ runner.temp }}/files"
       - name: Upload packages
-        uses: PowerDNS/pdns/upload-to-pulp@meta
+        uses: romeroalx/pdns/upload-to-pulp@meta-deb-content-unit
         with:
           pulp-api-url: ${{ secrets.PULP_URL }}
           pulp-ci-username: ${{ secrets.PULP_CI_USERNAME }}
@@ -478,7 +478,7 @@ jobs:
           cp ./${PRODUCT}/${VERSION}/${PRODUCT}-${VERSION}.tar.* ${PACKAGES_DIR}/
         working-directory: "${{ runner.temp }}/files"
       - name: Upload packages
-        uses: PowerDNS/pdns/upload-to-pulp@meta
+        uses: romeroalx/pdns/upload-to-pulp@meta-deb-content-unit
         with:
           pulp-api-url: ${{ secrets.PULP_URL }}
           pulp-ci-username: ${{ secrets.PULP_CI_USERNAME }}
@@ -504,7 +504,7 @@ jobs:
           persist-credentials: false
       - name: Publish Debian packages
         if: ${{ contains(inputs.os, 'debian') }}
-        uses: PowerDNS/pdns/upload-to-pulp@meta
+        uses: romeroalx/pdns/upload-to-pulp@meta-deb-content-unit
         with:
           pulp-api-url: ${{ secrets.PULP_URL }}
           pulp-ci-username: ${{ secrets.PULP_CI_USERNAME }}
@@ -515,7 +515,7 @@ jobs:
           publish: 'true'
       - name: Publish Debian packages
         if: ${{ contains(inputs.os, 'ubuntu') }}
-        uses: PowerDNS/pdns/upload-to-pulp@meta
+        uses: romeroalx/pdns/upload-to-pulp@meta-deb-content-unit
         with:
           pulp-api-url: ${{ secrets.PULP_URL }}
           pulp-ci-username: ${{ secrets.PULP_CI_USERNAME }}
