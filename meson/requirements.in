@@ -7,4 +7,4 @@ ninja
 invoke
 requests==2.33.0
 cython>=3.0.0
-setuptools<82
+setuptools>=83.0.0

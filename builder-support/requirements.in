@@ -6,4 +6,4 @@ requests>=2.33.0
 pulp-cli
 pulp-cli-deb
 cython>=3.0.0
-setuptools<82
+setuptools>=83.0.0

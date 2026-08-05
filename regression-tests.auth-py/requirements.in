@@ -7,5 +7,5 @@ pytest
 Twisted>0.15.0
 requests>=2.18.4
 https://github.com/PowerDNS/xfrserver/archive/refs/tags/0.3.zip
-setuptools<82
+setuptools>=83.0.0
 protobuf>=3.0

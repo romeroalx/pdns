@@ -14,4 +14,4 @@ sphinxcontrib-fulltoc
 pyyaml==6.0.3
 cython>=3.0.0
 pbr # setup-requires for sphinxcontrib-fulltoc
-setuptools<82
+setuptools>=83.0.0
