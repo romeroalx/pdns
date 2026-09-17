@@ -16,13 +16,6 @@ on:
         # update this list, as well as the one in builder-dispatch.yml
         default: >-
           el-8
-          el-9
-          el-10
-          debian-bookworm
-          debian-trixie
-          ubuntu-focal
-          ubuntu-jammy
-          ubuntu-noble
           ubuntu-resolute
       ref:
         description: git ref to checkout

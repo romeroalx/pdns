@@ -4,6 +4,7 @@ name: Trigger workflow build-packages for different releases
 on:
   schedule:
     - cron: '0 3 * * *'
+  push:
 
 permissions:
   actions: read
@@ -12,8 +13,8 @@ permissions:
 
 jobs:
   call-build-packages-auth-51:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-fix-upload-rpm-centos
     with:
       is_release: 'NO'
       product: 'authoritative'
@@ -22,10 +23,16 @@ jobs:
       DOWNLOADS_AUTOBUILT_SECRET: ${{ secrets.DOWNLOADS_AUTOBUILT_SECRET }}
       DOWNLOADS_AUTOBUILT_RSYNCTARGET: ${{ secrets.DOWNLOADS_AUTOBUILT_RSYNCTARGET }}
       DOWNLOADS_AUTOBUILT_HOSTKEY: ${{ secrets.DOWNLOADS_AUTOBUILT_HOSTKEY }}
+      PULP_FILE_REPO_NAME: ${{ secrets.PULP_FILE_REPO_NAME }}
+      PULP_URL: ${{ secrets.PULP_URL }}
+      PULP_CONTENT_URL: ${{ secrets.PULP_CONTENT_URL }}
+      PULP_CI_USERNAME: ${{ secrets.PULP_CI_USERNAME }}
+      PULP_CI_PASSWORD: ${{ secrets.PULP_CI_PASSWORD }}
+      PULP_PDNS_GPG_PUBKEY: ${{ secrets.PULP_PDNS_GPG_PUBKEY }}
 
   call-build-packages-auth-50:
-    if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
-    uses: PowerDNS/pdns/.github/workflows/build-packages.yml@master
+    # if: ${{ vars.SCHEDULED_PACKAGES_DAILY }}
+    uses: romeroalx/pdns/.github/workflows/build-packages.yml@test-fix-upload-rpm-centos
     with:
       is_release: 'NO'
       product: 'authoritative'
