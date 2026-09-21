@@ -2,6 +2,7 @@
 name: 'Build Docker images'
 
 on:
+  push:
   schedule:
     - cron: '0 4 * * *'
 
@@ -14,11 +15,10 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
 
 jobs:
   call-build-image-auth:
-    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
-    if: ${{ vars.SCHEDULED_DOCKER }}
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@test-dia
     with:
       product: auth
-      ref: ${{ github.ref_name }}
+      ref: master
       image-name: pdns-auth-master
       image-tags: |-
         latest
@@ -31,8 +31,7 @@ jobs:
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   call-build-image-recursor:
-    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
-    if: ${{ vars.SCHEDULED_DOCKER }}
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@test-dia
     with:
       product: recursor
       ref: ${{ github.ref_name }}
@@ -41,7 +40,7 @@ jobs:
         latest
       image-description: 'EXPERIMENTAL pdns recursor image'
       platforms: linux/amd64,linux/arm64/v8
-      push: true
+      push: false
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}

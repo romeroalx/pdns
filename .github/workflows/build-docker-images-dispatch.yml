@@ -80,7 +80,8 @@ jobs:
         id: get-image-timestamp
 
   call-build-docker-image:
-    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@test-dia
+    # uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
     needs: prepare
     with:
       product: ${{ inputs.product }}
