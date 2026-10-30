@@ -80,16 +80,14 @@ jobs:
         id: get-image-timestamp
 
   call-build-docker-image:
-    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@test-pr-17249
     needs: prepare
     with:
       product: ${{ inputs.product }}
       ref: ${{ inputs.ref }}
       image-name: ${{ needs.prepare.outputs.image-name }}
       image-tags: |-
-        latest
-        ${{ needs.prepare.outputs.image-tag }}
-        ${{ needs.prepare.outputs.image-tag }}-${{ needs.prepare.outputs.image-timestamp }}
+        test-pr-17249
       image-description: ${{ needs.prepare.outputs.image-description }}
       platforms: ${{ inputs.platforms }}
       build-args: ${{ inputs.build-args }}
