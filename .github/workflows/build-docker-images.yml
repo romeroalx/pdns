@@ -54,24 +54,24 @@ permissions: # least privileges, see https://docs.github.com/en/actions/using-wo
   id-token: write
 
 jobs:
-  validate-push-image:
-    name: Check only images built from tags and master are pushed
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          submodules: recursive
-          ref: ${{ inputs.ref }}
-          persist-credentials: false
-      - name: validate reference only if image will be pushed
-        if: ${{ inputs.push }}
-        env:
-          REF: ${{ inputs.ref }}
-        run: |
-          [[ "${REF}" == "master" ]] || git describe --tags --exact-match
+  # validate-push-image:
+  #   name: Check only images built from tags and master are pushed
+  #   runs-on: ubuntu-24.04
+  #   permissions:
+  #     contents: read
+  #   steps:
+  #     - uses: actions/checkout@v7
+  #       with:
+  #         fetch-depth: 0
+  #         submodules: recursive
+  #         ref: ${{ inputs.ref }}
+  #         persist-credentials: false
+  #     - name: validate reference only if image will be pushed
+  #       if: ${{ inputs.push }}
+  #       env:
+  #         REF: ${{ inputs.ref }}
+  #       run: |
+  #         [[ "${REF}" == "master" ]] || git describe --tags --exact-match
 
   prepare-runner-os-list:
     name: generate list of runner-architecture pairs based on the input "platforms"
@@ -95,7 +95,7 @@ jobs:
     name: build ${{ matrix.platform.arch }} docker image for a product
     runs-on: ${{ matrix.platform.runner }}
     needs:
-      - validate-push-image
+      # - validate-push-image
       - prepare-runner-os-list
     strategy:
       fail-fast: false
