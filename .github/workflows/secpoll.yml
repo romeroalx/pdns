@@ -2,9 +2,9 @@
 name: 'Verify secpoll zone syntax'
 
 on:
-  push:
-    paths:
-      - docs/secpoll.zone
+  # push:
+  #   paths:
+  #     - docs/secpoll.zone
   pull_request:
     paths:
       - docs/secpoll.zone

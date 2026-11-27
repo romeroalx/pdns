@@ -36,6 +36,11 @@ on:
         type: boolean
         required: false
         default: false
+      registry:
+        description: the registry to push the image to
+        type: string
+        default: 'docker.io'
+        required: false
 
 permissions: # least privileges, see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
   contents: read
@@ -85,7 +90,7 @@ jobs:
         id: get-image-timestamp
 
   call-build-docker-image:
-    uses: PowerDNS/pdns/.github/workflows/build-docker-images.yml@master
+    uses: romeroalx/pdns/.github/workflows/build-docker-images.yml@test-private-repo-harbor
     needs: prepare
     with:
       product: ${{ inputs.product }}
@@ -100,6 +105,7 @@ jobs:
       build-args: ${{ inputs.build-args }}
       push: ${{ inputs.push }}
       upload-image-artifacts: ${{ inputs.upload-image-artifacts }}
+      registry: ${{ inputs.registry }}
     secrets:
       DOCKERHUB_ORGANIZATION_NAME: ${{ secrets.DOCKERHUB_ORGANIZATION_NAME }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}

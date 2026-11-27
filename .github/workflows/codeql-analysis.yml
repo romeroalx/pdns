@@ -1,23 +1,23 @@
 name: "CodeQL and clang-tidy"
 
 on:
-  push:
-    paths:
-      - '**.c'
-      - '**.cc'
-      - '**.h'
-      - '**.hh'
-      - '**.py'
-      - '**.rs'
-      - '**.yml'
-      - '**.l'
-      - '**.rl'
-      - '**.yy'
-      - '**/configure.ac'
-      - '**/Makefile.am'
-      - '**/meson**'
-      - '**/requirements.in'
-      - '**/requirements.txt'
+  # push:
+  #   paths:
+  #     - '**.c'
+  #     - '**.cc'
+  #     - '**.h'
+  #     - '**.hh'
+  #     - '**.py'
+  #     - '**.rs'
+  #     - '**.yml'
+  #     - '**.l'
+  #     - '**.rl'
+  #     - '**.yy'
+  #     - '**/configure.ac'
+  #     - '**/Makefile.am'
+  #     - '**/meson**'
+  #     - '**/requirements.in'
+  #     - '**/requirements.txt'
   pull_request:
     paths:
       - '**.c'
